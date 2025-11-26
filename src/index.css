@@ -1,0 +1,39 @@
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Avenir", "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  color: #e5e7eb;
+  background-color: #020617;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+body {
+  overflow: hidden;
+  background: radial-gradient(circle at top, #020617, #000 60%);
+}
+
+#ui-root {
+  position: fixed;
+  inset: 0;
+  pointer-events: none; /* children that need interaction will override */
+  z-index: 999999;
+}
