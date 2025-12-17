@@ -10,8 +10,6 @@ import AuthorInspector from "./AuthorInspector.jsx";
 import { nodeRegistry } from "../nodes/registry.js";
 import {
   createPerlinNoiseNode,
-  createNumberSliderNode,
-  createPanelNode,
   createTerrainNode,
 } from "../nodes/factory/environmentNodes.js";
 
@@ -397,8 +395,6 @@ export default function AuthorCanvas({
   // ------------------------------------------------------
   const handleAddTerrainNode = () => addNodeToEnvironment(createTerrainNode());
   const handleAddPerlinNoise = () => addNodeToEnvironment(createPerlinNoiseNode());
-  const handleAddNumberSlider = () => addNodeToEnvironment(createNumberSliderNode());
-  const handleAddPanelNode = () => addNodeToEnvironment(createPanelNode());
   const handleAddAgentNode = () => addNodeToEnvironment(createAgentNode());
   const handleAddFlockingNode = () => addNodeToEnvironment(createFlockingNode());
   const handleAddLSystemNode = () => addNodeToEnvironment(createLSystemNode());
@@ -424,8 +420,6 @@ export default function AuthorCanvas({
         setActiveDomain={setActiveDomain}
         onAddTerrainNode={handleAddTerrainNode}
         onAddPerlinNoise={handleAddPerlinNoise}
-        onAddNumberSlider={handleAddNumberSlider}
-        onAddPanelNode={handleAddPanelNode}
         onAddAgentNode={handleAddAgentNode}
         onAddFlockingNode={handleAddFlockingNode}
         onAddLSystemNode={handleAddLSystemNode}

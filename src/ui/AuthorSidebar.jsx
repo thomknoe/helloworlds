@@ -14,8 +14,6 @@ export default function AuthorSidebar({
   // Noise & Heightfields nodes
   onAddTerrainNode,
   onAddPerlinNoise,
-  onAddNumberSlider,
-  onAddPanelNode,
 
   // Agent & Behavior Systems nodes
   onAddAgentNode,
@@ -87,20 +85,6 @@ export default function AuthorSidebar({
                   onClick={onAddPerlinNoise}
                 >
                   Add Perlin Noise Node
-                </button>
-
-                <button
-                  className="preset-node-item"
-                  onClick={onAddNumberSlider}
-                >
-                  Add Number Slider Node
-                </button>
-
-                <button
-                  className="preset-node-item"
-                  onClick={onAddPanelNode}
-                >
-                  Add Panel Node
                 </button>
               </div>
             )}

@@ -38,35 +38,3 @@ export function createTerrainNode(position = { x: 300, y: 0 }) {
   };
 }
 
-// ---------------------------------------------------------
-// Number Slider Node
-// ---------------------------------------------------------
-export function createNumberSliderNode(position = { x: 0, y: 200 }) {
-  return {
-    id: makeId("slider"),
-    type: "numberSlider",
-    position,
-    data: {
-      label: "Number",
-      min: 0,
-      max: 1,
-      step: 0.01,
-      value: 0,
-    },
-  };
-}
-
-// ---------------------------------------------------------
-// Panel Node
-// ---------------------------------------------------------
-export function createPanelNode(position = { x: 0, y: 350 }) {
-  return {
-    id: makeId("panel"),
-    type: "panel",
-    position,
-    data: {
-      label: "Panel",
-      children: "Panel Content",
-    },
-  };
-}

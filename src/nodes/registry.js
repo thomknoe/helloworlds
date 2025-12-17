@@ -7,8 +7,6 @@ import PlantNode from "./algorithms/PlantNode.jsx";
 import FlowerNode from "./algorithms/FlowerNode.jsx";
 import BuildingGrammarNode from "./algorithms/BuildingGrammarNode.jsx";
 import BuildingNode from "./algorithms/BuildingNode.jsx";
-import NumberSliderNode from "./core/NumberSliderNode.jsx";
-import PanelNode from "./core/PanelNode.jsx";
 import DefaultNode from "./core/DefaultNode.jsx";
 import InputNode from "./core/InputNode.jsx";
 import TerrainNode from "./environment/TerrainNode.jsx";
@@ -25,8 +23,6 @@ export const nodeRegistry = {
   flower: FlowerNode,
   buildingGrammar: BuildingGrammarNode,
   building: BuildingNode,
-  numberSlider: NumberSliderNode,
-  panel: PanelNode,
 
   terrain: TerrainNode,
 };
