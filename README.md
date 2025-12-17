@@ -6,11 +6,7 @@ helloworld.js is a procedural 3D world generation tool, combines procedural gene
 
 # Quick Start
 
-1. Clone this repository `git clone https://github.com/thomknoe/helloworld.js.git`
-2. Install dependencies `npm install`
-3. Start the development server `npm run dev`
-4. Open your browser to the local development URL (typically `http://localhost:5173`)
-5. Press **P** to toggle between Player Mode and Author Mode
+Visit the web application at [https://thomknoe.github.io/helloworld.js/](https://thomknoe.github.io/helloworld.js/)
 
 ## Controls
 
