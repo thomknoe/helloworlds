@@ -1,4 +1,5 @@
-![helloworld.js header](https://github.com/thomknoe/helloworld.js/blob/main/public/github-cover.png)
+![helloworld.js header 1](https://github.com/thomknoe/helloworld.js/blob/main/public/github-cover-1.png)
+![helloworld.js header 2](https://github.com/thomknoe/helloworld.js/blob/main/public/github-cover-2.png)
 
 # helloworld.js
 
