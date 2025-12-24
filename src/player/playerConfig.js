@@ -1,7 +1,5 @@
-// src/player/playerConfig.js
-
 export const playerConfig = {
-  speed: 5, // walking speed
+  speed: 5,
   mouseSensitivity: 0.002,
-  eyeHeight: 2.0, // camera height above terrain
+  eyeHeight: 2.0,
 };

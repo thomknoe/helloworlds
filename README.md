@@ -1,14 +1,10 @@
-![helloworld.js header 2](https://github.com/thomknoe/helloworld.js/blob/main/public/github-cover-2.png)
+# Hello Worlds
 
-# helloworld.js
-
-helloworld.js is a procedural 3D world generation tool, combines procedural generation algorithms with a visual node editor to create dynamic immersive environments. It features a node-based authoring system for procedural content creation and first-person exploration mode for navigating generated worlds. Procedural terrain generation uses Perlin noise, L-System-based plant generation with customizable growth patterns, flocking behavior systems for dynamic agent movement, procedural building generation using shape grammars, and interactive flower placement driven by noise patterns. Users can switch between author mode for designing worlds and player mode for exploring them. Game designers, procedural content creators, 3D artists, students learning procedural generation, and interactive media developers are the primary users.
-
-![helloworld.js header 1](https://github.com/thomknoe/helloworld.js/blob/main/public/github-cover-1.png)
+Hello Worlds is a procedural 3D world generation tool, combines procedural generation algorithms with a visual node editor to create dynamic immersive environments. It features a node-based authoring system for procedural content creation and first-person exploration mode for navigating generated worlds. Procedural terrain generation uses Perlin noise, L-System-based plant generation with customizable growth patterns, flocking behavior systems for dynamic agent movement, procedural building generation using shape grammars, and interactive flower placement driven by noise patterns. Users can switch between author mode for designing worlds and player mode for exploring them. Game designers, procedural content creators, 3D artists, students learning procedural generation, and interactive media developers are the primary users.
 
 # Quick Start
 
-Visit the web application at [https://thomknoe.github.io/helloworld.js/](https://thomknoe.github.io/helloworld.js/)
+Visit the web application at [https://thomknoe.github.io/helloworlds](https://thomknoe.github.io/helloworlds/)
 
 ## Controls
 

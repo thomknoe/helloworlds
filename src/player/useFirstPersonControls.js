@@ -1,15 +1,13 @@
-// src/player/useFirstPersonControls.js
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-// ⬅ This is now the ONLY terrain height sampler used
 import { sampleTerrainHeight } from "../world/terrain/sampleHeight.js";
 
 export default function useFirstPersonControls(
   playerRef,
   cameraRef,
   isAuthorModeRef,
-  terrainConfigRef // we add a ref so terrainConfig stays available inside the loop
+  terrainConfigRef
 ) {
   const move = useRef({
     forward: false,
@@ -24,11 +22,6 @@ export default function useFirstPersonControls(
   const speed = 0.2;
   const mouseSensitivity = 0.002;
 
-  // Camera height above ground
-
-  // -------------------------
-  // Pointer lock state
-  // -------------------------
   const isLocked = useRef(false);
 
   useEffect(() => {
@@ -39,9 +32,6 @@ export default function useFirstPersonControls(
     return () => document.removeEventListener("pointerlockchange", lockChange);
   }, []);
 
-  // -------------------------
-  // Mouse look
-  // -------------------------
   useEffect(() => {
     const onMouseMove = (e) => {
       if (!isLocked.current) return;
@@ -57,9 +47,6 @@ export default function useFirstPersonControls(
     return () => window.removeEventListener("mousemove", onMouseMove);
   }, []);
 
-  // -------------------------
-  // Keyboard
-  // -------------------------
   useEffect(() => {
     const onKeyDown = (e) => {
       if (e.code === "KeyW") move.current.forward = true;
@@ -83,9 +70,6 @@ export default function useFirstPersonControls(
     };
   }, []);
 
-  // -------------------------
-  // Movement + terrain following
-  // -------------------------
   useEffect(() => {
     const forward = new THREE.Vector3();
     const right = new THREE.Vector3();
@@ -97,11 +81,9 @@ export default function useFirstPersonControls(
       const cam = cameraRef.current;
       if (!player || !cam) return;
 
-      // Mouse look
       player.rotation.y = yaw.current;
       cam.rotation.x = pitch.current;
 
-      // WASD
       let dx = 0;
       let dz = 0;
       if (move.current.forward) dz += speed;
@@ -109,21 +91,15 @@ export default function useFirstPersonControls(
       if (move.current.left) dx -= speed;
       if (move.current.right) dx += speed;
 
-      // Camera forward vector (flattened)
       cam.getWorldDirection(forward);
       forward.y = 0;
       forward.normalize();
 
-      // Camera right vector
       right.crossVectors(forward, up).normalize();
 
-      // Apply movement
       player.position.addScaledVector(forward, dz);
       player.position.addScaledVector(right, dx);
 
-      // -------------------------------------------------------
-      // TRUE TERRAIN FOLLOWING (Perlin-driven mesh)
-      // -------------------------------------------------------
       const cfg = terrainConfigRef?.current;
       if (cfg) {
         const groundY = sampleTerrainHeight(

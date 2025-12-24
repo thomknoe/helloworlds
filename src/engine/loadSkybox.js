@@ -1,4 +1,3 @@
-// src/engine/loadSkybox.js
 import * as THREE from "three";
 
 export function loadSkybox(pathArray) {

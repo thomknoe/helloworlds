@@ -1,15 +1,8 @@
-// src/nodes/factory/agentNodes.js
-
-// Simple ID generator to avoid extra deps
 const makeId = (prefix) =>
   `${prefix}-${Math.random().toString(36).slice(2, 8)}`;
 
-// ---------------------------------------------------------
-// Agent Node (one agent per node - white reflective cube)
-// ---------------------------------------------------------
 export function createAgentNode(position = { x: 0, y: 0 }) {
-  // Start with grand dispersal - spread agents widely
-  const spread = 100; // Large initial spread
+  const spread = 100;
   return {
     id: makeId("agent"),
     type: "agent",
@@ -29,9 +22,6 @@ export function createAgentNode(position = { x: 0, y: 0 }) {
   };
 }
 
-// ---------------------------------------------------------
-// Flocking Behavior Node
-// ---------------------------------------------------------
 export function createFlockingNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("flocking"),
@@ -52,4 +42,3 @@ export function createFlockingNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-

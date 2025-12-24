@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-// src/nodes/algorithms/BuildingNode.jsx
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 
@@ -17,7 +15,6 @@ export default function BuildingNode({ id, data }) {
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
 
-  // Output building configuration to the graph
   useEffect(() => {
     onOutput?.({
       id,
@@ -31,12 +28,12 @@ export default function BuildingNode({ id, data }) {
 
   return (
     <div className="node-default node-building">
-      {/* Input handle for grammar connection - EMPHASIZED */}
-      <div style={{ 
-        position: 'absolute', 
-        left: '-95px', 
-        top: '35px', 
-        fontSize: '11px', 
+
+      <div style={{
+        position: 'absolute',
+        left: '-95px',
+        top: '35px',
+        fontSize: '11px',
         color: '#4a90e2',
         fontWeight: 'bold',
         whiteSpace: 'nowrap',
@@ -44,23 +41,22 @@ export default function BuildingNode({ id, data }) {
       }}>
         ← Grammar
       </div>
-      <Handle 
-        type="target" 
-        position={Position.Left} 
-        id="grammar" 
-        style={{ 
+      <Handle
+        type="target"
+        position={Position.Left}
+        id="grammar"
+        style={{
           top: 40,
           width: '12px',
           height: '12px',
           background: '#4a90e2',
           border: '2px solid #ffffff',
           boxShadow: '0 0 8px rgba(74, 144, 226, 0.6)'
-        }} 
+        }}
       />
 
       <div className="node-title">{label}</div>
 
-      {/* Position parameters */}
       <div className="node-param-row">
         <div className="node-param-label">X (Horizontal)</div>
         <input
@@ -100,7 +96,6 @@ export default function BuildingNode({ id, data }) {
         />
       </div>
 
-      {/* Color */}
       <div className="node-param-row">
         <div className="node-param-label">Color</div>
         <input
@@ -113,12 +108,11 @@ export default function BuildingNode({ id, data }) {
         />
       </div>
 
-      {/* Output handle - EMPHASIZED */}
-      <div style={{ 
-        position: 'absolute', 
-        right: '-85px', 
-        top: '115px', 
-        fontSize: '11px', 
+      <div style={{
+        position: 'absolute',
+        right: '-85px',
+        top: '115px',
+        fontSize: '11px',
         color: '#4a9e4a',
         fontWeight: 'bold',
         whiteSpace: 'nowrap',
@@ -130,7 +124,7 @@ export default function BuildingNode({ id, data }) {
         type="source"
         position={Position.Right}
         id="building"
-        style={{ 
+        style={{
           top: 120,
           width: '12px',
           height: '12px',
@@ -142,4 +136,3 @@ export default function BuildingNode({ id, data }) {
     </div>
   );
 }
-

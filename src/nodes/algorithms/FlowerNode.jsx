@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-// src/nodes/algorithms/FlowerNode.jsx
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 
@@ -16,7 +14,6 @@ export default function FlowerNode({ id, data }) {
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
 
-  // Output flower configuration to the graph
   useEffect(() => {
     onOutput?.({
       id,
@@ -29,12 +26,12 @@ export default function FlowerNode({ id, data }) {
 
   return (
     <div className="node-default node-flower">
-      {/* Input handle for Perlin noise connection - EMPHASIZED */}
-      <div style={{ 
-        position: 'absolute', 
-        left: '-80px', 
-        top: '35px', 
-        fontSize: '11px', 
+
+      <div style={{
+        position: 'absolute',
+        left: '-80px',
+        top: '35px',
+        fontSize: '11px',
         color: '#4a90e2',
         fontWeight: 'bold',
         whiteSpace: 'nowrap',
@@ -42,23 +39,22 @@ export default function FlowerNode({ id, data }) {
       }}>
         ← Perlin Noise
       </div>
-      <Handle 
-        type="target" 
-        position={Position.Left} 
-        id="noise" 
-        style={{ 
+      <Handle
+        type="target"
+        position={Position.Left}
+        id="noise"
+        style={{
           top: 40,
           width: '12px',
           height: '12px',
           background: '#4a90e2',
           border: '2px solid #ffffff',
           boxShadow: '0 0 8px rgba(74, 144, 226, 0.6)'
-        }} 
+        }}
       />
 
       <div className="node-title">{label}</div>
 
-      {/* Count */}
       <div className="node-param-row">
         <div className="node-param-label">Count</div>
         <input
@@ -73,7 +69,6 @@ export default function FlowerNode({ id, data }) {
         />
       </div>
 
-      {/* Spread */}
       <div className="node-param-row">
         <div className="node-param-label">Spread</div>
         <input
@@ -89,7 +84,6 @@ export default function FlowerNode({ id, data }) {
         />
       </div>
 
-      {/* Size */}
       <div className="node-param-row">
         <div className="node-param-label">Size</div>
         <input
@@ -105,12 +99,11 @@ export default function FlowerNode({ id, data }) {
         />
       </div>
 
-      {/* Output handle - EMPHASIZED */}
-      <div style={{ 
-        position: 'absolute', 
-        right: '-75px', 
-        top: '115px', 
-        fontSize: '11px', 
+      <div style={{
+        position: 'absolute',
+        right: '-75px',
+        top: '115px',
+        fontSize: '11px',
         color: '#4a9e4a',
         fontWeight: 'bold',
         whiteSpace: 'nowrap',
@@ -122,7 +115,7 @@ export default function FlowerNode({ id, data }) {
         type="source"
         position={Position.Right}
         id="flower"
-        style={{ 
+        style={{
           top: 120,
           width: '12px',
           height: '12px',
@@ -134,4 +127,3 @@ export default function FlowerNode({ id, data }) {
     </div>
   );
 }
-

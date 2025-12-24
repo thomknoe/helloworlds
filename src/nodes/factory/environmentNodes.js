@@ -1,12 +1,6 @@
-// src/nodes/factory/environmentNodes.js
-
-// Simple ID generator to avoid extra deps
 const makeId = (prefix) =>
   `${prefix}-${Math.random().toString(36).slice(2, 8)}`;
 
-// ---------------------------------------------------------
-// Perlin Noise Node
-// ---------------------------------------------------------
 export function createPerlinNoiseNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("perlin"),
@@ -24,9 +18,6 @@ export function createPerlinNoiseNode(position = { x: 0, y: 0 }) {
   };
 }
 
-// ---------------------------------------------------------
-// Terrain Node
-// ---------------------------------------------------------
 export function createTerrainNode(position = { x: 300, y: 0 }) {
   return {
     id: makeId("terrain"),
@@ -37,4 +28,3 @@ export function createTerrainNode(position = { x: 300, y: 0 }) {
     },
   };
 }
-

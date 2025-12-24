@@ -1,4 +1,3 @@
-// src/world/buildings/createBuilding.js
 import * as THREE from "three";
 
 export function createBuilding(config, scene) {
@@ -15,23 +14,20 @@ export function createBuilding(config, scene) {
   const building = grammar.building;
   const wallThickness = grammar.wallThickness || 0.2;
 
-  // Create group for the building
   const group = new THREE.Group();
   group.name = "building";
-  // Position - Y will be set by caller to terrain height
+
   group.position.set(positionX, positionY, positionZ);
 
-  // Building material
   const material = new THREE.MeshStandardMaterial({
     color: new THREE.Color(color),
     roughness: 0.7,
     metalness: 0.1,
   });
 
-  // Create rooms, walls, floors, and ceilings
   building.levels.forEach((level) => {
     level.rooms.forEach((room) => {
-      // Floor
+
       const floorGeometry = new THREE.PlaneGeometry(room.width, room.depth);
       const floor = new THREE.Mesh(floorGeometry, material);
       floor.rotation.x = -Math.PI / 2;
@@ -39,7 +35,6 @@ export function createBuilding(config, scene) {
       floor.receiveShadow = true;
       group.add(floor);
 
-      // Ceiling
       const ceilingGeometry = new THREE.PlaneGeometry(room.width, room.depth);
       const ceiling = new THREE.Mesh(ceilingGeometry, material);
       ceiling.rotation.x = Math.PI / 2;
@@ -47,11 +42,9 @@ export function createBuilding(config, scene) {
       ceiling.receiveShadow = true;
       group.add(ceiling);
 
-      // Walls (4 walls per room)
       const halfWidth = room.width / 2;
       const halfDepth = room.depth / 2;
 
-      // North wall
       if (!hasConnection(room, "north", level.rooms)) {
         const northWall = createWall(
           room.width,
@@ -65,7 +58,6 @@ export function createBuilding(config, scene) {
         group.add(northWall);
       }
 
-      // South wall
       if (!hasConnection(room, "south", level.rooms)) {
         const southWall = createWall(
           room.width,
@@ -79,7 +71,6 @@ export function createBuilding(config, scene) {
         group.add(southWall);
       }
 
-      // East wall
       if (!hasConnection(room, "east", level.rooms)) {
         const eastWall = createWall(
           room.depth,
@@ -94,7 +85,6 @@ export function createBuilding(config, scene) {
         group.add(eastWall);
       }
 
-      // West wall
       if (!hasConnection(room, "west", level.rooms)) {
         const westWall = createWall(
           room.depth,
@@ -111,7 +101,6 @@ export function createBuilding(config, scene) {
     });
   });
 
-  // Create stairs
   if (building.stairs && building.stairs.length > 0) {
     building.stairs.forEach((stair) => {
       const stairGeometry = new THREE.BoxGeometry(
@@ -131,7 +120,6 @@ export function createBuilding(config, scene) {
     });
   }
 
-  // Add to scene
   scene.add(group);
 
   return {
@@ -146,41 +134,35 @@ export function createBuilding(config, scene) {
       scene.remove(group);
     },
     updateConfig: (newConfig) => {
-      // For now, just recreate the building
-      // In a more advanced version, we could update materials/positions
+
       if (newConfig.grammar?.building !== grammar.building) {
-        return false; // Signal that recreation is needed
+        return false;
       }
 
-      // Update position
       group.position.set(
         newConfig.positionX ?? positionX,
         newConfig.positionY ?? positionY,
         newConfig.positionZ ?? positionZ
       );
 
-      // Update material color
       material.color.set(newConfig.color ?? color);
 
-      return true; // Successfully updated
+      return true;
     },
   };
 }
 
-// Helper: Create a wall
 function createWall(width, height, thickness, material) {
   const geometry = new THREE.BoxGeometry(width, height, thickness);
   return new THREE.Mesh(geometry, material);
 }
 
-// Helper: Check if room has connection in a direction
 function hasConnection(room, direction, allRooms) {
   return room.connections.some((conn) => {
     if (conn.direction === direction) {
-      // Verify the connected room exists
+
       return allRooms.some((r) => r.id === conn.to);
     }
     return false;
   });
 }
-

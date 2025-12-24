@@ -1,10 +1,9 @@
-// src/world/water/createWater.js
 import * as THREE from "three";
 import { createWaterMaterial } from "./waterMaterial.js";
 
 export function createWater({
   size = 400,
-  height = 20, // matches the old scene's look
+  height = 20,
 } = {}) {
   const material = createWaterMaterial();
 

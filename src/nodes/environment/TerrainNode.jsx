@@ -1,10 +1,7 @@
-// src/nodes/TerrainNode.jsx
 import { Handle, Position } from "reactflow";
 
-/* eslint-disable no-unused-vars */
 export default function TerrainNode({ id, data }) {
-  // The PerlinNoiseNode now passes ALL parameters directly via data.onOutput
-  // AuthorCanvas injects those values into this node's `data`.
+
   const hasNoiseInput =
     data?.seed !== undefined ||
     data?.scale !== undefined ||
@@ -13,7 +10,6 @@ export default function TerrainNode({ id, data }) {
     data?.amplitude !== undefined ||
     data?.frequency !== undefined;
 
-  // Status messaging
   let status = "Waiting for Perlin input…";
   if (hasNoiseInput) {
     status = "Reading noise values…";
@@ -27,12 +23,11 @@ export default function TerrainNode({ id, data }) {
         <div className="node-terrain-status">{status}</div>
       </div>
 
-      {/* Accept Perlin config - EMPHASIZED */}
-      <div style={{ 
-        position: 'absolute', 
-        left: '-90px', 
-        top: '35px', 
-        fontSize: '11px', 
+      <div style={{
+        position: 'absolute',
+        left: '-90px',
+        top: '35px',
+        fontSize: '11px',
         color: '#4a90e2',
         fontWeight: 'bold',
         whiteSpace: 'nowrap',
@@ -44,7 +39,7 @@ export default function TerrainNode({ id, data }) {
         type="target"
         position={Position.Left}
         id="config"
-        style={{ 
+        style={{
           top: 40,
           width: '12px',
           height: '12px',
@@ -54,12 +49,11 @@ export default function TerrainNode({ id, data }) {
         }}
       />
 
-      {/* Forward terrain config downstream if needed - EMPHASIZED */}
-      <div style={{ 
-        position: 'absolute', 
-        right: '-80px', 
-        top: '35px', 
-        fontSize: '11px', 
+      <div style={{
+        position: 'absolute',
+        right: '-80px',
+        top: '35px',
+        fontSize: '11px',
         color: '#4a9e4a',
         fontWeight: 'bold',
         whiteSpace: 'nowrap',
@@ -71,7 +65,7 @@ export default function TerrainNode({ id, data }) {
         type="source"
         position={Position.Right}
         id="out"
-        style={{ 
+        style={{
           top: 40,
           width: '12px',
           height: '12px',

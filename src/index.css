@@ -34,6 +34,6 @@ body {
 #ui-root {
   position: fixed;
   inset: 0;
-  pointer-events: none; /* children that need interaction will override */
+  pointer-events: none;
   z-index: 999999;
 }

@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-// src/nodes/algorithms/BuildingGrammarNode.jsx
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import { BuildingGrammar } from "../../algorithms/buildingGrammar.js";
@@ -21,7 +19,6 @@ export default function BuildingGrammarNode({ id, data }) {
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
 
-  // Generate building structure
   useEffect(() => {
     const grammar = new BuildingGrammar({
       levels,
@@ -53,7 +50,6 @@ export default function BuildingGrammarNode({ id, data }) {
     <div className="node-default node-building-grammar">
       <div className="node-title">{label}</div>
 
-      {/* Levels */}
       <div className="node-param-row">
         <div className="node-param-label">Levels</div>
         <input
@@ -68,7 +64,6 @@ export default function BuildingGrammarNode({ id, data }) {
         />
       </div>
 
-      {/* Rooms Per Level */}
       <div className="node-param-row">
         <div className="node-param-label">Rooms/Level</div>
         <input
@@ -83,7 +78,6 @@ export default function BuildingGrammarNode({ id, data }) {
         />
       </div>
 
-      {/* Room Size */}
       <div className="node-param-row">
         <div className="node-param-label">Room Size</div>
         <input
@@ -99,7 +93,6 @@ export default function BuildingGrammarNode({ id, data }) {
         />
       </div>
 
-      {/* Level Height */}
       <div className="node-param-row">
         <div className="node-param-label">Level Height</div>
         <input
@@ -115,7 +108,6 @@ export default function BuildingGrammarNode({ id, data }) {
         />
       </div>
 
-      {/* Wall Thickness */}
       <div className="node-param-row">
         <div className="node-param-label">Wall Thickness</div>
         <input
@@ -131,7 +123,6 @@ export default function BuildingGrammarNode({ id, data }) {
         />
       </div>
 
-      {/* Room Layout */}
       <div className="node-param-row">
         <div className="node-param-label">Layout</div>
         <select
@@ -147,7 +138,6 @@ export default function BuildingGrammarNode({ id, data }) {
         </select>
       </div>
 
-      {/* Has Stairs */}
       <div className="node-param-row">
         <div className="node-param-label">Stairs</div>
         <input
@@ -160,12 +150,11 @@ export default function BuildingGrammarNode({ id, data }) {
         />
       </div>
 
-      {/* Output handle - EMPHASIZED */}
-      <div style={{ 
-        position: 'absolute', 
-        right: '-85px', 
-        top: '115px', 
-        fontSize: '11px', 
+      <div style={{
+        position: 'absolute',
+        right: '-85px',
+        top: '115px',
+        fontSize: '11px',
         color: '#4a9e4a',
         fontWeight: 'bold',
         whiteSpace: 'nowrap',
@@ -177,7 +166,7 @@ export default function BuildingGrammarNode({ id, data }) {
         type="source"
         position={Position.Right}
         id="grammar"
-        style={{ 
+        style={{
           top: 120,
           width: '12px',
           height: '12px',
@@ -189,4 +178,3 @@ export default function BuildingGrammarNode({ id, data }) {
     </div>
   );
 }
-

@@ -1,4 +1,3 @@
-// src/ui/AuthorCanvas.jsx
 import { useState, useMemo, useEffect } from "react";
 import { useNodesState, useEdgesState, addEdge } from "reactflow";
 import "reactflow/dist/style.css";
@@ -17,15 +16,9 @@ import { createAgentNode, createFlockingNode } from "../nodes/factory/agentNodes
 import { createLSystemNode, createPlantNode, createFlowerNode } from "../nodes/factory/simulationNodes.js";
 import { createBuildingGrammarNode, createBuildingNode } from "../nodes/factory/structuralNodes.js";
 
-// ------------------------------------------------------
-// INITIAL NODES & EDGES
-// ------------------------------------------------------
 const initialNodes = [];
 const initialEdges = [];
 
-// ------------------------------------------------------
-// COMPONENT
-// ------------------------------------------------------
 export default function AuthorCanvas({
   onTerrainConfigChange,
   onFlockingConfigChange,
@@ -41,9 +34,6 @@ export default function AuthorCanvas({
   const [nodeOutputs, setNodeOutputs] = useState({});
   const nodeTypes = useMemo(() => nodeRegistry, []);
 
-  // ------------------------------------------------------
-  // TERRAIN CONFIG PIPELINE
-  // ------------------------------------------------------
   useEffect(() => {
     const terrainNode = nodes.find((n) => n.type === "terrain");
     if (!terrainNode) return;
@@ -99,22 +89,16 @@ export default function AuthorCanvas({
     }
   }, [nodes, edges, nodeOutputs, setNodes, onTerrainConfigChange]);
 
-  // ------------------------------------------------------
-  // FLOCKING CONFIG PIPELINE (Agents + Behavior)
-  // ------------------------------------------------------
   useEffect(() => {
     if (typeof onFlockingConfigChange !== "function") return;
 
-    // Collect all agent nodes (each node = one agent)
     const agentNodes = nodes.filter((n) => n.type === "agent");
-    
-    // If no agents, clear config
+
     if (agentNodes.length === 0) {
       onFlockingConfigChange(null);
       return;
     }
 
-    // Collect agent configurations (generate multiple agents per node based on count)
     const agents = [];
     agentNodes.forEach((agentNode) => {
       const agentOutput = nodeOutputs[agentNode.id];
@@ -128,19 +112,17 @@ export default function AuthorCanvas({
       const size = agentOutput?.size ?? agentNode.data?.size ?? 0.3;
       const spread = agentOutput?.spread ?? agentNode.data?.spread ?? 20.0;
 
-      // Generate multiple agents with spread around base position (grand dispersal)
       for (let i = 0; i < count; i++) {
         const offsetX = (Math.random() - 0.5) * spread;
-        const offsetY = (Math.random() - 0.5) * spread * 0.3; // Less vertical spread
+        const offsetY = (Math.random() - 0.5) * spread * 0.3;
         const offsetZ = (Math.random() - 0.5) * spread;
-        
-        // Use base velocity or random for dispersal
+
         const velX = baseVelocityX || (Math.random() - 0.5) * 4;
         const velY = baseVelocityY || (Math.random() - 0.5) * 1;
         const velZ = baseVelocityZ || (Math.random() - 0.5) * 4;
 
         agents.push({
-          id: `${agentNode.id}-${i}`, // Unique ID for each agent instance
+          id: `${agentNode.id}-${i}`,
           positionX: basePositionX + offsetX,
           positionY: basePositionY + offsetY,
           positionZ: basePositionZ + offsetZ,
@@ -152,28 +134,26 @@ export default function AuthorCanvas({
       }
     });
 
-    // Find flocking behavior nodes connected to agents
     const behaviorMap = new Map();
-    
+
     agentNodes.forEach((agentNode) => {
       const behaviorEdge = edges.find(
         (e) =>
           e.target === agentNode.id &&
           e.targetHandle === "behavior"
       );
-      
+
       if (behaviorEdge) {
         const behaviorNode = nodes.find((n) => n.type === "flocking" && n.id === behaviorEdge.source);
         if (behaviorNode && !behaviorMap.has(behaviorNode.id)) {
           const behaviorOutput = nodeOutputs[behaviorNode.id];
-          
-          // Check if connected to noise node
+
           const noiseEdge = edges.find(
             (e) =>
               e.target === behaviorNode.id &&
               e.targetHandle === "noise"
           );
-          
+
           let noiseConfig = null;
           if (noiseEdge) {
             const srcOutput = nodeOutputs[noiseEdge.source];
@@ -200,7 +180,6 @@ export default function AuthorCanvas({
       }
     });
 
-    // Use first behavior found (or default if none)
     const behaviors = Array.from(behaviorMap.values());
     const behavior = behaviors.length > 0 ? behaviors[0] : null;
 
@@ -212,32 +191,25 @@ export default function AuthorCanvas({
     onFlockingConfigChange(flockingConfig);
   }, [nodes, edges, nodeOutputs, onFlockingConfigChange]);
 
-  // ------------------------------------------------------
-  // PLANT CONFIG PIPELINE (L-System + Plant)
-  // ------------------------------------------------------
   useEffect(() => {
     if (typeof onPlantConfigChange !== "function") return;
 
-    // Collect all plant nodes
     const plantNodes = nodes.filter((n) => n.type === "plant");
-    
-    // If no plants, clear config
+
     if (plantNodes.length === 0) {
       onPlantConfigChange([]);
       return;
     }
 
-    // Collect plant configurations
     const plants = plantNodes.map((plantNode) => {
       const plantOutput = nodeOutputs[plantNode.id];
-      
-      // Find connected L-system node
+
       const lsystemEdge = edges.find(
         (e) =>
           e.target === plantNode.id &&
           e.targetHandle === "lsystem"
       );
-      
+
       let lsystem = null;
       if (lsystemEdge) {
         const lsystemOutput = nodeOutputs[lsystemEdge.source];
@@ -263,32 +235,25 @@ export default function AuthorCanvas({
     onPlantConfigChange(plants);
   }, [nodes, edges, nodeOutputs, onPlantConfigChange]);
 
-  // ------------------------------------------------------
-  // BUILDING CONFIG PIPELINE (Grammar + Building)
-  // ------------------------------------------------------
   useEffect(() => {
     if (typeof onBuildingConfigChange !== "function") return;
 
-    // Collect all building nodes
     const buildingNodes = nodes.filter((n) => n.type === "building");
-    
-    // If no buildings, clear config
+
     if (buildingNodes.length === 0) {
       onBuildingConfigChange([]);
       return;
     }
 
-    // Collect building configurations
     const buildings = buildingNodes.map((buildingNode) => {
       const buildingOutput = nodeOutputs[buildingNode.id];
-      
-      // Find connected grammar node
+
       const grammarEdge = edges.find(
         (e) =>
           e.target === buildingNode.id &&
           e.targetHandle === "grammar"
       );
-      
+
       let grammar = null;
       if (grammarEdge) {
         const grammarOutput = nodeOutputs[grammarEdge.source];
@@ -310,36 +275,28 @@ export default function AuthorCanvas({
     onBuildingConfigChange(buildings);
   }, [nodes, edges, nodeOutputs, onBuildingConfigChange]);
 
-  // ------------------------------------------------------
-  // FLOWER CONFIG PIPELINE (Flowers + Noise)
-  // ------------------------------------------------------
   useEffect(() => {
     if (typeof onFlowerConfigChange !== "function") return;
 
-    // Collect all flower nodes
     const flowerNodes = nodes.filter((n) => n.type === "flower");
-    
-    // If no flowers, clear config
+
     if (flowerNodes.length === 0) {
       onFlowerConfigChange([]);
       return;
     }
 
-    // Collect flower configurations
     const flowers = flowerNodes.map((flowerNode) => {
       const flowerOutput = nodeOutputs[flowerNode.id];
-      
-      // Find connected Perlin noise node
+
       const noiseEdge = edges.find(
         (e) =>
           e.target === flowerNode.id &&
           e.targetHandle === "noise"
       );
-      
+
       let noiseConfig = null;
       if (noiseEdge) {
         const noiseOutput = nodeOutputs[noiseEdge.source];
-        // Check if it's a Perlin noise output
         if (noiseOutput && (noiseOutput.type === "perlinNoise" || noiseOutput.seed !== undefined)) {
           noiseConfig = noiseOutput;
         }
@@ -357,9 +314,6 @@ export default function AuthorCanvas({
     onFlowerConfigChange(flowers);
   }, [nodes, edges, nodeOutputs, onFlowerConfigChange]);
 
-  // ------------------------------------------------------
-  // Attach handlers to new node instance
-  // ------------------------------------------------------
   function attachNodeHandlers(node) {
     const data = node.data || {};
 
@@ -390,9 +344,6 @@ export default function AuthorCanvas({
     setNodes((prev) => [...prev, wrapped]);
   }
 
-  // ------------------------------------------------------
-  // Sidebar handlers
-  // ------------------------------------------------------
   const handleAddTerrainNode = () => addNodeToEnvironment(createTerrainNode());
   const handleAddPerlinNoise = () => addNodeToEnvironment(createPerlinNoiseNode());
   const handleAddAgentNode = () => addNodeToEnvironment(createAgentNode());
@@ -403,16 +354,10 @@ export default function AuthorCanvas({
   const handleAddBuildingGrammarNode = () => addNodeToEnvironment(createBuildingGrammarNode());
   const handleAddBuildingNode = () => addNodeToEnvironment(createBuildingNode());
 
-  // ------------------------------------------------------
-  // Connect edges
-  // ------------------------------------------------------
   function onConnect(params) {
     setEdges((prev) => addEdge({ ...params, animated: true }, prev));
   }
 
-  // ------------------------------------------------------
-  // RENDER
-  // ------------------------------------------------------
   return (
     <div className="author-shell">
       <AuthorSidebar

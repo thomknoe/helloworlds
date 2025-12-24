@@ -10,29 +10,18 @@ const DOMAINS = [
 export default function AuthorSidebar({
   activeDomain,
   setActiveDomain,
-
-  // Noise & Heightfields nodes
   onAddTerrainNode,
   onAddPerlinNoise,
-
-  // Agent & Behavior Systems nodes
   onAddAgentNode,
   onAddFlockingNode,
-
-  // Simulation & Natural Systems nodes
   onAddLSystemNode,
   onAddPlantNode,
   onAddFlowerNode,
-
-  // Structural / Generative Grammars nodes
   onAddBuildingGrammarNode,
   onAddBuildingNode
 }) {
   return (
     <aside className="author-sidebar">
-      {/* -----------------------------------------------------
-         DOMAIN SELECTOR
-      ------------------------------------------------------ */}
       <div className="domain-section-shell">
         <div className="author-sidebar-header">
           <div className="author-sidebar-title">World Builder</div>
@@ -59,9 +48,6 @@ export default function AuthorSidebar({
         </div>
       </div>
 
-      {/* -----------------------------------------------------
-         NODE LIBRARY
-      ------------------------------------------------------ */}
       <div className="domain-section-shell preset-shell-full">
         <div className="preset-library">
           <div className="preset-library-title">
@@ -70,7 +56,6 @@ export default function AuthorSidebar({
 
           <div className="preset-library-list">
 
-            {/* NOISE & HEIGHTFIELDS DOMAIN */}
             {activeDomain === "noiseHeightfields" && (
               <div className="preset-node-list">
                 <button
@@ -89,7 +74,6 @@ export default function AuthorSidebar({
               </div>
             )}
 
-            {/* SIMULATION & NATURAL SYSTEMS DOMAIN */}
             {activeDomain === "simulationNatural" && (
               <div className="preset-node-list">
                 <button
@@ -113,7 +97,6 @@ export default function AuthorSidebar({
               </div>
             )}
 
-            {/* STRUCTURAL / GENERATIVE GRAMMARS DOMAIN */}
             {activeDomain === "structuralGenerative" && (
               <div className="preset-node-list">
                 <button
@@ -131,7 +114,6 @@ export default function AuthorSidebar({
               </div>
             )}
 
-            {/* AGENT & BEHAVIOR SYSTEMS DOMAIN */}
             {activeDomain === "agentBehavior" && (
               <div className="preset-node-list">
                 <button

@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-// src/nodes/algorithms/BoidNode.jsx
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 
@@ -22,7 +20,6 @@ export default function BoidNode({ id, data }) {
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
 
-  // Output boid configuration to the graph
   useEffect(() => {
     onOutput?.({
       id,
@@ -41,12 +38,11 @@ export default function BoidNode({ id, data }) {
 
   return (
     <div className="node-default node-boid">
-      {/* Input handle for behavior connection */}
+
       <Handle type="target" position={Position.Left} id="behavior" style={{ top: 40 }} />
 
       <div className="node-title">{label}</div>
 
-      {/* Count parameter */}
       <div className="node-param-row">
         <div className="node-param-label">Count</div>
         <input
@@ -61,7 +57,6 @@ export default function BoidNode({ id, data }) {
         />
       </div>
 
-      {/* Position parameters */}
       <div className="node-param-row">
         <div className="node-param-label">Pos X</div>
         <input
@@ -131,7 +126,6 @@ export default function BoidNode({ id, data }) {
         />
       </div>
 
-      {/* Output handle */}
       <Handle
         type="source"
         position={Position.Right}
@@ -141,4 +135,3 @@ export default function BoidNode({ id, data }) {
     </div>
   );
 }
-

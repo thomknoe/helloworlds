@@ -1,12 +1,6 @@
-// src/nodes/factory/simulationNodes.js
-
-// Simple ID generator to avoid extra deps
 const makeId = (prefix) =>
   `${prefix}-${Math.random().toString(36).slice(2, 8)}`;
 
-// ---------------------------------------------------------
-// L-System Node
-// ---------------------------------------------------------
 export function createLSystemNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("lsystem"),
@@ -28,9 +22,6 @@ export function createLSystemNode(position = { x: 0, y: 0 }) {
   };
 }
 
-// ---------------------------------------------------------
-// Plant Node
-// ---------------------------------------------------------
 export function createPlantNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("plant"),
@@ -42,17 +33,14 @@ export function createPlantNode(position = { x: 0, y: 0 }) {
       positionY: 0,
       positionZ: 0,
       branchThickness: 0.1,
-      branchColor: "#8B4513", // Brown bark color
+      branchColor: "#8B4513",
       leafSize: 0.3,
-      leafColor: "#228B22", // Forest green
+      leafColor: "#228B22",
       leafDensity: 0.7,
     },
   };
 }
 
-// ---------------------------------------------------------
-// Flower Node
-// ---------------------------------------------------------
 export function createFlowerNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("flower"),
@@ -62,8 +50,7 @@ export function createFlowerNode(position = { x: 0, y: 0 }) {
       label: "Flowers",
       count: 50,
       spread: 50.0,
-      size: 1.0, // Increased default size for more prominent flowers
+      size: 1.0,
     },
   };
 }
-

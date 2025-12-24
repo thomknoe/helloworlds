@@ -1,10 +1,8 @@
-// src/world/terrain/createTerrain.js
 import * as THREE from "three";
 import Perlin from "../../algorithms/perlin.js";
 import { defaultTerrainConfig } from "./terrainConfig.js";
 import { createTerrainMaterial } from "./terrainMaterial.js";
 
-// Shared helper: apply Perlin heightfield to a geometry
 function applyPerlinToGeometry(geometry, perlinConfig) {
   const positionAttr = geometry.getAttribute("position");
   const arr = positionAttr.array;
@@ -40,8 +38,6 @@ function applyPerlinToGeometry(geometry, perlinConfig) {
 
     const normalized = maxAmp > 0 ? total / maxAmp : total;
 
-    // Keep terrain centered around water level
-
     arr[idx + 1] = normalized * amplitude;
   }
 
@@ -49,7 +45,6 @@ function applyPerlinToGeometry(geometry, perlinConfig) {
   geometry.computeVertexNormals();
 }
 
-// Create the terrain mesh
 export function createTerrain({
   grassMap,
   sandMap,
@@ -64,7 +59,6 @@ export function createTerrain({
 
   geometry.rotateX(-Math.PI / 2);
 
-  // Initial static heightfield based on default config
   applyPerlinToGeometry(geometry, {
     seed: config.seed ?? 42,
     scale: config.noiseScale ?? 0.05,
@@ -85,7 +79,6 @@ export function createTerrain({
   return mesh;
 }
 
-// Live update from PerlinNoiseNode -> TerrainNode -> PlayerView
 export function updateTerrainGeometry(terrain, perlinConfig) {
   if (!terrain || !terrain.geometry) return;
   applyPerlinToGeometry(terrain.geometry, perlinConfig || {});

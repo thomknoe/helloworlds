@@ -1,6 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-empty */
-// src/nodes/PerlinNoiseNode.jsx
 import { useEffect, useRef } from "react";
 import { Handle, Position } from "reactflow";
 import Perlin from "../../algorithms/perlin.js";
@@ -22,9 +19,6 @@ export default function PerlinNoiseNode({ id, data }) {
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
 
-  // ------------------------------------------------------
-  // Draw classic 2D Perlin grayscale map
-  // ------------------------------------------------------
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -43,11 +37,9 @@ export default function PerlinNoiseNode({ id, data }) {
     const safeOctaves = Math.max(1, Math.floor(octaves));
     const safeFreq = frequency <= 0 ? 1 : frequency;
 
-    // Loop over pixels
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
 
-        // Normalize pixel coords to [-0.5, 0.5]
         const nx = (x / width - 0.5);
         const ny = (y / height - 0.5);
 
@@ -56,7 +48,6 @@ export default function PerlinNoiseNode({ id, data }) {
         let freq = safeFreq;
         let maxAmp = 0;
 
-        // Multi-octave Perlin noise
         for (let o = 0; o < safeOctaves; o++) {
           value += Perlin.noise2D(nx * freq / safeScale, ny * freq / safeScale) * amp;
           maxAmp += amp;
@@ -64,10 +55,9 @@ export default function PerlinNoiseNode({ id, data }) {
           freq *= 2;
         }
 
-        value = value / maxAmp; // normalize [-1..1]
-        value = (value + 1) / 2; // normalize [0..1]
+        value = value / maxAmp;
+        value = (value + 1) / 2;
 
-        // Apply amplitude scaling visually
         value = Math.min(1, Math.max(0, value * (amplitude / 10)));
 
         const col = Math.floor(value * 255);
@@ -76,16 +66,13 @@ export default function PerlinNoiseNode({ id, data }) {
         pixels[idx] = col;
         pixels[idx + 1] = col;
         pixels[idx + 2] = col;
-        pixels[idx + 3] = 255; // fully opaque
+        pixels[idx + 3] = 255;
       }
     }
 
     ctx.putImageData(imageData, 0, 0);
   }, [seed, scale, octaves, persistence, amplitude, frequency]);
 
-  // ------------------------------------------------------
-  // Output bundle to the graph (unchanged)
-  // ------------------------------------------------------
   useEffect(() => {
     Perlin.init(seed);
     const value = Perlin.noise2D(seed * scale, seed * scale);
@@ -105,7 +92,6 @@ export default function PerlinNoiseNode({ id, data }) {
 
   return (
     <div className="node-default node-perlin">
-      {/* Input handles */}
       <Handle type="target" position={Position.Left} id="seed" style={{ top: 40 }} />
       <Handle type="target" position={Position.Left} id="scale" style={{ top: 70 }} />
       <Handle type="target" position={Position.Left} id="octaves" style={{ top: 100 }} />
@@ -115,7 +101,6 @@ export default function PerlinNoiseNode({ id, data }) {
 
       <div className="node-title">{label}</div>
 
-      {/* Canvas Noise Preview */}
       <canvas
         ref={canvasRef}
         width={160}
@@ -133,7 +118,6 @@ export default function PerlinNoiseNode({ id, data }) {
         onClick={stop}
       />
 
-      {/* Number inputs (unchanged) */}
       <div className="node-param-row">
         <div className="node-param-label">Seed</div>
         <input
@@ -211,12 +195,11 @@ export default function PerlinNoiseNode({ id, data }) {
         />
       </div>
 
-      {/* Output handle - EMPHASIZED */}
-      <div style={{ 
-        position: 'absolute', 
-        right: '-100px', 
-        top: '115px', 
-        fontSize: '11px', 
+      <div style={{
+        position: 'absolute',
+        right: '-100px',
+        top: '115px',
+        fontSize: '11px',
         color: '#4a9e4a',
         fontWeight: 'bold',
         whiteSpace: 'nowrap',
@@ -228,7 +211,7 @@ export default function PerlinNoiseNode({ id, data }) {
         type="source"
         position={Position.Right}
         id="config"
-        style={{ 
+        style={{
           top: 120,
           width: '12px',
           height: '12px',

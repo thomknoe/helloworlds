@@ -1,4 +1,3 @@
-// src/nodes/registry.js
 import PerlinNoiseNode from "./algorithms/PerlinNoiseNode.jsx";
 import FlockingNode from "./algorithms/FlockingNode.jsx";
 import AgentNode from "./algorithms/AgentNode.jsx";

@@ -1,11 +1,6 @@
-/* eslint-disable no-unused-vars */
-// src/components/AuthorInspector.jsx
 import TerrainPreview from "./TerrainPreview.jsx";
 
 export default function AuthorInspector({ activeDomain }) {
-  // ---------------------------------------------
-  // MAP DOMAIN -> PREVIEW TITLE + COMPONENT
-  // ---------------------------------------------
   const previews = {
     noiseHeightfields: {
       title: "Terrain Preview",
@@ -37,7 +32,6 @@ export default function AuthorInspector({ activeDomain }) {
     },
   };
 
-  // fallback if domain missing
   const { title, component } = previews[activeDomain] || previews.noiseHeightfields;
 
   return (

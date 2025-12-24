@@ -1,5 +1,5 @@
 {
-  "name": "helloworld.js",
+  "name": "helloworlds",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "deploy": "gh-pages -d dist"
   },
-  "homepage": "https://thomknoe.github.io/helloworld.js/",
+  "homepage": "https://thomknoe.github.io/helloworlds/",
   "dependencies": {
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.4.0",

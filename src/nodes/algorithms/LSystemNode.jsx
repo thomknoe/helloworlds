@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-// src/nodes/algorithms/LSystemNode.jsx
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import { LSystem } from "../../algorithms/lsystem.js";
@@ -24,24 +22,22 @@ export default function LSystemNode({ id, data }) {
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
 
-  // Build rules object
   const rules = {};
   if (rule1 && rule1Replacement) rules[rule1] = rule1Replacement;
   if (rule2 && rule2Replacement) rules[rule2] = rule2Replacement;
   if (rule3 && rule3Replacement) rules[rule3] = rule3Replacement;
 
-  // Generate L-system string
   useEffect(() => {
     const lsystem = new LSystem(axiom, rules, iterations);
     const resultString = lsystem.iterate();
-    
+
     onOutput?.({
       id,
       type: "lsystem",
       axiom,
       rules,
       iterations,
-      angle: (angle * Math.PI) / 180, // Convert to radians
+      angle: (angle * Math.PI) / 180,
       stepSize,
       resultString,
     });
@@ -51,7 +47,6 @@ export default function LSystemNode({ id, data }) {
     <div className="node-default node-lsystem">
       <div className="node-title">{label}</div>
 
-      {/* Axiom */}
       <div className="node-param-row">
         <div className="node-param-label">Axiom</div>
         <input
@@ -64,7 +59,6 @@ export default function LSystemNode({ id, data }) {
         />
       </div>
 
-      {/* Rule 1 */}
       <div className="node-param-row">
         <div className="node-param-label">Rule 1: {rule1 || "?"}</div>
         <input
@@ -89,7 +83,6 @@ export default function LSystemNode({ id, data }) {
         />
       </div>
 
-      {/* Rule 2 */}
       <div className="node-param-row">
         <div className="node-param-label">Rule 2: {rule2 || "?"}</div>
         <input
@@ -114,7 +107,6 @@ export default function LSystemNode({ id, data }) {
         />
       </div>
 
-      {/* Rule 3 */}
       <div className="node-param-row">
         <div className="node-param-label">Rule 3: {rule3 || "?"}</div>
         <input
@@ -139,7 +131,6 @@ export default function LSystemNode({ id, data }) {
         />
       </div>
 
-      {/* Iterations */}
       <div className="node-param-row">
         <div className="node-param-label">Iterations</div>
         <input
@@ -154,7 +145,6 @@ export default function LSystemNode({ id, data }) {
         />
       </div>
 
-      {/* Angle */}
       <div className="node-param-row">
         <div className="node-param-label">Angle (deg)</div>
         <input
@@ -170,7 +160,6 @@ export default function LSystemNode({ id, data }) {
         />
       </div>
 
-      {/* Step Size */}
       <div className="node-param-row">
         <div className="node-param-label">Step Size</div>
         <input
@@ -186,12 +175,11 @@ export default function LSystemNode({ id, data }) {
         />
       </div>
 
-      {/* Output handle - EMPHASIZED */}
-      <div style={{ 
-        position: 'absolute', 
-        right: '-85px', 
-        top: '115px', 
-        fontSize: '11px', 
+      <div style={{
+        position: 'absolute',
+        right: '-85px',
+        top: '115px',
+        fontSize: '11px',
         color: '#4a9e4a',
         fontWeight: 'bold',
         whiteSpace: 'nowrap',
@@ -203,7 +191,7 @@ export default function LSystemNode({ id, data }) {
         type="source"
         position={Position.Right}
         id="lsystem"
-        style={{ 
+        style={{
           top: 120,
           width: '12px',
           height: '12px',
@@ -215,4 +203,3 @@ export default function LSystemNode({ id, data }) {
     </div>
   );
 }
-

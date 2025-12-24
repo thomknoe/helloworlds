@@ -1,4 +1,3 @@
-// src/player/PlayerView.jsx
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
@@ -20,37 +19,24 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
   const terrainRef = useRef(null);
   const sceneRef = useRef(null);
 
-  // flocking system
   const flockingSystemRef = useRef(null);
 
-  // plant system
   const plantRefs = useRef([]);
 
-  // building system
   const buildingRefs = useRef([]);
 
-  // flower system
   const flowerRefs = useRef([]);
 
-  // ----------------------------------------
-  // AUTHOR MODE TRACKER
-  // ----------------------------------------
   const isAuthorModeRef = useRef(isAuthorMode);
   useEffect(() => {
     isAuthorModeRef.current = isAuthorMode;
   }, [isAuthorMode]);
 
-  // ----------------------------------------
-  // TERRAIN CONFIG TRACKER
-  // ----------------------------------------
   const terrainConfigRef = useRef(null);
   useEffect(() => {
     terrainConfigRef.current = terrainConfig;
   }, [terrainConfig]);
 
-  // ----------------------------------------
-  // INIT SCENE
-  // ----------------------------------------
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
@@ -65,25 +51,19 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
     playerRef.current = player;
     scene.add(player);
 
-    // Track time for deltaTime calculation
     let lastTime = performance.now();
 
-    // ----------------------------------------
-    // ANIMATION LOOP
-    // ----------------------------------------
     const animate = () => {
       requestAnimationFrame(animate);
 
       const currentTime = performance.now();
-      const deltaTime = (currentTime - lastTime) / 1000; // Convert to seconds
+      const deltaTime = (currentTime - lastTime) / 1000;
       lastTime = currentTime;
 
-      // animate water only outside author mode
       if (!isAuthorModeRef.current && water?.material?.uniforms?.time) {
         water.material.uniforms.time.value = performance.now() / 1000;
       }
 
-      // Update flocking system
       if (flockingSystemRef.current) {
         flockingSystemRef.current.update(deltaTime);
       }
@@ -100,9 +80,6 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
     };
   }, []);
 
-  // ----------------------------------------
-  // FPS + Ground Following
-  // ----------------------------------------
   useFirstPersonControls(
     playerRef,
     cameraRef,
@@ -110,29 +87,20 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
     terrainConfigRef
   );
 
-  // ----------------------------------------
-  // UPDATE TERRAIN GEOMETRY
-  // ----------------------------------------
   useEffect(() => {
     if (!terrainConfig || !terrainRef.current) return;
     updateTerrainGeometry(terrainRef.current, terrainConfig);
   }, [terrainConfig]);
 
-
-  // ----------------------------------------
-  // FLOCKING SYSTEM
-  // ----------------------------------------
   useEffect(() => {
     const scene = sceneRef.current;
     if (!scene) return;
 
-    // Clean up existing system
     if (flockingSystemRef.current) {
       flockingSystemRef.current.dispose();
       flockingSystemRef.current = null;
     }
 
-    // Create new system if config exists
     if (flockingConfig) {
       const system = createFlockingMotes(flockingConfig, scene);
       flockingSystemRef.current = system;
@@ -146,21 +114,16 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
     };
   }, [flockingConfig]);
 
-  // Update flocking config when it changes
   useEffect(() => {
     if (flockingSystemRef.current && flockingConfig) {
       flockingSystemRef.current.updateConfig(flockingConfig);
     }
   }, [flockingConfig]);
 
-  // ----------------------------------------
-  // PLANT SYSTEM
-  // ----------------------------------------
   useEffect(() => {
     const scene = sceneRef.current;
     if (!scene) return;
 
-    // Clean up existing plants
     plantRefs.current.forEach((plant) => {
       if (plant && plant.dispose) {
         plant.dispose();
@@ -168,11 +131,9 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
     });
     plantRefs.current = [];
 
-    // Create new plants
     plantConfigs.forEach((plantConfig) => {
-      if (!plantConfig.lsystem) return; // Skip if no L-system connected
+      if (!plantConfig.lsystem) return;
 
-      // ALWAYS snap to terrain - ignore Y axis
       let terrainHeight = 0;
       if (terrainConfigRef.current) {
         terrainHeight = sampleTerrainHeight(plantConfig.positionX, plantConfig.positionZ, {
@@ -184,10 +145,10 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
           frequency: terrainConfigRef.current.frequency ?? 1,
         });
       }
-      
+
       const adjustedConfig = {
         ...plantConfig,
-        positionY: terrainHeight, // Always place on terrain
+        positionY: terrainHeight,
       };
 
       const plant = createPlant(adjustedConfig, scene);
@@ -206,14 +167,10 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
     };
   }, [plantConfigs]);
 
-  // ----------------------------------------
-  // BUILDING SYSTEM
-  // ----------------------------------------
   useEffect(() => {
     const scene = sceneRef.current;
     if (!scene) return;
 
-    // Clean up existing buildings
     buildingRefs.current.forEach((building) => {
       if (building && building.dispose) {
         building.dispose();
@@ -221,11 +178,9 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
     });
     buildingRefs.current = [];
 
-    // Create new buildings
     buildingConfigs.forEach((buildingConfig) => {
-      if (!buildingConfig.grammar) return; // Skip if no grammar connected
+      if (!buildingConfig.grammar) return;
 
-      // ALWAYS snap to terrain - ignore Y axis
       let terrainHeight = 0;
       if (terrainConfigRef.current) {
         terrainHeight = sampleTerrainHeight(buildingConfig.positionX, buildingConfig.positionZ, {
@@ -241,7 +196,7 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
       const adjustedConfig = {
         ...buildingConfig,
         positionX: buildingConfig.positionX,
-        positionY: terrainHeight, // Always place on terrain
+        positionY: terrainHeight,
         positionZ: buildingConfig.positionZ,
       };
 
@@ -261,14 +216,10 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
     };
   }, [buildingConfigs]);
 
-  // ----------------------------------------
-  // FLOWER SYSTEM
-  // ----------------------------------------
   useEffect(() => {
     const scene = sceneRef.current;
     if (!scene) return;
 
-    // Clean up existing flowers
     flowerRefs.current.forEach((flower) => {
       if (flower && flower.dispose) {
         flower.dispose();
@@ -276,9 +227,7 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
     });
     flowerRefs.current = [];
 
-    // Create new flowers
     flowerConfigs.forEach((flowerConfig) => {
-      // Pass full terrain config so height sampling matches the actual terrain mesh
       const terrainConfigForFlowers = terrainConfigRef.current || null;
 
       const flower = createFlowers(flowerConfig, scene, terrainConfigForFlowers);
@@ -297,21 +246,14 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
     };
   }, [flowerConfigs]);
 
-  // ----------------------------------------
-  // POINTER LOCK
-  // ----------------------------------------
   const handleClick = () => {
     if (!isAuthorModeRef.current) {
       document.body.requestPointerLock();
     }
   };
 
-  // ----------------------------------------
-  // RENDER
-  // ----------------------------------------
   return (
     <>
-      {/* THREEJS WORLD */}
       <div
         ref={mountRef}
         style={{

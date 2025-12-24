@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-// src/nodes/algorithms/PlantNode.jsx
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 
@@ -10,9 +8,9 @@ export default function PlantNode({ id, data }) {
     positionY = 0,
     positionZ = 0,
     branchThickness = 0.1,
-    branchColor = "#8B4513", // Brown bark color
+    branchColor = "#8B4513",
     leafSize = 0.3,
-    leafColor = "#228B22", // Forest green
+    leafColor = "#228B22",
     leafDensity = 0.7,
     onChange,
     onOutput,
@@ -21,7 +19,6 @@ export default function PlantNode({ id, data }) {
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
 
-  // Output plant configuration to the graph
   useEffect(() => {
     onOutput?.({
       id,
@@ -39,12 +36,11 @@ export default function PlantNode({ id, data }) {
 
   return (
     <div className="node-default node-plant">
-      {/* Input handle for L-system connection - EMPHASIZED */}
-      <div style={{ 
-        position: 'absolute', 
-        left: '-90px', 
-        top: '35px', 
-        fontSize: '11px', 
+      <div style={{
+        position: 'absolute',
+        left: '-90px',
+        top: '35px',
+        fontSize: '11px',
         color: '#4a90e2',
         fontWeight: 'bold',
         whiteSpace: 'nowrap',
@@ -52,23 +48,22 @@ export default function PlantNode({ id, data }) {
       }}>
         ← L-System
       </div>
-      <Handle 
-        type="target" 
-        position={Position.Left} 
-        id="lsystem" 
-        style={{ 
+      <Handle
+        type="target"
+        position={Position.Left}
+        id="lsystem"
+        style={{
           top: 40,
           width: '12px',
           height: '12px',
           background: '#4a90e2',
           border: '2px solid #ffffff',
           boxShadow: '0 0 8px rgba(74, 144, 226, 0.6)'
-        }} 
+        }}
       />
 
       <div className="node-title">{label}</div>
 
-      {/* Position parameters */}
       <div className="node-param-row">
         <div className="node-param-label">Pos X</div>
         <input
@@ -108,7 +103,6 @@ export default function PlantNode({ id, data }) {
         />
       </div>
 
-      {/* Branch parameters */}
       <div className="node-param-row">
         <div className="node-param-label">Branch Thickness</div>
         <input
@@ -136,7 +130,6 @@ export default function PlantNode({ id, data }) {
         />
       </div>
 
-      {/* Leaf parameters */}
       <div className="node-param-row">
         <div className="node-param-label">Leaf Size</div>
         <input
@@ -179,12 +172,11 @@ export default function PlantNode({ id, data }) {
         />
       </div>
 
-      {/* Output handle - EMPHASIZED */}
-      <div style={{ 
-        position: 'absolute', 
-        right: '-75px', 
-        top: '115px', 
-        fontSize: '11px', 
+      <div style={{
+        position: 'absolute',
+        right: '-75px',
+        top: '115px',
+        fontSize: '11px',
         color: '#4a9e4a',
         fontWeight: 'bold',
         whiteSpace: 'nowrap',
@@ -196,7 +188,7 @@ export default function PlantNode({ id, data }) {
         type="source"
         position={Position.Right}
         id="plant"
-        style={{ 
+        style={{
           top: 120,
           width: '12px',
           height: '12px',
@@ -208,4 +200,3 @@ export default function PlantNode({ id, data }) {
     </div>
   );
 }
-

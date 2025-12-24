@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-// src/nodes/algorithms/FlockingNode.jsx
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 
@@ -23,7 +21,6 @@ export default function FlockingNode({ id, data }) {
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
 
-  // Output behavior configuration to the graph
   useEffect(() => {
     onOutput?.({
       id,
@@ -56,12 +53,12 @@ export default function FlockingNode({ id, data }) {
 
   return (
     <div className="node-default node-flocking">
-      {/* Input handle for noise connection (optional) - EMPHASIZED */}
-      <div style={{ 
-        position: 'absolute', 
-        left: '-80px', 
-        top: '35px', 
-        fontSize: '11px', 
+
+      <div style={{
+        position: 'absolute',
+        left: '-80px',
+        top: '35px',
+        fontSize: '11px',
         color: '#4a90e2',
         fontWeight: 'bold',
         whiteSpace: 'nowrap',
@@ -70,11 +67,11 @@ export default function FlockingNode({ id, data }) {
       }}>
         ← Noise (opt)
       </div>
-      <Handle 
-        type="target" 
-        position={Position.Left} 
-        id="noise" 
-        style={{ 
+      <Handle
+        type="target"
+        position={Position.Left}
+        id="noise"
+        style={{
           top: 40,
           width: '10px',
           height: '10px',
@@ -82,7 +79,7 @@ export default function FlockingNode({ id, data }) {
           border: '2px solid #ffffff',
           boxShadow: '0 0 6px rgba(74, 144, 226, 0.4)',
           opacity: 0.7
-        }} 
+        }}
       />
 
       <div className="node-title">{label}</div>
@@ -204,12 +201,11 @@ export default function FlockingNode({ id, data }) {
         />
       </div>
 
-      {/* Output handle for behavior - EMPHASIZED */}
-      <div style={{ 
-        position: 'absolute', 
-        right: '-100px', 
-        top: '115px', 
-        fontSize: '11px', 
+      <div style={{
+        position: 'absolute',
+        right: '-100px',
+        top: '115px',
+        fontSize: '11px',
         color: '#4a9e4a',
         fontWeight: 'bold',
         whiteSpace: 'nowrap',
@@ -221,7 +217,7 @@ export default function FlockingNode({ id, data }) {
         type="source"
         position={Position.Right}
         id="behavior"
-        style={{ 
+        style={{
           top: 120,
           width: '12px',
           height: '12px',
@@ -233,4 +229,3 @@ export default function FlockingNode({ id, data }) {
     </div>
   );
 }
-

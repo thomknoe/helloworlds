@@ -1,8 +1,3 @@
-// src/algorithms/perlin.js
-
-// Classic Perlin Noise implementation (2D)
-// Deterministic, no external dependencies
-
 const Perlin = {
   permutation: [],
   p: [],
@@ -11,13 +6,10 @@ const Perlin = {
   init(seed = 1) {
     if (this.initialized) return;
 
-    // Deterministic RNG
     const random = mulberry32(seed);
 
-    // Create permutation array
     this.permutation = new Array(256).fill(0).map((_, i) => i);
 
-    // Shuffle
     for (let i = 255; i > 0; i--) {
       const j = Math.floor(random() * (i + 1));
       [this.permutation[i], this.permutation[j]] = [
@@ -26,7 +18,6 @@ const Perlin = {
       ];
     }
 
-    // Duplicate the array
     this.p = [...this.permutation, ...this.permutation];
 
     this.initialized = true;
@@ -71,14 +62,10 @@ const Perlin = {
       this.grad(bb, xf - 1, yf - 1)
     );
 
-    // Normalize output to [0,1]
     return (this.lerp(v, x1, x2) + 1) / 2;
   },
 };
 
-// --------------------------------------------------
-// Deterministic PRNG
-// --------------------------------------------------
 function mulberry32(seed) {
   return function () {
     seed |= 0;

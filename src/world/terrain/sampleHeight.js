@@ -1,6 +1,5 @@
 import Perlin from "../../algorithms/perlin.js";
 
-// exact same fBM logic as updateTerrainGeometry()
 export function sampleTerrainHeight(x, z, config) {
   const seed = config.seed ?? 42;
   const scale = config.scale ?? 0.05;

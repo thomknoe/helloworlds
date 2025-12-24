@@ -1,4 +1,3 @@
-// src/engine/createRenderer.js
 import * as THREE from "three";
 import { engineConfig } from "./engineConfig.js";
 

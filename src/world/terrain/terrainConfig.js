@@ -1,5 +1,3 @@
-// src/world/terrain/terrainConfig.js
-
 export const defaultTerrainConfig = {
   width: 400,
   depth: 400,

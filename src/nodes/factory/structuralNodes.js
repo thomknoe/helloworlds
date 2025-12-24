@@ -1,12 +1,6 @@
-// src/nodes/factory/structuralNodes.js
-
-// Simple ID generator to avoid extra deps
 const makeId = (prefix) =>
   `${prefix}-${Math.random().toString(36).slice(2, 8)}`;
 
-// ---------------------------------------------------------
-// Building Grammar Node
-// ---------------------------------------------------------
 export function createBuildingGrammarNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("buildingGrammar"),
@@ -25,9 +19,6 @@ export function createBuildingGrammarNode(position = { x: 0, y: 0 }) {
   };
 }
 
-// ---------------------------------------------------------
-// Building Node
-// ---------------------------------------------------------
 export function createBuildingNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("building"),
@@ -42,4 +33,3 @@ export function createBuildingNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-

@@ -1,4 +1,3 @@
-// src/ui/modeToggle.js
 import { inputState } from "../player/inputState.js";
 
 export function enableAuthorMode() {

@@ -5,9 +5,6 @@ export default function TerrainPreview() {
   const mountRef = useRef(null);
   const [isReady, setIsReady] = useState(false);
 
-  // -------------------------------
-  // Wait until container is stable
-  // -------------------------------
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
@@ -34,9 +31,6 @@ export default function TerrainPreview() {
     const terrain = window.__terrainReference;
     if (!terrain) return;
 
-    // -------------------------------------------
-    // RENDERER
-    // -------------------------------------------
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true,
@@ -47,14 +41,8 @@ export default function TerrainPreview() {
 
     mount.appendChild(renderer.domElement);
 
-    // -------------------------------------------
-    // SCENE
-    // -------------------------------------------
     const scene = new THREE.Scene();
 
-    // -------------------------------------------
-    // SAFE TERRAIN CLONE
-    // -------------------------------------------
     const clone = terrain.clone(true);
 
     const safeMat = terrain.material.clone();
@@ -70,9 +58,6 @@ export default function TerrainPreview() {
 
     scene.add(clone);
 
-    // -------------------------------------------
-    // LIGHTS
-    // -------------------------------------------
     const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.9);
     scene.add(hemi);
 
@@ -80,9 +65,6 @@ export default function TerrainPreview() {
     dir.position.set(50, 100, 80);
     scene.add(dir);
 
-    // -------------------------------------------
-    // CAMERA (orthographic)
-    // -------------------------------------------
     const aspect = mount.clientWidth / mount.clientHeight;
     const frustum = 180;
 
@@ -98,9 +80,6 @@ export default function TerrainPreview() {
     camera.position.set(140, 140, 140);
     camera.lookAt(0, 0, 0);
 
-    // -------------------------------------------
-    // RENDER LOOP
-    // -------------------------------------------
     let frameId;
     const loop = () => {
       renderer.render(scene, camera);
@@ -108,9 +87,6 @@ export default function TerrainPreview() {
     };
     loop();
 
-    // -------------------------------------------
-    // CLEANUP
-    // -------------------------------------------
     return () => {
       cancelAnimationFrame(frameId);
 
@@ -120,7 +96,6 @@ export default function TerrainPreview() {
 
       renderer.dispose();
 
-      // CLEAN child resources
       clone.geometry.dispose();
       clone.material.dispose();
     };
@@ -135,7 +110,7 @@ export default function TerrainPreview() {
         height: "100%",
         position: "relative",
         overflow: "hidden",
-        isolation: "isolate", // IMPORTANT for Safari + blur contexts
+        isolation: "isolate",
       }}
     />
   );

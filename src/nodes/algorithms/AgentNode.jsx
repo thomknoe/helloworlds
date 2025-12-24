@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-// src/nodes/algorithms/AgentNode.jsx
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 
@@ -22,7 +20,6 @@ export default function AgentNode({ id, data }) {
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
 
-  // Output agent configuration to the graph
   useEffect(() => {
     onOutput?.({
       id,
@@ -41,12 +38,12 @@ export default function AgentNode({ id, data }) {
 
   return (
     <div className="node-default node-agent">
-      {/* Input handle for behavior connection - EMPHASIZED */}
-      <div style={{ 
-        position: 'absolute', 
-        left: '-95px', 
-        top: '35px', 
-        fontSize: '11px', 
+
+      <div style={{
+        position: 'absolute',
+        left: '-95px',
+        top: '35px',
+        fontSize: '11px',
         color: '#4a90e2',
         fontWeight: 'bold',
         whiteSpace: 'nowrap',
@@ -54,23 +51,22 @@ export default function AgentNode({ id, data }) {
       }}>
         ← Behavior
       </div>
-      <Handle 
-        type="target" 
-        position={Position.Left} 
-        id="behavior" 
-        style={{ 
+      <Handle
+        type="target"
+        position={Position.Left}
+        id="behavior"
+        style={{
           top: 40,
           width: '12px',
           height: '12px',
           background: '#4a90e2',
           border: '2px solid #ffffff',
           boxShadow: '0 0 8px rgba(74, 144, 226, 0.6)'
-        }} 
+        }}
       />
 
       <div className="node-title">{label}</div>
 
-      {/* Count parameter */}
       <div className="node-param-row">
         <div className="node-param-label">Count</div>
         <input
@@ -85,7 +81,6 @@ export default function AgentNode({ id, data }) {
         />
       </div>
 
-      {/* Position parameters */}
       <div className="node-param-row">
         <div className="node-param-label">Pos X</div>
         <input
@@ -155,12 +150,11 @@ export default function AgentNode({ id, data }) {
         />
       </div>
 
-      {/* Output handle - EMPHASIZED */}
-      <div style={{ 
-        position: 'absolute', 
-        right: '-75px', 
-        top: '115px', 
-        fontSize: '11px', 
+      <div style={{
+        position: 'absolute',
+        right: '-75px',
+        top: '115px',
+        fontSize: '11px',
         color: '#4a9e4a',
         fontWeight: 'bold',
         whiteSpace: 'nowrap',
@@ -172,7 +166,7 @@ export default function AgentNode({ id, data }) {
         type="source"
         position={Position.Right}
         id="agent"
-        style={{ 
+        style={{
           top: 120,
           width: '12px',
           height: '12px',
@@ -184,4 +178,3 @@ export default function AgentNode({ id, data }) {
     </div>
   );
 }
-

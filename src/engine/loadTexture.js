@@ -1,4 +1,3 @@
-// src/engine/loadTexture.js
 import * as THREE from "three";
 
 export function loadTexture(url, repeat = 1) {

@@ -1,4 +1,3 @@
-// src/world/water/waterMaterial.js
 import * as THREE from "three";
 
 export function createWaterMaterial() {
@@ -44,25 +43,21 @@ export function createWaterMaterial() {
       }
 
       void main(){
-        // Time-evolving ripples
+
         float n = noise(vUv * 3.0 + vec2(time * 0.25,  time * 0.18));
         n += noise(vUv * 8.0 - vec2(time * 0.15, time * 0.10)) * 0.3;
 
-        // Depth-based shallow/deep color
         float depth = smoothstep(-3.0, 1.0, vWorldPos.y);
         vec3 color = mix(deepColor, skyColor, depth);
 
-        // Fresnel-ish sky reflection
         vec3 viewDir = normalize(vec3(0.0, 1.0, 1.0));
         float fres = pow(1.0 - dot(viewDir, vec3(0.0, 1.0, 0.0)), 3.0);
         vec3 reflection = mix(vec3(0.0), skyColor * 2.0, fres);
         color += reflection * 0.5;
 
-        // Sparkly highlights
         float highlight = smoothstep(0.82, 1.0, n);
         color += highlight * vec3(0.2, 0.25, 0.28);
 
-        // Subtle brightness modulation
         color *= 0.96 + n * 0.04;
 
         gl_FragColor = vec4(color, 0.45);
