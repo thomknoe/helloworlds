@@ -26,7 +26,7 @@ Visit the web application at [https://thomknoe.github.io/helloworlds](https://th
 
 # Detailed Guide
 
-The helloworld.js application consists of multiple node components organized into four categories: Noise & Heightfields, Agent & Behavior Systems, Simulation & Natural Systems, and Structural / Generative Grammars. Each node processes inputs and generates outputs that can be connected to other nodes to create complex procedural content. The nodes communicate through ReactFlow connections, with outputs from one node feeding into inputs of another.
+The application consists of multiple node components organized into four categories: Noise & Heightfields, Agent & Behavior Systems, Simulation & Natural Systems, and Structural / Generative Grammars. Each node processes inputs and generates outputs that can be connected to other nodes to create complex procedural content. The nodes communicate through ReactFlow connections, with outputs from one node feeding into inputs of another.
 
 ## Perlin Noise Node
 
