@@ -3994,37 +3994,30 @@ void main() {
         );
         vec3 base = mix(sand, grass, t);
 
-        // Basic lighting
         float diff = max(dot(normalize(vNormal), normalize(lightDir)), 0.0);
         vec3 litColor = base * (0.45 + diff * 0.9);
 
-        // Fake AO from slope + height
         float slope = 1.0 - abs(vNormal.y);
         float ao = smoothstep(0.0, 1.0, slope + (vHeight + 10.0) * 0.03);
         litColor *= 0.9 - 0.25 * ao;
 
-        // Height-based cool/warm tint
         vec3 lowTint  = vec3(0.85, 0.90, 1.05);
         vec3 highTint = vec3(1.10, 1.05, 0.95);
         float heightMix = smoothstep(-5.0, 15.0, vHeight);
         litColor *= mix(lowTint, highTint, heightMix);
 
-        // Subtle rim light
         float rim = pow(
           1.0 - max(dot(normalize(vNormal), normalize(lightDir)), 0.0),
           3.0
         );
         litColor += rim * 0.12;
 
-        // Slight desaturation for airy pastel feel
         float gray = dot(litColor, vec3(0.299, 0.587, 0.114));
         litColor = mix(litColor, vec3(gray), desaturate);
 
-        // Height fog
         float heightFog = smoothstep(-5.0, 25.0, vHeight);
         litColor = mix(litColor, mix(fogColor, litColor, 0.85), heightFog * 0.3);
 
-        // Radial distance fog
         float edgeFog = smoothstep(180.0, 220.0, vDist);
         litColor = mix(litColor, mix(fogColor, litColor, 0.8), edgeFog * 0.4);
 
@@ -4064,25 +4057,21 @@ void main() {
       }
 
       void main(){
-        // Time-evolving ripples
+
         float n = noise(vUv * 3.0 + vec2(time * 0.25,  time * 0.18));
         n += noise(vUv * 8.0 - vec2(time * 0.15, time * 0.10)) * 0.3;
 
-        // Depth-based shallow/deep color
         float depth = smoothstep(-3.0, 1.0, vWorldPos.y);
         vec3 color = mix(deepColor, skyColor, depth);
 
-        // Fresnel-ish sky reflection
         vec3 viewDir = normalize(vec3(0.0, 1.0, 1.0));
         float fres = pow(1.0 - dot(viewDir, vec3(0.0, 1.0, 0.0)), 3.0);
         vec3 reflection = mix(vec3(0.0), skyColor * 2.0, fres);
         color += reflection * 0.5;
 
-        // Sparkly highlights
         float highlight = smoothstep(0.82, 1.0, n);
         color += highlight * vec3(0.2, 0.25, 0.28);
 
-        // Subtle brightness modulation
         color *= 0.96 + n * 0.04;
 
         gl_FragColor = vec4(color, 0.45);
