@@ -1,3 +1,5 @@
+![GitHub Cover](public/github-cover.png)
+
 # Hello Worlds
 
 Hello Worlds is a procedural 3D world generation tool, combines procedural generation algorithms with a visual node editor to create dynamic immersive environments. It features a node-based authoring system for procedural content creation and first-person exploration mode for navigating generated worlds. Procedural terrain generation uses Perlin noise, L-System-based plant generation with customizable growth patterns, flocking behavior systems for dynamic agent movement, procedural building generation using shape grammars, and interactive flower placement driven by noise patterns. Users can switch between author mode for designing worlds and player mode for exploring them. Game designers, procedural content creators, 3D artists, students learning procedural generation, and interactive media developers are the primary users.
