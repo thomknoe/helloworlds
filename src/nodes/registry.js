@@ -7,6 +7,7 @@ import CellularAutomataNode from "./algorithms/CellularAutomataNode.jsx";
 import ParticleSystemNode from "./algorithms/ParticleSystemNode.jsx";
 import WavePropagationNode from "./algorithms/WavePropagationNode.jsx";
 import AgentNode from "./algorithms/AgentNode.jsx";
+import NPCNode from "./algorithms/NPCNode.jsx";
 import LSystemNode from "./algorithms/LSystemNode.jsx";
 import PlantNode from "./algorithms/PlantNode.jsx";
 import FlowerNode from "./algorithms/FlowerNode.jsx";
@@ -32,6 +33,7 @@ export const nodeRegistry = {
   particleSystem: ParticleSystemNode,
   wavePropagation: WavePropagationNode,
   agent: AgentNode,
+  npc: NPCNode,
   lsystem: LSystemNode,
   plant: PlantNode,
   flower: FlowerNode,

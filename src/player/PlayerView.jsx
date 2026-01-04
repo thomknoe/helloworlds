@@ -9,10 +9,11 @@ import { createFlockingMotes } from "../world/flocking/createFlockingMotes.js";
 import { createPlant } from "../world/plants/createPlant.js";
 import { createBuilding } from "../world/buildings/createBuilding.js";
 import { createFlowers } from "../world/flowers/createFlowers.js";
+import { createNPC, updateNPCs } from "../world/npcs/createNPC.js";
 
 import { sampleTerrainHeight } from "../world/terrain/sampleHeight.js";
 
-export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig, plantConfigs = [], buildingConfigs = [], flowerConfigs = [] }) {
+export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig, plantConfigs = [], buildingConfigs = [], flowerConfigs = [], npcConfigs = [] }) {
   const mountRef = useRef(null);
   const cameraRef = useRef(null);
   const playerRef = useRef(null);
@@ -26,6 +27,9 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
   const buildingRefs = useRef([]);
 
   const flowerRefs = useRef([]);
+
+  const npcRefs = useRef([]);
+  const dialogueRef = useRef(null);
 
   const isAuthorModeRef = useRef(isAuthorMode);
   useEffect(() => {
@@ -66,6 +70,41 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
 
       if (flockingSystemRef.current) {
         flockingSystemRef.current.update(deltaTime);
+      }
+
+      // Update NPCs
+      if (npcRefs.current.length > 0 && playerRef.current && cameraRef.current) {
+        const playerPosition = playerRef.current.position;
+        updateNPCs(npcRefs.current, deltaTime, playerPosition, terrainConfigRef.current);
+        
+        // Update dialogue UI
+        if (dialogueRef.current) {
+          const nearbyNPC = npcRefs.current.find(({ group }) => {
+            return group?.userData?.dialogue && group.userData.dialogue.length > 0;
+          });
+          
+          if (nearbyNPC && nearbyNPC.group) {
+            const dialogue = nearbyNPC.group.userData.dialogue;
+            const npcPosition = nearbyNPC.group.position;
+            
+            // Convert 3D position to screen coordinates
+            const vector = npcPosition.clone();
+            vector.y += 2.0; // Offset above floating cube
+            vector.project(cameraRef.current);
+            
+            const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+            const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
+            
+            dialogueRef.current.style.display = "block";
+            dialogueRef.current.style.left = `${x}px`;
+            dialogueRef.current.style.top = `${y - 40}px`;
+            dialogueRef.current.textContent = dialogue;
+          } else {
+            if (dialogueRef.current) {
+              dialogueRef.current.style.display = "none";
+            }
+          }
+        }
       }
 
       renderer.render(scene, camera);
@@ -232,6 +271,37 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
     };
   }, [flowerConfigs]);
 
+  useEffect(() => {
+    const scene = sceneRef.current;
+    if (!scene) return;
+
+    // Clean up existing NPCs
+    npcRefs.current.forEach(({ group }) => {
+      if (group && group.parent) {
+        group.parent.remove(group);
+      }
+    });
+    npcRefs.current = [];
+
+    // Create new NPCs
+    const terrainConfigForNPCs = terrainConfigRef.current || null;
+    npcConfigs.forEach((npcConfig) => {
+      const npc = createNPC(npcConfig, scene, terrainConfigForNPCs);
+      if (npc) {
+        npcRefs.current.push(npc);
+      }
+    });
+
+    return () => {
+      npcRefs.current.forEach(({ group }) => {
+        if (group && group.parent) {
+          group.parent.remove(group);
+        }
+      });
+      npcRefs.current = [];
+    };
+  }, [npcConfigs]);
+
   const handleClick = () => {
     if (!isAuthorModeRef.current) {
       document.body.requestPointerLock();
@@ -250,6 +320,26 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
           zIndex: 1
         }}
         onClick={handleClick}
+      />
+      <div
+        ref={dialogueRef}
+        style={{
+          position: "fixed",
+          display: "none",
+          pointerEvents: "none",
+          zIndex: 1000,
+          background: "rgba(32, 36, 42, 0.55)",
+          backdropFilter: "blur(14px) saturate(1.3)",
+          color: "#ffffff",
+          padding: "8px 12px",
+          borderRadius: "18px",
+          fontSize: "14px",
+          maxWidth: "200px",
+          textAlign: "center",
+          transform: "translateX(-50%)",
+          border: "1px solid rgba(255, 255, 255, 0.15)",
+          boxShadow: "0 6px 18px rgba(0,0,0,0.40), inset 0 0 0 1px rgba(255,255,255,0.05)",
+        }}
       />
     </>
   );

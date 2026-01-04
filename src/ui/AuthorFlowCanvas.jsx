@@ -6,7 +6,8 @@ export default function AuthorFlowCanvas({
   nodeTypes,
   onNodesChange,
   onEdgesChange,
-  onConnect
+  onConnect,
+  onSelectionChange
 }) {
   return (
     <main className="author-main">
@@ -19,7 +20,10 @@ export default function AuthorFlowCanvas({
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            onSelectionChange={onSelectionChange}
             className="author-flow"
+            deleteKeyCode={["Backspace", "Delete"]}
+            multiSelectionKeyCode={["Meta", "Control"]}
           >
             <Background />
             <Controls />

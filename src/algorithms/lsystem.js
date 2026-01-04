@@ -1,31 +1,71 @@
-export class LSystem {
-  constructor(axiom, rules, iterations = 3) {
+import { Grammar } from "../core/algorithms/Grammar.js";
+
+/**
+ * L-System implementation for procedural plant generation
+ * Extends Grammar base class
+ */
+export class LSystem extends Grammar {
+  constructor(axiom = "F", rules = {}, iterations = 3) {
+    super();
     this.axiom = axiom;
     this.rules = rules;
     this.iterations = iterations;
     this.currentString = axiom;
   }
 
-  iterate() {
-    this.currentString = this.axiom;
+  /**
+   * Generate the L-system string
+   * @param {Object} config - Optional configuration override
+   * @returns {string} Generated L-system string
+   */
+  generate(config = {}) {
+    const axiom = config.axiom ?? this.axiom;
+    const rules = config.rules ?? this.rules;
+    const iterations = config.iterations ?? this.iterations;
 
-    for (let i = 0; i < this.iterations; i++) {
-      let newString = "";
-      for (let char of this.currentString) {
-        if (this.rules[char]) {
-          newString += this.rules[char];
-        } else {
-          newString += char;
-        }
-      }
-      this.currentString = newString;
-    }
-
+    this.currentString = this.applyRules(axiom, rules, iterations);
     return this.currentString;
   }
 
+  /**
+   * Iterate the L-system
+   * @returns {string} Resulting string after iterations
+   */
+  iterate() {
+    return this.generate();
+  }
+
+  /**
+   * Get the current string
+   * @returns {string} Current L-system string
+   */
   getString() {
     return this.currentString;
+  }
+
+  /**
+   * Set the axiom
+   * @param {string} axiom - New axiom
+   */
+  setAxiom(axiom) {
+    this.axiom = axiom;
+  }
+
+  /**
+   * Add or update a rule
+   * @param {string} character - Character to replace
+   * @param {string} replacement - Replacement string
+   */
+  addRule(character, replacement) {
+    this.rules[character] = replacement;
+  }
+
+  /**
+   * Set all rules
+   * @param {Object} rules - Rules object
+   */
+  setRules(rules) {
+    this.rules = rules;
   }
 }
 

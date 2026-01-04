@@ -1,16 +1,15 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
-import Perlin from "../../algorithms/perlin.js";
 
-export default function PerlinNoiseNode({ id, data }) {
+export default function CellularAutomataNode({ id, data }) {
   const {
-    label = "Perlin Noise",
-    seed = 42,
-    scale = 0.05,
-    octaves = 4,
-    persistence = 0.5,
-    amplitude = 10,
-    frequency = 1,
+    label = "Cellular Automata",
+    width = 100,
+    height = 100,
+    surviveMin = 2,
+    surviveMax = 3,
+    birthMin = 3,
+    birthMax = 3,
     onChange,
     onOutput,
   } = data || {};
@@ -19,100 +18,103 @@ export default function PerlinNoiseNode({ id, data }) {
   const stop = (e) => e.stopPropagation();
 
   useEffect(() => {
-    Perlin.init(seed);
-    const value = Perlin.noise2D(seed * scale, seed * scale);
-
     onOutput?.({
       id,
-      type: "perlinNoise",
-      value,
-      seed,
-      scale,
-      octaves,
-      persistence,
-      amplitude,
-      frequency,
+      type: "cellularAutomata",
+      width,
+      height,
+      surviveMin,
+      surviveMax,
+      birthMin,
+      birthMax,
     });
-  }, [id, seed, scale, octaves, persistence, amplitude, frequency, onOutput]);
+  }, [id, width, height, surviveMin, surviveMax, birthMin, birthMax, onOutput]);
 
   return (
-    <div className="node-default node-perlin">
+    <div className="node-default node-cellular-automata">
       <div className="node-title">{label}</div>
 
       <div className="node-param-row">
-        <div className="node-param-label">Seed</div>
+        <div className="node-param-label">Grid Width</div>
         <input
           className="node-param-input"
           type="number"
-          value={seed}
+          min={10}
+          max={500}
+          value={width}
           onPointerDown={stop}
           onMouseDown={stop}
-          onChange={(e) => update({ seed: Number(e.target.value) })}
+          onChange={(e) => update({ width: Number(e.target.value) })}
         />
       </div>
 
       <div className="node-param-row">
-        <div className="node-param-label">Scale</div>
+        <div className="node-param-label">Grid Height</div>
         <input
           className="node-param-input"
           type="number"
-          step="0.001"
-          value={scale}
+          min={10}
+          max={500}
+          value={height}
           onPointerDown={stop}
           onMouseDown={stop}
-          onChange={(e) => update({ scale: Number(e.target.value) })}
+          onChange={(e) => update({ height: Number(e.target.value) })}
         />
       </div>
 
       <div className="node-param-row">
-        <div className="node-param-label">Octaves</div>
+        <div className="node-param-label">Survive Min</div>
         <input
           className="node-param-input"
           type="number"
-          min={1}
+          min={0}
           max={8}
-          value={octaves}
+          value={surviveMin}
           onPointerDown={stop}
           onMouseDown={stop}
-          onChange={(e) => update({ octaves: Number(e.target.value) })}
+          onChange={(e) => update({ surviveMin: Number(e.target.value) })}
         />
       </div>
 
       <div className="node-param-row">
-        <div className="node-param-label">Persistence</div>
+        <div className="node-param-label">Survive Max</div>
         <input
           className="node-param-input"
           type="number"
-          step="0.01"
-          value={persistence}
+          min={0}
+          max={8}
+          value={surviveMax}
           onPointerDown={stop}
           onMouseDown={stop}
-          onChange={(e) => update({ persistence: Number(e.target.value) })}
+          onChange={(e) => update({ surviveMax: Number(e.target.value) })}
         />
       </div>
 
       <div className="node-param-row">
-        <div className="node-param-label">Amplitude</div>
+        <div className="node-param-label">Birth Min</div>
         <input
           className="node-param-input"
           type="number"
-          value={amplitude}
+          min={0}
+          max={8}
+          value={birthMin}
           onPointerDown={stop}
           onMouseDown={stop}
-          onChange={(e) => update({ amplitude: Number(e.target.value) })}
+          onChange={(e) => update({ birthMin: Number(e.target.value) })}
         />
       </div>
 
       <div className="node-param-row">
-        <div className="node-param-label">Frequency</div>
+        <div className="node-param-label">Birth Max</div>
         <input
           className="node-param-input"
           type="number"
-          step="0.1"
-          value={frequency}
+          min={0}
+          max={8}
+          value={birthMax}
           onPointerDown={stop}
           onMouseDown={stop}
-          onChange={(e) => update({ frequency: Number(e.target.value) })}
+          onChange={(e) => update({ birthMax: Number(e.target.value) })}
         />
       </div>
 
@@ -126,7 +128,7 @@ export default function PerlinNoiseNode({ id, data }) {
         whiteSpace: 'nowrap',
         pointerEvents: 'none'
       }}>
-        Perlin Noise →
+        Cellular Automata →
       </div>
       <Handle
         type="source"
@@ -144,3 +146,4 @@ export default function PerlinNoiseNode({ id, data }) {
     </div>
   );
 }
+

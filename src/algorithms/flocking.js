@@ -1,46 +1,39 @@
 import * as THREE from "three";
+import { Entity } from "../core/world/Entity.js";
 
-export class Boid {
-  constructor(position, velocity) {
-    this.position = position;
-    this.velocity = velocity;
-    this.acceleration = new THREE.Vector3();
+/**
+ * Boid entity for flocking behavior
+ * Extends Entity base class
+ */
+export class Boid extends Entity {
+  constructor(position = new THREE.Vector3(), velocity = new THREE.Vector3()) {
+    super(position, velocity);
   }
 
-  update(deltaTime) {
-
+  /**
+   * Update boid state
+   * @param {number} deltaTime - Time since last update
+   * @param {number} maxSpeed - Maximum speed limit
+   */
+  update(deltaTime, maxSpeed = 5.0) {
     this.velocity.add(this.acceleration.clone().multiplyScalar(deltaTime));
-
-    const maxSpeed = 5.0;
-    if (this.velocity.length() > maxSpeed) {
-      this.velocity.normalize().multiplyScalar(maxSpeed);
-    }
-
+    this.limitVelocity(maxSpeed);
     this.position.add(this.velocity.clone().multiplyScalar(deltaTime));
-
     this.acceleration.multiplyScalar(0);
-  }
-
-  applyForce(force) {
-    this.acceleration.add(force);
+    super.update(deltaTime);
   }
 }
 
+import { FlockingConfig } from "../core/config/FlockingConfig.js";
+
+/**
+ * Flocking system for managing boid behavior
+ * Uses FlockingConfig for configuration
+ */
 export class FlockingSystem {
   constructor(config = {}) {
     this.boids = [];
-    this.config = {
-      separation: config.separation ?? 1.5,
-      alignment: config.alignment ?? 1.0,
-      cohesion: config.cohesion ?? 1.0,
-      separationRadius: config.separationRadius ?? 2.0,
-      neighborRadius: config.neighborRadius ?? 5.0,
-      maxSpeed: config.maxSpeed ?? 5.0,
-      maxForce: config.maxForce ?? 0.1,
-      bounds: config.bounds ?? { width: 50, height: 50, depth: 50 },
-      center: config.center ?? new THREE.Vector3(0, 50, 0),
-      planeHeight: config.planeHeight ?? 50,
-    };
+    this.config = config instanceof FlockingConfig ? config : new FlockingConfig(config);
   }
 
   addBoid(boid) {
@@ -61,7 +54,7 @@ export class FlockingSystem {
     for (const other of this.boids) {
       if (other === boid) continue;
 
-      const distance = boid.position.distanceTo(other.position);
+      const distance = boid.distanceTo(other);
 
       if (distance > 0 && distance < this.config.separationRadius) {
         const diff = new THREE.Vector3()
@@ -91,7 +84,7 @@ export class FlockingSystem {
     for (const other of this.boids) {
       if (other === boid) continue;
 
-      const distance = boid.position.distanceTo(other.position);
+      const distance = boid.distanceTo(other);
 
       if (distance > 0 && distance < this.config.neighborRadius) {
         sum.add(other.velocity);
@@ -118,7 +111,7 @@ export class FlockingSystem {
     for (const other of this.boids) {
       if (other === boid) continue;
 
-      const distance = boid.position.distanceTo(other.position);
+      const distance = boid.distanceTo(other);
 
       if (distance > 0 && distance < this.config.neighborRadius) {
         sum.add(other.position);
@@ -142,7 +135,9 @@ export class FlockingSystem {
   boundaries(boid) {
     const margin = 5.0;
     const steer = new THREE.Vector3();
-    const { bounds, center, planeHeight } = this.config;
+    const bounds = this.config.getBounds();
+    const center = this.config.getCenter();
+    const planeHeight = this.config.planeHeight;
 
     if (boid.position.x < center.x - bounds.width / 2 + margin) {
       steer.x = 1;
@@ -174,7 +169,6 @@ export class FlockingSystem {
 
   update(deltaTime) {
     for (const boid of this.boids) {
-
       const sep = this.separate(boid).multiplyScalar(this.config.separation);
       const ali = this.align(boid).multiplyScalar(this.config.alignment);
       const coh = this.cohesion(boid).multiplyScalar(this.config.cohesion);
@@ -185,11 +179,19 @@ export class FlockingSystem {
       boid.applyForce(coh);
       boid.applyForce(bounds);
 
-      boid.update(deltaTime);
+      boid.update(deltaTime, this.config.maxSpeed);
     }
   }
 
+  /**
+   * Update configuration
+   * @param {Object|FlockingConfig} newConfig - New configuration
+   */
   updateConfig(newConfig) {
-    this.config = { ...this.config, ...newConfig };
+    if (newConfig instanceof FlockingConfig) {
+      this.config = newConfig;
+    } else {
+      this.config.update(newConfig);
+    }
   }
 }

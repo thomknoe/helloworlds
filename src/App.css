@@ -226,9 +226,10 @@
 }
 
 .preset-library-title {
-  font-size: 0.74rem;
+  font-size: 0.80rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
+  font-weight: 600;
   opacity: 0.85;
   margin-bottom: 0.5rem;
 }

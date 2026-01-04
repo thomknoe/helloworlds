@@ -17,10 +17,10 @@ export default function AuthorSidebar({
   onAddSimplexNoise,
   onAddAgentNode,
   onAddFlockingNode,
+  onAddNPCNode,
   onAddLSystemNode,
   onAddPlantNode,
   onAddFlowerNode,
-  onAddBuildingGrammarNode,
   onAddShapeGrammarNode,
   onAddMarkovChainNode,
   onAddParametricCurveNode,
@@ -60,7 +60,7 @@ export default function AuthorSidebar({
       <div className="domain-section-shell preset-shell-full">
         <div className="preset-library">
           <div className="preset-library-title">
-            {activeDomain.charAt(0).toUpperCase() + activeDomain.slice(1)} Nodes
+            Node List
           </div>
 
           <div className="preset-library-list">
@@ -168,6 +168,12 @@ export default function AuthorSidebar({
                   onClick={onAddAgentNode}
                 >
                   Add Boids Node
+                </button>
+                <button
+                  className="preset-node-item"
+                  onClick={onAddNPCNode}
+                >
+                  Add NPC Node
                 </button>
                 <button
                   className="preset-node-item"

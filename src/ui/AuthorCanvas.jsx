@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useNodesState, useEdgesState, addEdge } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -14,7 +14,7 @@ import {
   createTerrainNode,
 } from "../nodes/factory/environmentNodes.js";
 
-import { createAgentNode, createFlockingNode } from "../nodes/factory/agentNodes.js";
+import { createAgentNode, createFlockingNode, createNPCNode } from "../nodes/factory/agentNodes.js";
 import {
   createLSystemNode,
   createPlantNode,
@@ -39,7 +39,8 @@ export default function AuthorCanvas({
   onFlockingConfigChange,
   onPlantConfigChange,
   onBuildingConfigChange,
-  onFlowerConfigChange
+  onFlowerConfigChange,
+  onNPCConfigChange,
 }) {
   const [activeDomain, setActiveDomain] = useState("noiseHeightfields");
 
@@ -47,7 +48,26 @@ export default function AuthorCanvas({
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   const [nodeOutputs, setNodeOutputs] = useState({});
+  const [copiedNodes, setCopiedNodes] = useState([]);
+  const [selectedNodeIds, setSelectedNodeIds] = useState(new Set());
   const nodeTypes = useMemo(() => nodeRegistry, []);
+  
+  // Use refs to access latest state in event handlers
+  const nodesRef = useRef(nodes);
+  const selectedNodeIdsRef = useRef(selectedNodeIds);
+  const copiedNodesRef = useRef(copiedNodes);
+  
+  useEffect(() => {
+    nodesRef.current = nodes;
+  }, [nodes]);
+  
+  useEffect(() => {
+    selectedNodeIdsRef.current = selectedNodeIds;
+  }, [selectedNodeIds]);
+  
+  useEffect(() => {
+    copiedNodesRef.current = copiedNodes;
+  }, [copiedNodes]);
 
   useEffect(() => {
     const terrainNode = nodes.find((n) => n.type === "terrain");
@@ -349,6 +369,41 @@ export default function AuthorCanvas({
     onFlowerConfigChange(flowers);
   }, [nodes, edges, nodeOutputs, onFlowerConfigChange]);
 
+  useEffect(() => {
+    if (typeof onNPCConfigChange !== "function") return;
+
+    const npcNodes = nodes.filter((n) => n.type === "npc");
+
+    if (npcNodes.length === 0) {
+      onNPCConfigChange([]);
+      return;
+    }
+
+    const npcs = npcNodes.map((npcNode) => {
+      const npcOutput = nodeOutputs[npcNode.id];
+
+      return {
+        id: npcNode.id,
+        positionX: npcOutput?.positionX ?? npcNode.data?.positionX ?? 0,
+        positionY: npcOutput?.positionY ?? npcNode.data?.positionY ?? 0,
+        positionZ: npcOutput?.positionZ ?? npcNode.data?.positionZ ?? 0,
+        movementType: npcOutput?.movementType ?? npcNode.data?.movementType ?? "random",
+        speed: npcOutput?.speed ?? npcNode.data?.speed ?? 2.0,
+        wanderRadius: npcOutput?.wanderRadius ?? npcNode.data?.wanderRadius ?? 10.0,
+        wanderCenterX: npcOutput?.wanderCenterX ?? npcNode.data?.wanderCenterX ?? 0,
+        wanderCenterY: npcOutput?.wanderCenterY ?? npcNode.data?.wanderCenterY ?? 0,
+        wanderCenterZ: npcOutput?.wanderCenterZ ?? npcNode.data?.wanderCenterZ ?? 0,
+        interactionRadius: npcOutput?.interactionRadius ?? npcNode.data?.interactionRadius ?? 5.0,
+        dialogueWords: npcOutput?.dialogueWords ?? npcNode.data?.dialogueWords ?? [],
+        dialogueLength: npcOutput?.dialogueLength ?? npcNode.data?.dialogueLength ?? 5,
+        color: npcOutput?.color ?? npcNode.data?.color ?? "#4a90e2",
+        size: npcOutput?.size ?? npcNode.data?.size ?? 1.0,
+      };
+    });
+
+    onNPCConfigChange(npcs);
+  }, [nodes, edges, nodeOutputs, onNPCConfigChange]);
+
   function attachNodeHandlers(node) {
     const data = node.data || {};
 
@@ -386,6 +441,7 @@ export default function AuthorCanvas({
   const handleAddSimplexNoise = () => addNodeToEnvironment(createSimplexNoiseNode());
   const handleAddAgentNode = () => addNodeToEnvironment(createAgentNode());
   const handleAddFlockingNode = () => addNodeToEnvironment(createFlockingNode());
+  const handleAddNPCNode = () => addNodeToEnvironment(createNPCNode());
   const handleAddLSystemNode = () => addNodeToEnvironment(createLSystemNode());
   const handleAddPlantNode = () => addNodeToEnvironment(createPlantNode());
   const handleAddFlowerNode = () => addNodeToEnvironment(createFlowerNode());
@@ -402,6 +458,88 @@ export default function AuthorCanvas({
     setEdges((prev) => addEdge({ ...params, animated: true }, prev));
   }
 
+  // Handle node selection change
+  const onSelectionChange = useCallback(({ nodes: selectedNodes }) => {
+    const selectedIds = new Set(selectedNodes.map((n) => n.id));
+    setSelectedNodeIds(selectedIds);
+  }, []);
+
+  // Keyboard event handlers
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Don't handle if user is typing in an input field
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        e.target.isContentEditable
+      ) {
+        return;
+      }
+
+      // Copy (Ctrl+C or Cmd+C)
+      if ((e.ctrlKey || e.metaKey) && e.key === "c") {
+        const currentNodes = nodesRef.current;
+        const currentSelectedIds = selectedNodeIdsRef.current;
+        const selectedNodes = currentNodes.filter((n) => currentSelectedIds.has(n.id));
+        
+        if (selectedNodes.length > 0) {
+          e.preventDefault();
+          // Store node data without handlers
+          const nodesToCopy = selectedNodes.map((node) => {
+            const { onChange, onOutput, ...nodeData } = node.data || {};
+            return {
+              ...node,
+              data: nodeData,
+            };
+          });
+          setCopiedNodes(nodesToCopy);
+          console.log(`Copied ${nodesToCopy.length} node(s)`);
+        }
+      }
+      
+      // Paste (Ctrl+V or Cmd+V)
+      if ((e.ctrlKey || e.metaKey) && e.key === "v") {
+        const currentCopiedNodes = copiedNodesRef.current;
+        
+        if (currentCopiedNodes.length > 0) {
+          e.preventDefault();
+          
+          // Generate new IDs and offset positions
+          const offsetX = 50;
+          const offsetY = 50;
+          
+          const newNodes = currentCopiedNodes.map((node) => {
+            const newId = `${node.type}-${Math.random().toString(36).slice(2, 8)}`;
+            
+            return {
+              ...node,
+              id: newId,
+              position: {
+                x: node.position.x + offsetX,
+                y: node.position.y + offsetY,
+              },
+              selected: false,
+            };
+          });
+
+          // Attach handlers and add to canvas
+          const wrappedNodes = newNodes.map((node) => attachNodeHandlers(node));
+          setNodes((prev) => [...prev, ...wrappedNodes]);
+          
+          // Select newly pasted nodes
+          setSelectedNodeIds(new Set(newNodes.map((n) => n.id)));
+          
+          console.log(`Pasted ${newNodes.length} node(s)`);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
     <div className="author-shell">
       <AuthorSidebar
@@ -414,6 +552,7 @@ export default function AuthorCanvas({
         onAddSimplexNoise={handleAddSimplexNoise}
         onAddAgentNode={handleAddAgentNode}
         onAddFlockingNode={handleAddFlockingNode}
+        onAddNPCNode={handleAddNPCNode}
         onAddLSystemNode={handleAddLSystemNode}
         onAddPlantNode={handleAddPlantNode}
         onAddFlowerNode={handleAddFlowerNode}
@@ -434,6 +573,7 @@ export default function AuthorCanvas({
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onSelectionChange={onSelectionChange}
       />
     </div>
   );

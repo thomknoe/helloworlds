@@ -1,16 +1,14 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
-import Perlin from "../../algorithms/perlin.js";
 
-export default function PerlinNoiseNode({ id, data }) {
+export default function WavePropagationNode({ id, data }) {
   const {
-    label = "Perlin Noise",
-    seed = 42,
-    scale = 0.05,
-    octaves = 4,
-    persistence = 0.5,
-    amplitude = 10,
-    frequency = 1,
+    label = "Wave Propagation",
+    amplitude = 1.0,
+    speed = 10.0,
+    decayRate = 0.1,
+    lifetime = 5.0,
+    maxWaves = 10,
     onChange,
     onOutput,
   } = data || {};
@@ -19,83 +17,28 @@ export default function PerlinNoiseNode({ id, data }) {
   const stop = (e) => e.stopPropagation();
 
   useEffect(() => {
-    Perlin.init(seed);
-    const value = Perlin.noise2D(seed * scale, seed * scale);
-
     onOutput?.({
       id,
-      type: "perlinNoise",
-      value,
-      seed,
-      scale,
-      octaves,
-      persistence,
+      type: "wavePropagation",
       amplitude,
-      frequency,
+      speed,
+      decayRate,
+      lifetime,
+      maxWaves,
     });
-  }, [id, seed, scale, octaves, persistence, amplitude, frequency, onOutput]);
+  }, [id, amplitude, speed, decayRate, lifetime, maxWaves, onOutput]);
 
   return (
-    <div className="node-default node-perlin">
+    <div className="node-default node-wave-propagation">
       <div className="node-title">{label}</div>
-
-      <div className="node-param-row">
-        <div className="node-param-label">Seed</div>
-        <input
-          className="node-param-input"
-          type="number"
-          value={seed}
-          onPointerDown={stop}
-          onMouseDown={stop}
-          onChange={(e) => update({ seed: Number(e.target.value) })}
-        />
-      </div>
-
-      <div className="node-param-row">
-        <div className="node-param-label">Scale</div>
-        <input
-          className="node-param-input"
-          type="number"
-          step="0.001"
-          value={scale}
-          onPointerDown={stop}
-          onMouseDown={stop}
-          onChange={(e) => update({ scale: Number(e.target.value) })}
-        />
-      </div>
-
-      <div className="node-param-row">
-        <div className="node-param-label">Octaves</div>
-        <input
-          className="node-param-input"
-          type="number"
-          min={1}
-          max={8}
-          value={octaves}
-          onPointerDown={stop}
-          onMouseDown={stop}
-          onChange={(e) => update({ octaves: Number(e.target.value) })}
-        />
-      </div>
-
-      <div className="node-param-row">
-        <div className="node-param-label">Persistence</div>
-        <input
-          className="node-param-input"
-          type="number"
-          step="0.01"
-          value={persistence}
-          onPointerDown={stop}
-          onMouseDown={stop}
-          onChange={(e) => update({ persistence: Number(e.target.value) })}
-        />
-      </div>
 
       <div className="node-param-row">
         <div className="node-param-label">Amplitude</div>
         <input
           className="node-param-input"
           type="number"
+          step="0.1"
+          min="0"
           value={amplitude}
           onPointerDown={stop}
           onMouseDown={stop}
@@ -104,15 +47,58 @@ export default function PerlinNoiseNode({ id, data }) {
       </div>
 
       <div className="node-param-row">
-        <div className="node-param-label">Frequency</div>
+        <div className="node-param-label">Speed</div>
         <input
           className="node-param-input"
           type="number"
           step="0.1"
-          value={frequency}
+          min="0"
+          value={speed}
           onPointerDown={stop}
           onMouseDown={stop}
-          onChange={(e) => update({ frequency: Number(e.target.value) })}
+          onChange={(e) => update({ speed: Number(e.target.value) })}
+        />
+      </div>
+
+      <div className="node-param-row">
+        <div className="node-param-label">Decay Rate</div>
+        <input
+          className="node-param-input"
+          type="number"
+          step="0.01"
+          min="0"
+          value={decayRate}
+          onPointerDown={stop}
+          onMouseDown={stop}
+          onChange={(e) => update({ decayRate: Number(e.target.value) })}
+        />
+      </div>
+
+      <div className="node-param-row">
+        <div className="node-param-label">Lifetime</div>
+        <input
+          className="node-param-input"
+          type="number"
+          step="0.1"
+          min="0"
+          value={lifetime}
+          onPointerDown={stop}
+          onMouseDown={stop}
+          onChange={(e) => update({ lifetime: Number(e.target.value) })}
+        />
+      </div>
+
+      <div className="node-param-row">
+        <div className="node-param-label">Max Waves</div>
+        <input
+          className="node-param-input"
+          type="number"
+          min={1}
+          max={100}
+          value={maxWaves}
+          onPointerDown={stop}
+          onMouseDown={stop}
+          onChange={(e) => update({ maxWaves: Number(e.target.value) })}
         />
       </div>
 
@@ -126,7 +112,7 @@ export default function PerlinNoiseNode({ id, data }) {
         whiteSpace: 'nowrap',
         pointerEvents: 'none'
       }}>
-        Perlin Noise →
+        Wave Propagation →
       </div>
       <Handle
         type="source"
@@ -144,3 +130,4 @@ export default function PerlinNoiseNode({ id, data }) {
     </div>
   );
 }
+

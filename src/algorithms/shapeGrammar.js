@@ -1,39 +1,38 @@
-import { Grammar } from "../core/algorithms/Grammar.js";
-
 /**
- * Building grammar implementation for procedural building generation
- * Extends Grammar base class
+ * Shape Grammar - General purpose shape generation
+ * Can be used for buildings, facades, floor plans, architectural details
+ * Consolidates/replaces Building Grammar with more general capabilities
  */
-export class BuildingGrammar extends Grammar {
+export class ShapeGrammar {
   constructor(config = {}) {
-    super();
-    this.levels = config.levels || 3;
-    this.roomsPerLevel = config.roomsPerLevel || 4;
-    this.roomSize = config.roomSize || 4.0;
-    this.levelHeight = config.levelHeight || 3.0;
+    // Building-specific parameters (for compatibility)
+    this.levels = config.levels || config.buildingLevels || 3;
+    this.roomsPerLevel = config.roomsPerLevel || config.buildingRoomsPerLevel || 4;
+    this.roomSize = config.roomSize || config.buildingRoomSize || 4.0;
+    this.levelHeight = config.levelHeight || config.buildingLevelHeight || 3.0;
     this.wallThickness = config.wallThickness || 0.2;
     this.hasStairs = config.hasStairs !== false;
     this.roomLayout = config.roomLayout || "grid";
+    
+    // General shape grammar parameters
+    this.grammarType = config.grammarType || "building"; // "building", "facade", "floorplan"
+    this.rules = config.rules || {};
+    this.iterations = config.iterations || 3;
+    this.seed = config.seed || 42;
   }
 
-  /**
-   * Generate building structure
-   * @param {Object} config - Optional configuration override
-   * @returns {Object} Generated building structure
-   */
-  generate(config = {}) {
-    const levels = config.levels ?? this.levels;
-    const hasStairs = config.hasStairs ?? this.hasStairs;
+  // Generate building structure (compatible with BuildingGrammar)
+  generateBuilding() {
     const building = {
       levels: [],
       stairs: [],
     };
 
-    for (let level = 0; level < levels; level++) {
-      const levelData = this.generateLevel(level, config);
+    for (let level = 0; level < this.levels; level++) {
+      const levelData = this.generateLevel(level);
       building.levels.push(levelData);
 
-      if (hasStairs && level < levels - 1) {
+      if (this.hasStairs && level < this.levels - 1) {
         const stair = this.generateStairs(level, levelData);
         building.stairs.push(stair);
       }
@@ -42,14 +41,10 @@ export class BuildingGrammar extends Grammar {
     return building;
   }
 
-  generateLevel(levelIndex, config = {}) {
+  generateLevel(levelIndex) {
     const rooms = [];
-    const levelHeight = config.levelHeight ?? this.levelHeight;
-    const roomSize = config.roomSize ?? this.roomSize;
-    const roomsPerLevel = config.roomsPerLevel ?? this.roomsPerLevel;
-    const y = levelIndex * levelHeight;
-
-    const positions = this.generateRoomPositions(levelIndex, config);
+    const y = levelIndex * this.levelHeight;
+    const positions = this.generateRoomPositions(levelIndex);
 
     positions.forEach((pos, index) => {
       const room = {
@@ -57,9 +52,9 @@ export class BuildingGrammar extends Grammar {
         x: pos.x,
         y: y,
         z: pos.z,
-        width: roomSize,
-        depth: roomSize,
-        height: levelHeight,
+        width: this.roomSize,
+        depth: this.roomSize,
+        height: this.levelHeight,
         level: levelIndex,
         connections: [],
       };
@@ -71,9 +66,8 @@ export class BuildingGrammar extends Grammar {
           Math.pow(pos.x - otherPos.x, 2) + Math.pow(pos.z - otherPos.z, 2)
         );
 
-        if (distance < roomSize * 1.2) {
+        if (distance < this.roomSize * 1.2) {
           const direction = this.getDirection(pos, otherPos);
-
           if (!room.connections.some(c => c.to === `level-${levelIndex}-room-${otherIndex}`)) {
             room.connections.push({
               to: `level-${levelIndex}-room-${otherIndex}`,
@@ -93,18 +87,15 @@ export class BuildingGrammar extends Grammar {
     };
   }
 
-  generateRoomPositions(levelIndex, config = {}) {
+  generateRoomPositions(levelIndex) {
     const positions = [];
-    const roomSize = config.roomSize ?? this.roomSize;
-    const roomsPerLevel = config.roomsPerLevel ?? this.roomsPerLevel;
-    const roomLayout = config.roomLayout ?? this.roomLayout;
-    const spacing = roomSize * 1.1;
+    const spacing = this.roomSize * 1.1;
 
-    switch (roomLayout) {
+    switch (this.roomLayout) {
       case "grid":
-        const cols = Math.ceil(Math.sqrt(roomsPerLevel));
-        const rows = Math.ceil(roomsPerLevel / cols);
-        for (let i = 0; i < roomsPerLevel; i++) {
+        const cols = Math.ceil(Math.sqrt(this.roomsPerLevel));
+        const rows = Math.ceil(this.roomsPerLevel / cols);
+        for (let i = 0; i < this.roomsPerLevel; i++) {
           const col = i % cols;
           const row = Math.floor(i / cols);
           positions.push({
@@ -115,18 +106,18 @@ export class BuildingGrammar extends Grammar {
         break;
 
       case "linear":
-        for (let i = 0; i < roomsPerLevel; i++) {
+        for (let i = 0; i < this.roomsPerLevel; i++) {
           positions.push({
-            x: (i - (roomsPerLevel - 1) / 2) * spacing,
+            x: (i - (this.roomsPerLevel - 1) / 2) * spacing,
             z: 0,
           });
         }
         break;
 
       case "radial":
-        const angleStep = (Math.PI * 2) / roomsPerLevel;
+        const angleStep = (Math.PI * 2) / this.roomsPerLevel;
         const radius = spacing * 1.5;
-        for (let i = 0; i < roomsPerLevel; i++) {
+        for (let i = 0; i < this.roomsPerLevel; i++) {
           const angle = i * angleStep;
           positions.push({
             x: Math.cos(angle) * radius,
@@ -136,7 +127,7 @@ export class BuildingGrammar extends Grammar {
         break;
 
       default:
-        for (let i = 0; i < roomsPerLevel; i++) {
+        for (let i = 0; i < this.roomsPerLevel; i++) {
           positions.push({
             x: (i % 3 - 1) * spacing,
             z: (Math.floor(i / 3) - 1) * spacing,
@@ -159,7 +150,6 @@ export class BuildingGrammar extends Grammar {
   }
 
   generateStairs(levelIndex, levelData) {
-
     const firstRoom = levelData.rooms[0];
     return {
       x: firstRoom.x,
@@ -171,4 +161,37 @@ export class BuildingGrammar extends Grammar {
       level: levelIndex,
     };
   }
+
+  // General generate method
+  generate() {
+    switch (this.grammarType) {
+      case "building":
+        return this.generateBuilding();
+      case "facade":
+        return this.generateFacade();
+      case "floorplan":
+        return this.generateFloorPlan();
+      default:
+        return this.generateBuilding();
+    }
+  }
+
+  generateFacade() {
+    // Placeholder for facade generation
+    return {
+      type: "facade",
+      elements: [],
+    };
+  }
+
+  generateFloorPlan() {
+    // Placeholder for floor plan generation
+    return {
+      type: "floorplan",
+      rooms: [],
+    };
+  }
 }
+
+export default ShapeGrammar;
+

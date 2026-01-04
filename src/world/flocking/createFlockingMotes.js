@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { Boid, FlockingSystem } from "../../algorithms/flocking.js";
+import { FlockingConfig } from "../../core/config/FlockingConfig.js";
 
 export function createFlockingMotes(config, scene) {
   if (!config || !config.agents || config.agents.length === 0) return null;
@@ -38,7 +39,7 @@ export function createFlockingMotes(config, scene) {
   const meshes = [];
   const agentMap = new Map();
 
-  const flockingSystem = new FlockingSystem({
+  const flockingConfig = new FlockingConfig({
     separation: behaviorConfig.separation,
     alignment: behaviorConfig.alignment,
     cohesion: behaviorConfig.cohesion,
@@ -46,14 +47,13 @@ export function createFlockingMotes(config, scene) {
     neighborRadius: behaviorConfig.neighborRadius,
     maxSpeed: behaviorConfig.maxSpeed,
     maxForce: behaviorConfig.maxForce,
-    bounds: {
-      width: behaviorConfig.boundsWidth,
-      height: 10,
-      depth: behaviorConfig.boundsDepth
-    },
-    center: new THREE.Vector3(0, behaviorConfig.planeHeight, 0),
+    boundsWidth: behaviorConfig.boundsWidth,
+    boundsDepth: behaviorConfig.boundsDepth,
     planeHeight: behaviorConfig.planeHeight,
+    noiseConfig: behaviorConfig.noiseConfig,
   });
+
+  const flockingSystem = new FlockingSystem(flockingConfig);
 
   agentConfigs.forEach((agentConfig) => {
     const position = new THREE.Vector3(
@@ -125,7 +125,7 @@ export function createFlockingMotes(config, scene) {
       const { agents: newAgentConfigs, behavior: newBehavior } = newConfig;
 
       if (newBehavior) {
-        flockingSystem.updateConfig({
+        const newFlockingConfig = new FlockingConfig({
           separation: newBehavior.separation,
           alignment: newBehavior.alignment,
           cohesion: newBehavior.cohesion,
@@ -133,13 +133,12 @@ export function createFlockingMotes(config, scene) {
           neighborRadius: newBehavior.neighborRadius,
           maxSpeed: newBehavior.maxSpeed,
           maxForce: newBehavior.maxForce,
-          bounds: {
-            width: newBehavior.boundsWidth,
-            height: 10,
-            depth: newBehavior.boundsDepth
-          },
+          boundsWidth: newBehavior.boundsWidth,
+          boundsDepth: newBehavior.boundsDepth,
           planeHeight: newBehavior.planeHeight,
+          noiseConfig: newBehavior.noiseConfig,
         });
+        flockingSystem.updateConfig(newFlockingConfig);
       }
 
       const existingIds = new Set();

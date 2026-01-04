@@ -42,6 +42,7 @@ export default function useFirstPersonControls(
   const jumpVelocity = 0.3; // Increased for more powerful jump
   const gravity = 0.01; // Reduced for slower, more graceful descent
   const groundThreshold = 0.1; // How close to ground to be considered "on ground"
+  const airControlFactor = 0.8; // How much control player has in air (0-1, 1 = full control)
 
   const velocity = useRef(new THREE.Vector3(0, 0, 0));
   const isOnGround = useRef(false);
@@ -156,8 +157,22 @@ export default function useFirstPersonControls(
         velocity.current.x = forwardAmount * forward.x + rightAmount * right.x;
         velocity.current.z = forwardAmount * forward.z + rightAmount * right.z;
       } else {
-        // In air: preserve momentum (keep horizontal velocity from jump)
-        // Horizontal velocity is maintained, no air control
+        // In air: allow air control (can change direction mid-air)
+        const desiredX = forwardAmount * forward.x + rightAmount * right.x;
+        const desiredZ = forwardAmount * forward.z + rightAmount * right.z;
+
+        // Interpolate between current velocity and desired direction
+        // This allows changing direction while maintaining some momentum
+        velocity.current.x = THREE.MathUtils.lerp(
+          velocity.current.x,
+          desiredX,
+          airControlFactor
+        );
+        velocity.current.z = THREE.MathUtils.lerp(
+          velocity.current.z,
+          desiredZ,
+          airControlFactor
+        );
       }
 
       // Apply gravity

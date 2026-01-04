@@ -1,16 +1,24 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
-import Perlin from "../../algorithms/perlin.js";
 
-export default function PerlinNoiseNode({ id, data }) {
+export default function ParticleSystemNode({ id, data }) {
   const {
-    label = "Perlin Noise",
-    seed = 42,
-    scale = 0.05,
-    octaves = 4,
-    persistence = 0.5,
-    amplitude = 10,
-    frequency = 1,
+    label = "Particle System",
+    maxParticles = 1000,
+    spawnRate = 10,
+    gravityX = 0,
+    gravityY = -9.8,
+    gravityZ = 0,
+    windX = 0,
+    windY = 0,
+    windZ = 0,
+    spawnX = 0,
+    spawnY = 50,
+    spawnZ = 0,
+    spawnSizeX = 10,
+    spawnSizeY = 5,
+    spawnSizeZ = 10,
+    lifetime = 5.0,
     onChange,
     onOutput,
   } = data || {};
@@ -19,100 +27,127 @@ export default function PerlinNoiseNode({ id, data }) {
   const stop = (e) => e.stopPropagation();
 
   useEffect(() => {
-    Perlin.init(seed);
-    const value = Perlin.noise2D(seed * scale, seed * scale);
-
     onOutput?.({
       id,
-      type: "perlinNoise",
-      value,
-      seed,
-      scale,
-      octaves,
-      persistence,
-      amplitude,
-      frequency,
+      type: "particleSystem",
+      maxParticles,
+      spawnRate,
+      gravityX,
+      gravityY,
+      gravityZ,
+      windX,
+      windY,
+      windZ,
+      spawnX,
+      spawnY,
+      spawnZ,
+      spawnSizeX,
+      spawnSizeY,
+      spawnSizeZ,
+      lifetime,
     });
-  }, [id, seed, scale, octaves, persistence, amplitude, frequency, onOutput]);
+  }, [
+    id,
+    maxParticles,
+    spawnRate,
+    gravityX,
+    gravityY,
+    gravityZ,
+    windX,
+    windY,
+    windZ,
+    spawnX,
+    spawnY,
+    spawnZ,
+    spawnSizeX,
+    spawnSizeY,
+    spawnSizeZ,
+    lifetime,
+    onOutput,
+  ]);
 
   return (
-    <div className="node-default node-perlin">
+    <div className="node-default node-particle-system">
       <div className="node-title">{label}</div>
 
       <div className="node-param-row">
-        <div className="node-param-label">Seed</div>
-        <input
-          className="node-param-input"
-          type="number"
-          value={seed}
-          onPointerDown={stop}
-          onMouseDown={stop}
-          onChange={(e) => update({ seed: Number(e.target.value) })}
-        />
-      </div>
-
-      <div className="node-param-row">
-        <div className="node-param-label">Scale</div>
-        <input
-          className="node-param-input"
-          type="number"
-          step="0.001"
-          value={scale}
-          onPointerDown={stop}
-          onMouseDown={stop}
-          onChange={(e) => update({ scale: Number(e.target.value) })}
-        />
-      </div>
-
-      <div className="node-param-row">
-        <div className="node-param-label">Octaves</div>
+        <div className="node-param-label">Max Particles</div>
         <input
           className="node-param-input"
           type="number"
           min={1}
-          max={8}
-          value={octaves}
+          max={10000}
+          value={maxParticles}
           onPointerDown={stop}
           onMouseDown={stop}
-          onChange={(e) => update({ octaves: Number(e.target.value) })}
+          onChange={(e) => update({ maxParticles: Number(e.target.value) })}
         />
       </div>
 
       <div className="node-param-row">
-        <div className="node-param-label">Persistence</div>
-        <input
-          className="node-param-input"
-          type="number"
-          step="0.01"
-          value={persistence}
-          onPointerDown={stop}
-          onMouseDown={stop}
-          onChange={(e) => update({ persistence: Number(e.target.value) })}
-        />
-      </div>
-
-      <div className="node-param-row">
-        <div className="node-param-label">Amplitude</div>
-        <input
-          className="node-param-input"
-          type="number"
-          value={amplitude}
-          onPointerDown={stop}
-          onMouseDown={stop}
-          onChange={(e) => update({ amplitude: Number(e.target.value) })}
-        />
-      </div>
-
-      <div className="node-param-row">
-        <div className="node-param-label">Frequency</div>
+        <div className="node-param-label">Spawn Rate</div>
         <input
           className="node-param-input"
           type="number"
           step="0.1"
-          value={frequency}
+          min="0"
+          value={spawnRate}
           onPointerDown={stop}
           onMouseDown={stop}
-          onChange={(e) => update({ frequency: Number(e.target.value) })}
+          onChange={(e) => update({ spawnRate: Number(e.target.value) })}
+        />
+      </div>
+
+      <div className="node-param-row">
+        <div className="node-param-label">Gravity Y</div>
+        <input
+          className="node-param-input"
+          type="number"
+          step="0.1"
+          value={gravityY}
+          onPointerDown={stop}
+          onMouseDown={stop}
+          onChange={(e) => update({ gravityY: Number(e.target.value) })}
+        />
+      </div>
+
+      <div className="node-param-row">
+        <div className="node-param-label">Wind X</div>
+        <input
+          className="node-param-input"
+          type="number"
+          step="0.1"
+          value={windX}
+          onPointerDown={stop}
+          onMouseDown={stop}
+          onChange={(e) => update({ windX: Number(e.target.value) })}
+        />
+      </div>
+
+      <div className="node-param-row">
+        <div className="node-param-label">Wind Z</div>
+        <input
+          className="node-param-input"
+          type="number"
+          step="0.1"
+          value={windZ}
+          onPointerDown={stop}
+          onMouseDown={stop}
+          onChange={(e) => update({ windZ: Number(e.target.value) })}
+        />
+      </div>
+
+      <div className="node-param-row">
+        <div className="node-param-label">Lifetime</div>
+        <input
+          className="node-param-input"
+          type="number"
+          step="0.1"
+          min="0"
+          value={lifetime}
+          onPointerDown={stop}
+          onMouseDown={stop}
+          onChange={(e) => update({ lifetime: Number(e.target.value) })}
         />
       </div>
 
@@ -126,7 +161,7 @@ export default function PerlinNoiseNode({ id, data }) {
         whiteSpace: 'nowrap',
         pointerEvents: 'none'
       }}>
-        Perlin Noise →
+        Particle System →
       </div>
       <Handle
         type="source"
@@ -144,3 +179,4 @@ export default function PerlinNoiseNode({ id, data }) {
     </div>
   );
 }
+

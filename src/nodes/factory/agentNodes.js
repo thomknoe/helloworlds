@@ -42,3 +42,29 @@ export function createFlockingNode(position = { x: 0, y: 0 }) {
     },
   };
 }
+
+export function createNPCNode(position = { x: 0, y: 0 }) {
+  return {
+    id: makeId("npc"),
+    type: "npc",
+    position,
+    data: {
+      label: "NPC",
+      positionX: 0,
+      positionY: 0,
+      positionZ: 0,
+      movementType: "random",
+      speed: 2.0,
+      wanderRadius: 10.0,
+      wanderCenterX: 0,
+      wanderCenterY: 0,
+      wanderCenterZ: 0,
+      interactionRadius: 6.0, // Slightly larger interaction radius
+      dialogueWords:
+        "hello,world,greetings,traveler,welcome,friend,adventure,journey",
+      dialogueLength: 5,
+      color: "#ffffff", // White color
+      size: 1.5, // Slightly larger size (will scale with interaction radius)
+    },
+  };
+}
