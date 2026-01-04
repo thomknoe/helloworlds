@@ -25,6 +25,7 @@ export function createTerrainNode(position = { x: 300, y: 0 }) {
     position,
     data: {
       elevationInfo: null,
+      waterHeight: 0, // Default water level starts at 0
     },
   };
 }

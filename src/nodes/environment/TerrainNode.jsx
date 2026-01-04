@@ -1,6 +1,10 @@
 import { Handle, Position } from "reactflow";
 
-export default function TerrainNode({ id, data }) {
+export default function TerrainNode({ data }) {
+  const {
+    waterHeight = 0,
+    onChange,
+  } = data || {};
 
   const hasNoiseInput =
     data?.seed !== undefined ||
@@ -25,12 +29,28 @@ export default function TerrainNode({ id, data }) {
     status = `Reading ${noiseLabel} values…`;
   }
 
+  const update = (patch) => onChange?.({ ...data, ...patch });
+  const stop = (e) => e.stopPropagation();
+
   return (
     <div className="node-default node-terrain">
       <div className="node-title">Terrain</div>
 
       <div className="node-body">
         <div className="node-terrain-status">{status}</div>
+        
+        <div className="node-param-row" style={{ marginTop: '12px' }}>
+          <div className="node-param-label">Water Level</div>
+          <input
+            className="node-param-input"
+            type="number"
+            step="0.5"
+            value={waterHeight}
+            onPointerDown={stop}
+            onMouseDown={stop}
+            onChange={(e) => update({ waterHeight: Number(e.target.value) })}
+          />
+        </div>
       </div>
 
       <div style={{

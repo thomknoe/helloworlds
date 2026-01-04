@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-export default function PerformanceMonitor() {
+export default function PerformanceMonitor({ playerData = null }) {
   const [fps, setFps] = useState(0);
   const [frameTime, setFrameTime] = useState(0);
   const [memoryUsage, setMemoryUsage] = useState(null);
@@ -88,6 +88,14 @@ export default function PerformanceMonitor() {
           <span className="performance-label">Memory:</span>
           <span className="performance-value">
             {memoryUsage.used}MB / {memoryUsage.total}MB
+          </span>
+        </span>
+      )}
+      {playerData && (
+        <span className="performance-stat">
+          <span className="performance-label">Pos:</span>
+          <span className="performance-value">
+            ({playerData.position.x}, {playerData.position.y}, {playerData.position.z})
           </span>
         </span>
       )}

@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { WorldObject } from "../../core/world/WorldObject.js";
 import { parseLSystemString } from "../../algorithms/lsystem.js";
+import { createCelShadedMaterial } from "../../engine/createCelShadedMaterial.js";
 
 /**
  * Plant world object
@@ -36,18 +37,15 @@ export class Plant extends WorldObject {
     this.setPosition(positionX, positionY, positionZ);
     this.group.name = "plant";
 
-    this.barkMaterial = new THREE.MeshStandardMaterial({
-      color: new THREE.Color(branchColor),
-      roughness: 0.95,
-      metalness: 0.0,
+    // Cel-shaded materials for cartoon-like appearance
+    this.barkMaterial = createCelShadedMaterial(branchColor, {
+      rimIntensity: 0.2,
     });
 
-    this.leafMaterial = new THREE.MeshStandardMaterial({
-      color: new THREE.Color(leafColor),
-      roughness: 0.6,
-      metalness: 0.1,
-      side: THREE.DoubleSide,
+    this.leafMaterial = createCelShadedMaterial(leafColor, {
+      rimIntensity: 0.3,
     });
+    this.leafMaterial.side = THREE.DoubleSide;
 
     const commands = parseLSystemString(
       lsystem.resultString,

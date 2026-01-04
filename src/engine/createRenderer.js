@@ -12,6 +12,10 @@ export function createRenderer(mount) {
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = engineConfig.toneMappingExposure;
+  
+  // Enable shadows for flat, minimalist aesthetic
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   mount.appendChild(renderer.domElement);
 

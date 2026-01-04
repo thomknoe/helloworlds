@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import Perlin from "../../algorithms/perlin.js";
 import { sampleTerrainHeight } from "../terrain/sampleHeight.js";
+import { createCelShadedMaterial } from "../../engine/createCelShadedMaterial.js";
 
 export function createFlowers(config, scene, terrainConfig) {
   if (!config) return null;
@@ -17,40 +18,29 @@ export function createFlowers(config, scene, terrainConfig) {
   const group = new THREE.Group();
   group.name = "flowers";
 
-  const redMaterial = new THREE.MeshStandardMaterial({
-    color: 0xff4444,
-    roughness: 0.9,
-    metalness: 0.0,
+  // Cel-shaded materials for cartoon-like appearance
+  const redMaterial = createCelShadedMaterial(0xff4444, {
+    rimIntensity: 0.3,
   });
 
-  const whiteMaterial = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
-    roughness: 0.9,
-    metalness: 0.0,
+  const whiteMaterial = createCelShadedMaterial(0xffffff, {
+    rimIntensity: 0.25,
   });
 
-  const stemMaterial = new THREE.MeshStandardMaterial({
-    color: 0x4a7c59,
-    roughness: 0.9,
-    metalness: 0.0,
+  const stemMaterial = createCelShadedMaterial(0x4a7c59, {
+    rimIntensity: 0.2,
   });
 
-  const leafMaterial = new THREE.MeshStandardMaterial({
-    color: 0x4a7c59,
-    roughness: 0.9,
-    metalness: 0.0,
+  const leafMaterial = createCelShadedMaterial(0x4a7c59, {
+    rimIntensity: 0.2,
   });
 
-  const yellowCenterMaterial = new THREE.MeshStandardMaterial({
-    color: 0xffffaa,
-    roughness: 0.8,
-    metalness: 0.1,
+  const yellowCenterMaterial = createCelShadedMaterial(0xffffaa, {
+    rimIntensity: 0.35,
   });
 
-  const orangeCenterMaterial = new THREE.MeshStandardMaterial({
-    color: 0xffaa00,
-    roughness: 0.8,
-    metalness: 0.1,
+  const orangeCenterMaterial = createCelShadedMaterial(0xffaa00, {
+    rimIntensity: 0.35,
   });
 
   const flowers = [];
@@ -112,6 +102,8 @@ export function createFlowers(config, scene, terrainConfig) {
     const stemMesh = new THREE.Mesh(stemGeometry, stemMaterial);
 
     stemMesh.position.y = stemHeight / 2;
+    stemMesh.castShadow = true;
+    stemMesh.receiveShadow = false;
     flowerGroup.add(stemMesh);
 
     const flowerHeadY = stemHeight;
@@ -130,6 +122,8 @@ export function createFlowers(config, scene, terrainConfig) {
 
       petalMesh.rotation.z = angle + Math.PI / 2;
       petalMesh.rotation.x = -Math.PI / 3;
+      petalMesh.castShadow = true;
+      petalMesh.receiveShadow = false;
 
       flowerGroup.add(petalMesh);
     }
@@ -141,6 +135,8 @@ export function createFlowers(config, scene, terrainConfig) {
       isRed ? orangeCenterMaterial : yellowCenterMaterial
     );
     centerMesh.position.y = flowerHeadY;
+    centerMesh.castShadow = true;
+    centerMesh.receiveShadow = false;
     flowerGroup.add(centerMesh);
 
     const leafCount = 2;
@@ -152,6 +148,8 @@ export function createFlowers(config, scene, terrainConfig) {
       leafMesh.position.x = stemRadius * 1.5;
       leafMesh.rotation.z = Math.PI / 4;
       leafMesh.rotation.y = Math.PI / 6;
+      leafMesh.castShadow = true;
+      leafMesh.receiveShadow = false;
       flowerGroup.add(leafMesh);
     }
 

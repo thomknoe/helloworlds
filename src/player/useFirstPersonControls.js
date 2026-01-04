@@ -105,21 +105,24 @@ export default function useFirstPersonControls(
     };
   }, []);
 
+  // Store update function ref so it can be called from main animation loop
+  const updatePlayerControlsRef = useRef(null);
+  const initializedRef = useRef(false);
+
   useEffect(() => {
     const forward = new THREE.Vector3();
     const right = new THREE.Vector3();
     const up = new THREE.Vector3(0, 1, 0);
-    let initialized = false;
 
-    const step = () => {
-      requestAnimationFrame(step);
+    // Create update function (no requestAnimationFrame - called from main loop)
+    const updatePlayerControls = (deltaTime) => {
       const player = playerRef.current;
       const cam = cameraRef.current;
       if (!player || !cam) return;
 
       // Initialize player position on terrain surface on first frame
       // Use default Perlin parameters if terrain config not available yet
-      if (!initialized) {
+      if (!initializedRef.current) {
         const cfg = terrainConfigRef?.current || defaultPerlinConfig;
         const groundY = sampleTerrainHeight(
           player.position.x,
@@ -128,7 +131,7 @@ export default function useFirstPersonControls(
         );
         player.position.y = groundY; // Player position is at terrain level
         isOnGround.current = true;
-        initialized = true;
+        initializedRef.current = true;
       }
 
       // Apply rotation directly to camera (first-person style, not orbital)
@@ -306,6 +309,15 @@ export default function useFirstPersonControls(
       cam.position.set(0, playerConfig.eyeHeight, 0);
     };
 
-    step();
+    // Store update function in ref
+    updatePlayerControlsRef.current = updatePlayerControls;
+
+    return () => {
+      updatePlayerControlsRef.current = null;
+      initializedRef.current = false;
+    };
   }, [cameraRef, playerRef, terrainConfigRef]);
+
+  // Return update function ref so it can be called from main animation loop
+  return updatePlayerControlsRef;
 }

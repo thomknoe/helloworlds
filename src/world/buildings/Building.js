@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { WorldObject } from "../../core/world/WorldObject.js";
+import { createCelShadedMaterial } from "../../engine/createCelShadedMaterial.js";
 
 /**
  * Building world object
@@ -30,10 +31,9 @@ export class Building extends WorldObject {
     this.setPosition(positionX, positionY, positionZ);
     this.group.name = "building";
 
-    this.material = new THREE.MeshStandardMaterial({
-      color: new THREE.Color(color),
-      roughness: 0.7,
-      metalness: 0.1,
+    // Cel-shaded white material for cartoon-like appearance
+    this.material = createCelShadedMaterial(0xffffff, {
+      rimIntensity: 0.25,
     });
 
     const building = grammar.building;
@@ -45,6 +45,7 @@ export class Building extends WorldObject {
         const floor = new THREE.Mesh(floorGeometry, this.material);
         floor.rotation.x = -Math.PI / 2;
         floor.position.set(room.x, room.y, room.z);
+        floor.castShadow = true; // Cast shadows onto terrain
         floor.receiveShadow = true;
         this.addMesh(floor);
 

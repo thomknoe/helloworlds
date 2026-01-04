@@ -110,7 +110,12 @@ export default function AuthorCanvas({
       }
     }
 
+    // Include waterHeight from terrain node data
+    const waterHeight = terrainNode.data?.waterHeight ?? 0;
+    
     if (nextTerrainConfig) {
+      nextTerrainConfig.waterHeight = waterHeight;
+      
       const needsUpdate =
         terrainNode.data?.type !== nextTerrainConfig.type ||
         terrainNode.data?.seed !== nextTerrainConfig.seed ||
@@ -126,7 +131,8 @@ export default function AuthorCanvas({
         terrainNode.data?.warpScale !== nextTerrainConfig.warpScale ||
         terrainNode.data?.offset !== nextTerrainConfig.offset ||
         terrainNode.data?.power !== nextTerrainConfig.power ||
-        terrainNode.data?.zOffset !== nextTerrainConfig.zOffset;
+        terrainNode.data?.zOffset !== nextTerrainConfig.zOffset ||
+        terrainNode.data?.waterHeight !== nextTerrainConfig.waterHeight;
 
       if (needsUpdate) {
         setNodes((prev) =>
@@ -140,6 +146,12 @@ export default function AuthorCanvas({
 
       if (typeof onTerrainConfigChange === "function") {
         onTerrainConfigChange(nextTerrainConfig);
+      }
+    } else {
+      // Even if no noise config, we should still send waterHeight
+      const waterConfig = { waterHeight };
+      if (typeof onTerrainConfigChange === "function") {
+        onTerrainConfigChange(waterConfig);
       }
     }
   }, [nodes, edges, nodeOutputs, setNodes, onTerrainConfigChange]);

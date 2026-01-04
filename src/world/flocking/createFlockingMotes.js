@@ -1,8 +1,15 @@
 import * as THREE from "three";
 import { Boid, FlockingSystem } from "../../algorithms/flocking.js";
 import { FlockingConfig } from "../../core/config/FlockingConfig.js";
+import { sampleTerrainHeight } from "../terrain/sampleHeight.js";
+import { createCelShadedMaterial } from "../../engine/createCelShadedMaterial.js";
 
-export function createFlockingMotes(config, scene) {
+export function createFlockingMotes(
+  config,
+  scene,
+  terrainConfig = null,
+  buildingRefs = []
+) {
   if (!config || !config.agents || config.agents.length === 0) return null;
 
   const { agents: agentConfigs, behavior } = config;
@@ -20,16 +27,8 @@ export function createFlockingMotes(config, scene) {
     planeHeight: 50,
   };
 
-  const envMap = scene.environment?.isCubeTexture
-    ? scene.environment
-    : (scene.background?.isCubeTexture ? scene.background : null);
-
-  const material = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
-    metalness: 1.0,
-    roughness: 0.0,
-    envMap: envMap,
-    envMapIntensity: 1.5,
+  const material = createCelShadedMaterial(0xffffff, {
+    rimIntensity: 0.25,
   });
 
   const group = new THREE.Group();
@@ -56,11 +55,24 @@ export function createFlockingMotes(config, scene) {
   const flockingSystem = new FlockingSystem(flockingConfig);
 
   agentConfigs.forEach((agentConfig) => {
-    const position = new THREE.Vector3(
+    let position = new THREE.Vector3(
       agentConfig.positionX,
       agentConfig.positionY,
       agentConfig.positionZ
     );
+
+    if (terrainConfig) {
+      const terrainY = sampleTerrainHeight(
+        position.x,
+        position.z,
+        terrainConfig
+      );
+      const minHeight = terrainY + (agentConfig.size || 0.3) * 0.5 + 1.0;
+      if (position.y < minHeight) {
+        position.y = minHeight;
+      }
+    }
+
     let velocity = new THREE.Vector3(
       agentConfig.velocityX ?? (Math.random() - 0.5) * 4,
       agentConfig.velocityY ?? (Math.random() - 0.5) * 1,
@@ -89,7 +101,7 @@ export function createFlockingMotes(config, scene) {
     );
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.copy(position);
-    mesh.castShadow = true;
+    mesh.castShadow = false;
     mesh.receiveShadow = false;
     mesh.userData.agentId = agentConfig.id;
 
@@ -99,28 +111,124 @@ export function createFlockingMotes(config, scene) {
 
   scene.add(group);
 
+  const buildingBoundsCache = new Map();
+  let cacheInvalidated = false;
+
+  const updateBuildingBoundsCache = (buildingRefsToCheck) => {
+    if (!cacheInvalidated && buildingBoundsCache.size > 0) {
+      return;
+    }
+
+    buildingBoundsCache.clear();
+
+    for (const buildingRef of buildingRefsToCheck) {
+      if (!buildingRef || !buildingRef.group) continue;
+
+      const groupBox = new THREE.Box3().setFromObject(buildingRef.group);
+      if (!groupBox.isEmpty()) {
+        buildingBoundsCache.set(buildingRef, {
+          box: groupBox,
+          center: groupBox.getCenter(new THREE.Vector3()),
+        });
+      }
+    }
+
+    cacheInvalidated = false;
+  };
+
+  const tempVec1 = new THREE.Vector3();
+  const tempVec2 = new THREE.Vector3();
+  const tempBox = new THREE.Box3();
+
+  const checkBuildingCollision = (position, size, buildingRefsToCheck) => {
+    const boidRadius = size * 0.5;
+    tempBox.setFromCenterAndSize(
+      position,
+      tempVec1.set(boidRadius * 2, boidRadius * 2, boidRadius * 2)
+    );
+
+    updateBuildingBoundsCache(buildingRefsToCheck);
+
+    for (const [, cached] of buildingBoundsCache) {
+      if (tempBox.intersectsBox(cached.box)) {
+        tempVec1.subVectors(position, cached.center).normalize();
+
+        if (tempVec1.lengthSq() < 0.0001) {
+          tempVec1.set(0, 1, 0);
+        }
+
+        return tempVec1.clone();
+      }
+    }
+
+    return null;
+  };
+
   return {
     group,
     flockingSystem,
     boids,
     meshes,
     agentMap,
-    update: (deltaTime) => {
-
+    update: (
+      deltaTime,
+      currentTerrainConfig = null,
+      currentBuildingRefs = []
+    ) => {
       flockingSystem.update(deltaTime);
 
-      for (let i = 0; i < boids.length; i++) {
-        meshes[i].position.copy(boids[i].position);
+      const terrainConfigToUse = currentTerrainConfig || terrainConfig;
+      const buildingRefsToUse =
+        currentBuildingRefs.length > 0 ? currentBuildingRefs : buildingRefs;
 
-        if (boids[i].velocity.length() > 0.01) {
-          meshes[i].lookAt(
-            boids[i].position.clone().add(boids[i].velocity.clone().normalize())
+      for (let i = 0; i < boids.length; i++) {
+        const boid = boids[i];
+        const mesh = meshes[i];
+        const boidSize = mesh.scale.x * 0.3;
+
+        if (terrainConfigToUse) {
+          const terrainY = sampleTerrainHeight(
+            boid.position.x,
+            boid.position.z,
+            terrainConfigToUse
           );
+          const minHeight = terrainY + boidSize * 0.5 + 0.1;
+
+          if (boid.position.y < minHeight) {
+            boid.position.y = minHeight;
+            if (boid.velocity.y < 0) {
+              boid.velocity.y = Math.abs(boid.velocity.y) * 0.5;
+            }
+          }
+        }
+
+        const buildingCollision = checkBuildingCollision(
+          boid.position,
+          boidSize,
+          buildingRefsToUse
+        );
+        if (buildingCollision) {
+          tempVec1.copy(buildingCollision).multiplyScalar(2.0);
+          boid.velocity.add(tempVec1);
+          tempVec1.copy(buildingCollision).multiplyScalar(0.1);
+          boid.position.add(tempVec1);
+        }
+
+        mesh.position.copy(boid.position);
+
+        if (boid.velocity.lengthSq() > 0.0001) {
+          tempVec2.copy(boid.velocity).normalize().add(boid.position);
+          mesh.lookAt(tempVec2);
         }
       }
     },
+    invalidateBuildingCache: () => {
+      cacheInvalidated = true;
+    },
     updateConfig: (newConfig) => {
       if (!newConfig || !newConfig.agents) return;
+
+      cacheInvalidated = true;
 
       const { agents: newAgentConfigs, behavior: newBehavior } = newConfig;
 
@@ -148,7 +256,6 @@ export function createFlockingMotes(config, scene) {
 
         const index = agentMap.get(agentConfig.id);
         if (index !== undefined) {
-
           const boid = boids[index];
           boid.position.set(
             agentConfig.positionX,
@@ -157,15 +264,29 @@ export function createFlockingMotes(config, scene) {
           );
 
           if (agentConfig.size !== undefined) {
-            meshes[index].scale.setScalar(agentConfig.size / (agentConfig.size || 0.3));
+            meshes[index].scale.setScalar(
+              agentConfig.size / (agentConfig.size || 0.3)
+            );
           }
         } else {
-
-          const position = new THREE.Vector3(
+          let position = new THREE.Vector3(
             agentConfig.positionX,
             agentConfig.positionY,
             agentConfig.positionZ
           );
+
+          if (terrainConfig) {
+            const terrainY = sampleTerrainHeight(
+              position.x,
+              position.z,
+              terrainConfig
+            );
+            const minHeight = terrainY + (agentConfig.size || 0.3) * 0.5 + 1.0;
+            if (position.y < minHeight) {
+              position.y = minHeight;
+            }
+          }
+
           let velocity = new THREE.Vector3(
             agentConfig.velocityX ?? (Math.random() - 0.5) * 4,
             agentConfig.velocityY ?? (Math.random() - 0.5) * 1,
@@ -194,7 +315,7 @@ export function createFlockingMotes(config, scene) {
           );
           const mesh = new THREE.Mesh(geometry, material);
           mesh.position.copy(position);
-          mesh.castShadow = true;
+          mesh.castShadow = false;
           mesh.receiveShadow = false;
           mesh.userData.agentId = agentConfig.id;
           group.add(mesh);
@@ -203,7 +324,9 @@ export function createFlockingMotes(config, scene) {
       });
 
       for (let i = boids.length - 1; i >= 0; i--) {
-        const agentId = Array.from(agentMap.entries()).find(([_, idx]) => idx === i)?.[0];
+        const agentId = Array.from(agentMap.entries()).find(
+          ([, idx]) => idx === i
+        )?.[0];
         if (agentId && !existingIds.has(agentId)) {
           const boid = boids[i];
           flockingSystem.removeBoid(boid);
@@ -223,7 +346,6 @@ export function createFlockingMotes(config, scene) {
       }
     },
     dispose: () => {
-
       meshes.forEach((mesh) => {
         mesh.geometry.dispose();
       });

@@ -50,17 +50,22 @@ export class FlockingSystem {
   separate(boid) {
     const steer = new THREE.Vector3();
     let count = 0;
+    const separationRadiusSq = this.config.separationRadius * this.config.separationRadius;
+    const maxNeighbors = 8; // Limit neighbor checks for performance
 
     for (const other of this.boids) {
       if (other === boid) continue;
+      if (count >= maxNeighbors) break; // Early exit optimization
 
-      const distance = boid.distanceTo(other);
+      // Use distance squared to avoid expensive sqrt
+      const dx = boid.position.x - other.position.x;
+      const dy = boid.position.y - other.position.y;
+      const dz = boid.position.z - other.position.z;
+      const distanceSq = dx * dx + dy * dy + dz * dz;
 
-      if (distance > 0 && distance < this.config.separationRadius) {
-        const diff = new THREE.Vector3()
-          .subVectors(boid.position, other.position)
-          .normalize()
-          .divideScalar(distance);
+      if (distanceSq > 0 && distanceSq < separationRadiusSq) {
+        const distance = Math.sqrt(distanceSq);
+        const diff = new THREE.Vector3(dx, dy, dz).normalize().divideScalar(distance);
         steer.add(diff);
         count++;
       }
@@ -80,13 +85,20 @@ export class FlockingSystem {
   align(boid) {
     const sum = new THREE.Vector3();
     let count = 0;
+    const neighborRadiusSq = this.config.neighborRadius * this.config.neighborRadius;
+    const maxNeighbors = 8; // Limit neighbor checks for performance
 
     for (const other of this.boids) {
       if (other === boid) continue;
+      if (count >= maxNeighbors) break; // Early exit optimization
 
-      const distance = boid.distanceTo(other);
+      // Use distance squared to avoid expensive sqrt
+      const dx = boid.position.x - other.position.x;
+      const dy = boid.position.y - other.position.y;
+      const dz = boid.position.z - other.position.z;
+      const distanceSq = dx * dx + dy * dy + dz * dz;
 
-      if (distance > 0 && distance < this.config.neighborRadius) {
+      if (distanceSq > 0 && distanceSq < neighborRadiusSq) {
         sum.add(other.velocity);
         count++;
       }
@@ -107,13 +119,20 @@ export class FlockingSystem {
   cohesion(boid) {
     const sum = new THREE.Vector3();
     let count = 0;
+    const neighborRadiusSq = this.config.neighborRadius * this.config.neighborRadius;
+    const maxNeighbors = 8; // Limit neighbor checks for performance
 
     for (const other of this.boids) {
       if (other === boid) continue;
+      if (count >= maxNeighbors) break; // Early exit optimization
 
-      const distance = boid.distanceTo(other);
+      // Use distance squared to avoid expensive sqrt
+      const dx = boid.position.x - other.position.x;
+      const dy = boid.position.y - other.position.y;
+      const dz = boid.position.z - other.position.z;
+      const distanceSq = dx * dx + dy * dy + dz * dz;
 
-      if (distance > 0 && distance < this.config.neighborRadius) {
+      if (distanceSq > 0 && distanceSq < neighborRadiusSq) {
         sum.add(other.position);
         count++;
       }

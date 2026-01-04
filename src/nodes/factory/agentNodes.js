@@ -53,18 +53,18 @@ export function createNPCNode(position = { x: 0, y: 0 }) {
       positionX: 0,
       positionY: 0,
       positionZ: 0,
-      movementType: "random",
+      movementType: "stationary",
       speed: 2.0,
       wanderRadius: 10.0,
       wanderCenterX: 0,
       wanderCenterY: 0,
       wanderCenterZ: 0,
-      interactionRadius: 6.0, // Slightly larger interaction radius
+      interactionRadius: 10.0, // Increased interaction radius
       dialogueWords:
         "hello,world,greetings,traveler,welcome,friend,adventure,journey",
       dialogueLength: 5,
       color: "#ffffff", // White color
-      size: 1.5, // Slightly larger size (will scale with interaction radius)
+      size: 3.5, // Size 3.5 for NPCs
     },
   };
 }

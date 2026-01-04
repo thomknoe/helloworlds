@@ -45,10 +45,8 @@ export default function TerrainPreview() {
 
     const clone = terrain.clone(true);
 
+    // Clone shader material (no texture maps needed for gradient-based material)
     const safeMat = terrain.material.clone();
-    safeMat.map = terrain.material.map;
-    safeMat.normalMap = terrain.material.normalMap;
-    safeMat.roughnessMap = terrain.material.roughnessMap;
     safeMat.needsUpdate = true;
 
     clone.material = safeMat;
@@ -58,12 +56,16 @@ export default function TerrainPreview() {
 
     scene.add(clone);
 
-    const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.9);
+    // Soft lighting matching main scene aesthetic
+    const hemi = new THREE.HemisphereLight(0xfff5e6, 0xd4c5b8, 0.6);
     scene.add(hemi);
 
-    const dir = new THREE.DirectionalLight(0xffffff, 0.7);
+    const dir = new THREE.DirectionalLight(0xfff8f0, 0.5);
     dir.position.set(50, 100, 80);
     scene.add(dir);
+
+    const ambient = new THREE.AmbientLight(0xf5e6d3, 0.4);
+    scene.add(ambient);
 
     const aspect = mount.clientWidth / mount.clientHeight;
     const frustum = 180;
@@ -81,7 +83,16 @@ export default function TerrainPreview() {
     camera.lookAt(0, 0, 0);
 
     let frameId;
+    let lastTime = performance.now();
     const loop = () => {
+      const currentTime = performance.now();
+      const time = currentTime / 1000;
+      
+      // Update shader time uniform for animated effects
+      if (safeMat.uniforms?.time) {
+        safeMat.uniforms.time.value = time;
+      }
+      
       renderer.render(scene, camera);
       frameId = requestAnimationFrame(loop);
     };

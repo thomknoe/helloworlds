@@ -46,9 +46,8 @@ function applyNoiseToGeometry(geometry, noiseConfig) {
 }
 
 export function createTerrain({
-  grassMap,
-  sandMap,
   config = defaultTerrainConfig,
+  time = 0.0,
 }) {
   const geometry = new THREE.PlaneGeometry(
     config.width,
@@ -70,12 +69,12 @@ export function createTerrain({
   });
 
   const material = createTerrainMaterial({
-    grassMap,
-    sandMap,
+    time,
+    waterHeight: config.waterHeight ?? 20,
   });
 
   const mesh = new THREE.Mesh(geometry, material);
-  mesh.receiveShadow = false;
+  mesh.receiveShadow = true; // Enable shadow receiving for flat aesthetic
 
   return mesh;
 }

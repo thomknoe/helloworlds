@@ -10,15 +10,20 @@ import { createPlant } from "../world/plants/createPlant.js";
 import { createBuilding } from "../world/buildings/createBuilding.js";
 import { createFlowers } from "../world/flowers/createFlowers.js";
 import { createNPC, updateNPCs } from "../world/npcs/createNPC.js";
+import { createPostProcessing } from "../engine/createPostProcessing.js";
 
 import { sampleTerrainHeight } from "../world/terrain/sampleHeight.js";
+import { analyzeTerrainComposition } from "../world/terrain/analyzeTerrainComposition.js";
 
-export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig, plantConfigs = [], buildingConfigs = [], flowerConfigs = [], npcConfigs = [] }) {
+export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig, plantConfigs = [], buildingConfigs = [], flowerConfigs = [], npcConfigs = [], onPlayerDataUpdate, onConsoleMessage }) {
   const mountRef = useRef(null);
   const cameraRef = useRef(null);
   const playerRef = useRef(null);
   const terrainRef = useRef(null);
   const sceneRef = useRef(null);
+  const skyRef = useRef(null);
+  const waterRef = useRef(null);
+  const postProcessingRef = useRef(null);
 
   const flockingSystemRef = useRef(null);
 
@@ -30,11 +35,27 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
 
   const npcRefs = useRef([]);
   const dialogueRef = useRef(null);
+  const playerDataRef = useRef({ position: { x: 0, y: 0, z: 0 }, terrainHeight: 0 });
+  const lastPlayerDataUpdateRef = useRef(0);
+  const onPlayerDataUpdateRef = useRef(onPlayerDataUpdate);
+  const onConsoleMessageRef = useRef(onConsoleMessage);
+  const consoleMessagesRef = useRef([]);
+  const lastDialogueRef = useRef("");
+  const lastCompositionUpdateRef = useRef(0);
 
   const isAuthorModeRef = useRef(isAuthorMode);
   useEffect(() => {
     isAuthorModeRef.current = isAuthorMode;
   }, [isAuthorMode]);
+
+  // Keep callback refs up to date
+  useEffect(() => {
+    onPlayerDataUpdateRef.current = onPlayerDataUpdate;
+  }, [onPlayerDataUpdate]);
+
+  useEffect(() => {
+    onConsoleMessageRef.current = onConsoleMessage;
+  }, [onConsoleMessage]);
 
   const terrainConfigRef = useRef(null);
   useEffect(() => {
@@ -45,15 +66,50 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
     const mount = mountRef.current;
     if (!mount) return;
 
-    const { scene, camera, renderer, water, terrain } = createScene(mount);
+    const { scene, camera, renderer, water, terrain, sky } = createScene(mount, terrainConfig);
 
     sceneRef.current = scene;
     cameraRef.current = camera;
     terrainRef.current = terrain;
+    skyRef.current = sky;
+    waterRef.current = water;
+    
+    // Create post-processing pipeline
+    const postProcessing = createPostProcessing(renderer, scene, camera);
+    postProcessingRef.current = postProcessing;
+    
+    // Calculate initial terrain composition and set sky immediately
+    // Use setTimeout to ensure terrain geometry is fully initialized
+    setTimeout(() => {
+      if (sky?.material?.uniforms?.terrainComposition && terrain) {
+        const waterHeight = terrainConfig?.waterHeight ?? 20;
+        const initialComposition = analyzeTerrainComposition(terrain, waterHeight);
+        sky.material.uniforms.terrainComposition.value = initialComposition;
+      }
+    }, 50);
 
     const player = createCameraRig(camera);
     playerRef.current = player;
     scene.add(player);
+
+    // Initial player data update
+    if (onPlayerDataUpdateRef.current && player) {
+      const position = player.position;
+      const initialData = {
+        position: {
+          x: position.x.toFixed(1),
+          y: position.y.toFixed(1),
+          z: position.z.toFixed(1),
+        },
+        terrainHeight: position.y.toFixed(1),
+      };
+      onPlayerDataUpdateRef.current(initialData);
+    }
+
+    // Initialize console (make it visible from the start)
+    if (onConsoleMessageRef.current) {
+      onConsoleMessageRef.current([]);
+    }
 
     let lastTime = performance.now();
 
@@ -64,62 +120,130 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
       const deltaTime = (currentTime - lastTime) / 1000;
       lastTime = currentTime;
 
-      if (!isAuthorModeRef.current && water?.material?.uniforms?.time) {
-        water.material.uniforms.time.value = performance.now() / 1000;
+      const time = performance.now() / 1000;
+
+      // Update player controls (movement, camera, physics)
+      if (playerControlsUpdateRef.current) {
+        playerControlsUpdateRef.current(deltaTime);
+      }
+
+      const now = performance.now();
+      if (playerRef.current && (now - lastPlayerDataUpdateRef.current > 100)) {
+        const position = playerRef.current.position;
+        let terrainHeight = 0;
+
+        if (terrainConfigRef.current) {
+          try {
+            terrainHeight = sampleTerrainHeight(position.x, position.z, terrainConfigRef.current);
+          } catch (e) {
+            terrainHeight = position.y;
+          }
+        } else {
+          terrainHeight = position.y;
+        }
+
+        const newPlayerData = {
+          position: {
+            x: position.x.toFixed(1),
+            y: position.y.toFixed(1),
+            z: position.z.toFixed(1),
+          },
+          terrainHeight: terrainHeight.toFixed(1),
+        };
+        playerDataRef.current = newPlayerData;
+        lastPlayerDataUpdateRef.current = now;
+        if (onPlayerDataUpdateRef.current) {
+          onPlayerDataUpdateRef.current(newPlayerData);
+        }
+      }
+
+      if (!isAuthorModeRef.current) {
+        if (water?.material?.uniforms?.time) {
+          water.material.uniforms.time.value = time;
+        }
+        if (skyRef.current?.material?.uniforms?.time) {
+          skyRef.current.material.uniforms.time.value = time;
+        }
+        if (terrain?.material?.uniforms?.time) {
+          terrain.material.uniforms.time.value = time;
+        }
+
+        if (skyRef.current?.material?.uniforms?.terrainComposition && terrainRef.current) {
+          const now = performance.now();
+          if (now - lastCompositionUpdateRef.current > 2000) {
+            const waterHeight = terrainConfigRef.current?.waterHeight ?? 20;
+            const composition = analyzeTerrainComposition(terrainRef.current, waterHeight);
+            skyRef.current.material.uniforms.terrainComposition.value = composition;
+            lastCompositionUpdateRef.current = now;
+          }
+        }
       }
 
       if (flockingSystemRef.current) {
-        flockingSystemRef.current.update(deltaTime);
+        flockingSystemRef.current.update(deltaTime, terrainConfigRef.current, buildingRefs.current);
       }
 
-      // Update NPCs
       if (npcRefs.current.length > 0 && playerRef.current && cameraRef.current) {
         const playerPosition = playerRef.current.position;
-        updateNPCs(npcRefs.current, deltaTime, playerPosition, terrainConfigRef.current);
-        
-        // Update dialogue UI
-        if (dialogueRef.current) {
-          const nearbyNPC = npcRefs.current.find(({ group }) => {
-            return group?.userData?.dialogue && group.userData.dialogue.length > 0;
-          });
-          
-          if (nearbyNPC && nearbyNPC.group) {
-            const dialogue = nearbyNPC.group.userData.dialogue;
-            const npcPosition = nearbyNPC.group.position;
-            
-            // Convert 3D position to screen coordinates
-            const vector = npcPosition.clone();
-            vector.y += 2.0; // Offset above floating cube
-            vector.project(cameraRef.current);
-            
-            const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
-            const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
-            
-            dialogueRef.current.style.display = "block";
-            dialogueRef.current.style.left = `${x}px`;
-            dialogueRef.current.style.top = `${y - 40}px`;
-            dialogueRef.current.textContent = dialogue;
-          } else {
-            if (dialogueRef.current) {
-              dialogueRef.current.style.display = "none";
+        updateNPCs(npcRefs.current, deltaTime, playerPosition, terrainConfigRef.current, time);
+
+        let nearbyNPC = null;
+        for (let i = 0; i < npcRefs.current.length; i++) {
+          const npcRef = npcRefs.current[i];
+          if (npcRef?.group?.userData?.dialogue && npcRef.group.userData.dialogue.length > 0) {
+            nearbyNPC = npcRef;
+            break;
+          }
+        }
+
+        if (nearbyNPC && nearbyNPC.group) {
+          const dialogue = nearbyNPC.group.userData.dialogue;
+
+          if (dialogue !== lastDialogueRef.current && dialogue.length > 0) {
+            lastDialogueRef.current = dialogue;
+            const formattedDialogue = `"${dialogue}"`;
+            consoleMessagesRef.current = [formattedDialogue];
+
+            if (onConsoleMessageRef.current) {
+              onConsoleMessageRef.current([...consoleMessagesRef.current]);
+            }
+          }
+        } else {
+          if (lastDialogueRef.current !== "") {
+            lastDialogueRef.current = "";
+            consoleMessagesRef.current = [];
+
+            if (onConsoleMessageRef.current) {
+              onConsoleMessageRef.current([]);
             }
           }
         }
       }
 
-      renderer.render(scene, camera);
+      // Use post-processing composer instead of direct render
+      if (postProcessingRef.current?.composer) {
+        postProcessingRef.current.composer.render();
+      } else {
+        renderer.render(scene, camera);
+      }
     };
 
     animate();
 
     return () => {
+      // Clean up post-processing
+      if (postProcessingRef.current?.dispose) {
+        postProcessingRef.current.dispose();
+        postProcessingRef.current = null;
+      }
+      
       if (renderer?.domElement && mount.contains(renderer.domElement)) {
         mount.removeChild(renderer.domElement);
       }
     };
   }, []);
 
-  useFirstPersonControls(
+  const playerControlsUpdateRef = useFirstPersonControls(
     playerRef,
     cameraRef,
     isAuthorModeRef,
@@ -129,6 +253,25 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
   useEffect(() => {
     if (!terrainConfig || !terrainRef.current) return;
     updateTerrainGeometry(terrainRef.current, terrainConfig);
+    
+    // Update water height if it changed
+    const waterHeight = terrainConfig.waterHeight ?? 0;
+    if (waterRef.current) {
+      waterRef.current.position.y = waterHeight;
+    }
+    
+    // Update terrain material waterHeight uniform
+    if (terrainRef.current?.material?.uniforms?.waterHeight) {
+      terrainRef.current.material.uniforms.waterHeight.value = waterHeight;
+    }
+    
+    // Update sky composition after terrain geometry changes
+    if (skyRef.current?.material?.uniforms?.terrainComposition && terrainRef.current) {
+      setTimeout(() => {
+        const composition = analyzeTerrainComposition(terrainRef.current, waterHeight);
+        skyRef.current.material.uniforms.terrainComposition.value = composition;
+      }, 100); // Small delay to ensure geometry is updated
+    }
   }, [terrainConfig]);
 
   useEffect(() => {
@@ -141,7 +284,7 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
     }
 
     if (flockingConfig) {
-      const system = createFlockingMotes(flockingConfig, scene);
+      const system = createFlockingMotes(flockingConfig, scene, terrainConfigRef.current, buildingRefs.current);
       flockingSystemRef.current = system;
     }
 
@@ -230,6 +373,11 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
         buildingRefs.current.push(building);
       }
     });
+
+    // Invalidate building collision cache in flocking system
+    if (flockingSystemRef.current?.invalidateBuildingCache) {
+      flockingSystemRef.current.invalidateBuildingCache();
+    }
 
     return () => {
       buildingRefs.current.forEach((building) => {
@@ -320,26 +468,6 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
           zIndex: 1
         }}
         onClick={handleClick}
-      />
-      <div
-        ref={dialogueRef}
-        style={{
-          position: "fixed",
-          display: "none",
-          pointerEvents: "none",
-          zIndex: 1000,
-          background: "rgba(32, 36, 42, 0.55)",
-          backdropFilter: "blur(14px) saturate(1.3)",
-          color: "#ffffff",
-          padding: "8px 12px",
-          borderRadius: "18px",
-          fontSize: "14px",
-          maxWidth: "200px",
-          textAlign: "center",
-          transform: "translateX(-50%)",
-          border: "1px solid rgba(255, 255, 255, 0.15)",
-          boxShadow: "0 6px 18px rgba(0,0,0,0.40), inset 0 0 0 1px rgba(255,255,255,0.05)",
-        }}
       />
     </>
   );
