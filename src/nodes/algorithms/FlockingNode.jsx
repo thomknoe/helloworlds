@@ -53,35 +53,6 @@ export default function FlockingNode({ id, data }) {
 
   return (
     <div className="node-default node-flocking">
-
-      <div style={{
-        position: 'absolute',
-        left: '-80px',
-        top: '35px',
-        fontSize: '11px',
-        color: '#4a90e2',
-        fontWeight: 'bold',
-        whiteSpace: 'nowrap',
-        pointerEvents: 'none',
-        opacity: 0.7
-      }}>
-        ← Noise (opt)
-      </div>
-      <Handle
-        type="target"
-        position={Position.Left}
-        id="noise"
-        style={{
-          top: 40,
-          width: '10px',
-          height: '10px',
-          background: '#4a90e2',
-          border: '2px solid #ffffff',
-          boxShadow: '0 0 6px rgba(74, 144, 226, 0.4)',
-          opacity: 0.7
-        }}
-      />
-
       <div className="node-title">{label}</div>
 
       <div className="node-param-row">

@@ -4,17 +4,32 @@ import "reactflow/dist/style.css";
 
 import AuthorSidebar from "./AuthorSidebar.jsx";
 import AuthorFlowCanvas from "./AuthorFlowCanvas.jsx";
-import AuthorInspector from "./AuthorInspector.jsx";
 
 import { nodeRegistry } from "../nodes/registry.js";
 import {
   createPerlinNoiseNode,
+  createVoronoiNoiseNode,
+  createRidgeNoiseNode,
+  createSimplexNoiseNode,
   createTerrainNode,
 } from "../nodes/factory/environmentNodes.js";
 
 import { createAgentNode, createFlockingNode } from "../nodes/factory/agentNodes.js";
-import { createLSystemNode, createPlantNode, createFlowerNode } from "../nodes/factory/simulationNodes.js";
-import { createBuildingGrammarNode, createBuildingNode } from "../nodes/factory/structuralNodes.js";
+import {
+  createLSystemNode,
+  createPlantNode,
+  createFlowerNode,
+  createCellularAutomataNode,
+  createParticleSystemNode,
+  createWavePropagationNode,
+} from "../nodes/factory/simulationNodes.js";
+import {
+  createBuildingGrammarNode,
+  createShapeGrammarNode,
+  createMarkovChainNode,
+  createParametricCurveNode,
+  createBuildingNode,
+} from "../nodes/factory/structuralNodes.js";
 
 const initialNodes = [];
 const initialEdges = [];
@@ -52,6 +67,7 @@ export default function AuthorCanvas({
       if (srcOutput) {
         nextTerrainConfig = {
           sourceId: configEdge.source,
+          type: srcOutput.type || "perlinNoise",
           seed: srcOutput.seed ?? 42,
           scale: srcOutput.scale ?? 0.05,
           octaves: srcOutput.octaves ?? 4,
@@ -59,19 +75,38 @@ export default function AuthorCanvas({
           amplitude: srcOutput.amplitude ?? 10,
           frequency: srcOutput.frequency ?? 1,
           rawValue: srcOutput.value ?? 0,
+          // Voronoi specific
+          mode: srcOutput.mode,
+          // Domain Warping specific
+          baseScale: srcOutput.baseScale,
+          warpStrength: srcOutput.warpStrength,
+          warpScale: srcOutput.warpScale,
+          // Ridge Noise specific
+          offset: srcOutput.offset,
+          power: srcOutput.power,
+          // Simplex specific
+          zOffset: srcOutput.zOffset,
         };
       }
     }
 
     if (nextTerrainConfig) {
       const needsUpdate =
+        terrainNode.data?.type !== nextTerrainConfig.type ||
         terrainNode.data?.seed !== nextTerrainConfig.seed ||
         terrainNode.data?.scale !== nextTerrainConfig.scale ||
         terrainNode.data?.octaves !== nextTerrainConfig.octaves ||
         terrainNode.data?.persistence !== nextTerrainConfig.persistence ||
         terrainNode.data?.amplitude !== nextTerrainConfig.amplitude ||
         terrainNode.data?.frequency !== nextTerrainConfig.frequency ||
-        terrainNode.data?.sourceId !== nextTerrainConfig.sourceId;
+        terrainNode.data?.sourceId !== nextTerrainConfig.sourceId ||
+        terrainNode.data?.mode !== nextTerrainConfig.mode ||
+        terrainNode.data?.baseScale !== nextTerrainConfig.baseScale ||
+        terrainNode.data?.warpStrength !== nextTerrainConfig.warpStrength ||
+        terrainNode.data?.warpScale !== nextTerrainConfig.warpScale ||
+        terrainNode.data?.offset !== nextTerrainConfig.offset ||
+        terrainNode.data?.power !== nextTerrainConfig.power ||
+        terrainNode.data?.zOffset !== nextTerrainConfig.zOffset;
 
       if (needsUpdate) {
         setNodes((prev) =>
@@ -346,13 +381,22 @@ export default function AuthorCanvas({
 
   const handleAddTerrainNode = () => addNodeToEnvironment(createTerrainNode());
   const handleAddPerlinNoise = () => addNodeToEnvironment(createPerlinNoiseNode());
+  const handleAddVoronoiNoise = () => addNodeToEnvironment(createVoronoiNoiseNode());
+  const handleAddRidgeNoise = () => addNodeToEnvironment(createRidgeNoiseNode());
+  const handleAddSimplexNoise = () => addNodeToEnvironment(createSimplexNoiseNode());
   const handleAddAgentNode = () => addNodeToEnvironment(createAgentNode());
   const handleAddFlockingNode = () => addNodeToEnvironment(createFlockingNode());
   const handleAddLSystemNode = () => addNodeToEnvironment(createLSystemNode());
   const handleAddPlantNode = () => addNodeToEnvironment(createPlantNode());
   const handleAddFlowerNode = () => addNodeToEnvironment(createFlowerNode());
   const handleAddBuildingGrammarNode = () => addNodeToEnvironment(createBuildingGrammarNode());
+  const handleAddShapeGrammarNode = () => addNodeToEnvironment(createShapeGrammarNode());
+  const handleAddMarkovChainNode = () => addNodeToEnvironment(createMarkovChainNode());
+  const handleAddParametricCurveNode = () => addNodeToEnvironment(createParametricCurveNode());
   const handleAddBuildingNode = () => addNodeToEnvironment(createBuildingNode());
+  const handleAddCellularAutomataNode = () => addNodeToEnvironment(createCellularAutomataNode());
+  const handleAddParticleSystemNode = () => addNodeToEnvironment(createParticleSystemNode());
+  const handleAddWavePropagationNode = () => addNodeToEnvironment(createWavePropagationNode());
 
   function onConnect(params) {
     setEdges((prev) => addEdge({ ...params, animated: true }, prev));
@@ -365,13 +409,22 @@ export default function AuthorCanvas({
         setActiveDomain={setActiveDomain}
         onAddTerrainNode={handleAddTerrainNode}
         onAddPerlinNoise={handleAddPerlinNoise}
+        onAddVoronoiNoise={handleAddVoronoiNoise}
+        onAddRidgeNoise={handleAddRidgeNoise}
+        onAddSimplexNoise={handleAddSimplexNoise}
         onAddAgentNode={handleAddAgentNode}
         onAddFlockingNode={handleAddFlockingNode}
         onAddLSystemNode={handleAddLSystemNode}
         onAddPlantNode={handleAddPlantNode}
         onAddFlowerNode={handleAddFlowerNode}
         onAddBuildingGrammarNode={handleAddBuildingGrammarNode}
+        onAddShapeGrammarNode={handleAddShapeGrammarNode}
+        onAddMarkovChainNode={handleAddMarkovChainNode}
+        onAddParametricCurveNode={handleAddParametricCurveNode}
         onAddBuildingNode={handleAddBuildingNode}
+        onAddCellularAutomataNode={handleAddCellularAutomataNode}
+        onAddParticleSystemNode={handleAddParticleSystemNode}
+        onAddWavePropagationNode={handleAddWavePropagationNode}
       />
 
       <AuthorFlowCanvas
@@ -382,8 +435,6 @@ export default function AuthorCanvas({
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
       />
-
-      <AuthorInspector activeDomain={activeDomain} />
     </div>
   );
 }

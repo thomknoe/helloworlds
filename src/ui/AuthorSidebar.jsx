@@ -2,9 +2,9 @@ import { Waves, Zap, Network, Users } from "lucide-react";
 
 const DOMAINS = [
   { id: "noiseHeightfields", label: "Noise & Heightfields", icon: Waves },
-  { id: "simulationNatural", label: "Simulation & Natural Systems", icon: Zap },
-  { id: "structuralGenerative", label: "Structural / Generative Grammars", icon: Network },
-  { id: "agentBehavior", label: "Agent & Behavior Systems", icon: Users },
+  { id: "simulationNatural", label: "Simulations & Systems", icon: Zap },
+  { id: "structuralGenerative", label: "Structures & Grammars", icon: Network },
+  { id: "agentBehavior", label: "Agent & Entities", icon: Users },
 ];
 
 export default function AuthorSidebar({
@@ -12,13 +12,22 @@ export default function AuthorSidebar({
   setActiveDomain,
   onAddTerrainNode,
   onAddPerlinNoise,
+  onAddVoronoiNoise,
+  onAddRidgeNoise,
+  onAddSimplexNoise,
   onAddAgentNode,
   onAddFlockingNode,
   onAddLSystemNode,
   onAddPlantNode,
   onAddFlowerNode,
   onAddBuildingGrammarNode,
-  onAddBuildingNode
+  onAddShapeGrammarNode,
+  onAddMarkovChainNode,
+  onAddParametricCurveNode,
+  onAddBuildingNode,
+  onAddCellularAutomataNode,
+  onAddParticleSystemNode,
+  onAddWavePropagationNode,
 }) {
   return (
     <aside className="author-sidebar">
@@ -60,16 +69,30 @@ export default function AuthorSidebar({
               <div className="preset-node-list">
                 <button
                   className="preset-node-item"
-                  onClick={onAddTerrainNode}
+                  onClick={onAddPerlinNoise}
                 >
-                  Add Terrain Node
+                  Add Perlin Noise Node
                 </button>
 
                 <button
                   className="preset-node-item"
-                  onClick={onAddPerlinNoise}
+                  onClick={onAddVoronoiNoise}
                 >
-                  Add Perlin Noise Node
+                  Add Voronoi Noise Node
+                </button>
+
+                <button
+                  className="preset-node-item"
+                  onClick={onAddRidgeNoise}
+                >
+                  Add Ridge Noise Node
+                </button>
+
+                <button
+                  className="preset-node-item"
+                  onClick={onAddSimplexNoise}
+                >
+                  Add Simplex Noise Node
                 </button>
               </div>
             )}
@@ -78,9 +101,73 @@ export default function AuthorSidebar({
               <div className="preset-node-list">
                 <button
                   className="preset-node-item"
+                  onClick={onAddFlockingNode}
+                >
+                  Add Flocking Behavior Node
+                </button>
+                <button
+                  className="preset-node-item"
+                  onClick={onAddCellularAutomataNode}
+                >
+                  Add Cellular Automata Node
+                </button>
+                <button
+                  className="preset-node-item"
+                  onClick={onAddParticleSystemNode}
+                >
+                  Add Particle System Node
+                </button>
+                <button
+                  className="preset-node-item"
+                  onClick={onAddWavePropagationNode}
+                >
+                  Add Wave Propagation Node
+                </button>
+              </div>
+            )}
+
+            {activeDomain === "structuralGenerative" && (
+              <div className="preset-node-list">
+                <button
+                  className="preset-node-item"
                   onClick={onAddLSystemNode}
                 >
                   Add L-System Node
+                </button>
+                <button
+                  className="preset-node-item"
+                  onClick={onAddShapeGrammarNode}
+                >
+                  Add Shape Grammar Node
+                </button>
+                <button
+                  className="preset-node-item"
+                  onClick={onAddMarkovChainNode}
+                >
+                  Add Markov Chain Node
+                </button>
+                <button
+                  className="preset-node-item"
+                  onClick={onAddParametricCurveNode}
+                >
+                  Add Parametric Curve Node
+                </button>
+              </div>
+            )}
+
+            {activeDomain === "agentBehavior" && (
+              <div className="preset-node-list">
+                <button
+                  className="preset-node-item"
+                  onClick={onAddTerrainNode}
+                >
+                  Add Terrain Node
+                </button>
+                <button
+                  className="preset-node-item"
+                  onClick={onAddAgentNode}
+                >
+                  Add Boids Node
                 </button>
                 <button
                   className="preset-node-item"
@@ -94,39 +181,11 @@ export default function AuthorSidebar({
                 >
                   Add Flower Node
                 </button>
-              </div>
-            )}
-
-            {activeDomain === "structuralGenerative" && (
-              <div className="preset-node-list">
-                <button
-                  className="preset-node-item"
-                  onClick={onAddBuildingGrammarNode}
-                >
-                  Add Building Grammar Node
-                </button>
                 <button
                   className="preset-node-item"
                   onClick={onAddBuildingNode}
                 >
                   Add Building Node
-                </button>
-              </div>
-            )}
-
-            {activeDomain === "agentBehavior" && (
-              <div className="preset-node-list">
-                <button
-                  className="preset-node-item"
-                  onClick={onAddAgentNode}
-                >
-                  Add Agents Node
-                </button>
-                <button
-                  className="preset-node-item"
-                  onClick={onAddFlockingNode}
-                >
-                  Add Flocking Behavior Node
                 </button>
               </div>
             )}

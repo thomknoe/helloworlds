@@ -8,7 +8,7 @@ export function createAgentNode(position = { x: 0, y: 0 }) {
     type: "agent",
     position,
     data: {
-      label: "Agents",
+      label: "Boids",
       count: 10,
       positionX: (Math.random() - 0.5) * spread,
       positionY: 50 + (Math.random() - 0.5) * spread * 0.3,

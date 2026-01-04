@@ -136,14 +136,7 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
 
       let terrainHeight = 0;
       if (terrainConfigRef.current) {
-        terrainHeight = sampleTerrainHeight(plantConfig.positionX, plantConfig.positionZ, {
-          seed: terrainConfigRef.current.seed ?? 42,
-          scale: terrainConfigRef.current.scale ?? terrainConfigRef.current.noiseScale ?? 0.05,
-          octaves: terrainConfigRef.current.octaves ?? 4,
-          persistence: terrainConfigRef.current.persistence ?? 0.5,
-          amplitude: terrainConfigRef.current.amplitude ?? 10,
-          frequency: terrainConfigRef.current.frequency ?? 1,
-        });
+        terrainHeight = sampleTerrainHeight(plantConfig.positionX, plantConfig.positionZ, terrainConfigRef.current);
       }
 
       const adjustedConfig = {
@@ -183,14 +176,7 @@ export default function PlayerView({ isAuthorMode, terrainConfig, flockingConfig
 
       let terrainHeight = 0;
       if (terrainConfigRef.current) {
-        terrainHeight = sampleTerrainHeight(buildingConfig.positionX, buildingConfig.positionZ, {
-          seed: terrainConfigRef.current.seed ?? 42,
-          scale: terrainConfigRef.current.scale ?? terrainConfigRef.current.noiseScale ?? 0.05,
-          octaves: terrainConfigRef.current.octaves ?? 4,
-          persistence: terrainConfigRef.current.persistence ?? 0.5,
-          amplitude: terrainConfigRef.current.amplitude ?? 10,
-          frequency: terrainConfigRef.current.frequency ?? 1,
-        });
+        terrainHeight = sampleTerrainHeight(buildingConfig.positionX, buildingConfig.positionZ, terrainConfigRef.current);
       }
 
       const adjustedConfig = {

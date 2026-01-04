@@ -7,26 +7,26 @@ export default function AuthorInspector({ activeDomain }) {
       component: <TerrainPreview />,
     },
     simulationNatural: {
-      title: "Simulation Preview",
+      title: "Simulations & Systems Preview",
       component: (
         <div className="inspector-placeholder">
-          Simulation preview coming soon.
+          Simulations & systems preview coming soon.
         </div>
       ),
     },
     structuralGenerative: {
-      title: "Structural Preview",
+      title: "Structures & Grammars Preview",
       component: (
         <div className="inspector-placeholder">
-          Structural preview coming soon.
+          Structures & grammars preview coming soon.
         </div>
       ),
     },
     agentBehavior: {
-      title: "Agent Behavior Preview",
+      title: "Agent & Entities Preview",
       component: (
         <div className="inspector-placeholder">
-          Agent behavior preview coming soon.
+          Agent & entities preview coming soon.
         </div>
       ),
     },

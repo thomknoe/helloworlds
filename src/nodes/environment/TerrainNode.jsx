@@ -10,9 +10,19 @@ export default function TerrainNode({ id, data }) {
     data?.amplitude !== undefined ||
     data?.frequency !== undefined;
 
-  let status = "Waiting for Perlin input…";
+  const noiseType = data?.type || "perlinNoise";
+  const noiseTypeLabels = {
+    perlinNoise: "Perlin",
+    voronoiNoise: "Voronoi",
+    domainWarping: "Domain Warping",
+    ridgeNoise: "Ridge",
+    simplexNoise: "Simplex",
+  };
+  const noiseLabel = noiseTypeLabels[noiseType] || "Noise";
+
+  let status = `Waiting for ${noiseLabel} input…`;
   if (hasNoiseInput) {
-    status = "Reading noise values…";
+    status = `Reading ${noiseLabel} values…`;
   }
 
   return (
@@ -33,7 +43,7 @@ export default function TerrainNode({ id, data }) {
         whiteSpace: 'nowrap',
         pointerEvents: 'none'
       }}>
-        ← Perlin Noise
+        ← {noiseLabel} Noise
       </div>
       <Handle
         type="target"

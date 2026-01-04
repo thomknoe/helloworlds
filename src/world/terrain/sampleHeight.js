@@ -1,29 +1,31 @@
-import Perlin from "../../algorithms/perlin.js";
+import { sampleNoise2D } from "./sampleNoise.js";
 
 export function sampleTerrainHeight(x, z, config) {
-  const seed = config.seed ?? 42;
-  const scale = config.scale ?? 0.05;
-  const octaves = Math.max(1, Math.floor(config.octaves ?? 4));
-  const persistence = config.persistence ?? 0.5;
+  // Support both 'scale' (from noise nodes) and 'noiseScale' (from defaultTerrainConfig)
+  const scale = config.scale ?? config.noiseScale ?? 0.05;
   const amplitude = config.amplitude ?? 10;
-  const baseFreq = config.frequency ?? 1;
+  
+  // Use the unified noise sampler
+  const noiseValue = sampleNoise2D(x, z, {
+    type: config.type || "perlinNoise",
+    seed: config.seed ?? 42,
+    scale: scale,
+    octaves: config.octaves ?? 4,
+    persistence: config.persistence ?? 0.5,
+    frequency: config.frequency ?? 1,
+    amplitude: amplitude,
+    // Voronoi specific
+    mode: config.mode,
+    // Domain Warping specific
+    baseScale: config.baseScale,
+    warpStrength: config.warpStrength,
+    warpScale: config.warpScale,
+    // Ridge Noise specific
+    offset: config.offset,
+    power: config.power,
+    // Simplex specific
+    zOffset: config.zOffset,
+  });
 
-  Perlin.init(seed);
-
-  let total = 0;
-  let freq = baseFreq;
-  let amp = 1;
-  let maxAmp = 0;
-  const safeScale = scale > 0 ? scale : 0.0001;
-
-  for (let o = 0; o < octaves; o++) {
-    total += Perlin.noise2D(x * safeScale * freq, z * safeScale * freq) * amp;
-    maxAmp += amp;
-    amp *= persistence;
-    freq *= 2;
-  }
-
-  const normalized = maxAmp > 0 ? total / maxAmp : total;
-
-  return normalized * amplitude;
+  return noiseValue * amplitude;
 }

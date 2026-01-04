@@ -3,7 +3,7 @@ import { Handle, Position } from "reactflow";
 
 export default function AgentNode({ id, data }) {
   const {
-    label = "Agents",
+    label = "Boids",
     count = 10,
     positionX = 0,
     positionY = 50,
@@ -160,7 +160,7 @@ export default function AgentNode({ id, data }) {
         whiteSpace: 'nowrap',
         pointerEvents: 'none'
       }}>
-        Agents →
+        Boids →
       </div>
       <Handle
         type="source"

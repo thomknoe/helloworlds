@@ -83,18 +83,11 @@ export function createFlowers(config, scene, terrainConfig) {
     let terrainHeight = 0;
     if (terrainConfig) {
 
-      const noiseScale = terrainConfig.scale ?? terrainConfig.noiseScale ?? 0.05;
-      terrainHeight = sampleTerrainHeight(x, z, {
-        seed: terrainConfig.seed ?? 42,
-        scale: noiseScale,
-        octaves: terrainConfig.octaves ?? 4,
-        persistence: terrainConfig.persistence ?? 0.5,
-        amplitude: terrainConfig.amplitude ?? 10,
-        frequency: terrainConfig.frequency ?? 1,
-      });
+      terrainHeight = sampleTerrainHeight(x, z, terrainConfig);
     } else {
 
       terrainHeight = sampleTerrainHeight(x, z, {
+        type: "perlinNoise",
         seed: 42,
         scale: 0.05,
         octaves: 4,
