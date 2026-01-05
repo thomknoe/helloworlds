@@ -1,11 +1,6 @@
 import * as THREE from "three";
 import { WorldObject } from "../../core/world/WorldObject.js";
 import { createCelShadedMaterial } from "../../engine/createCelShadedMaterial.js";
-
-/**
- * Building world object
- * Extends WorldObject base class
- */
 export class Building extends WorldObject {
   constructor(config) {
     super();
@@ -13,13 +8,8 @@ export class Building extends WorldObject {
     this.material = null;
     this.build();
   }
-
-  /**
-   * Build the building geometry from grammar
-   */
   build() {
     if (!this.config || !this.config.grammar || !this.config.grammar.building) return;
-
     const {
       positionX = 0,
       positionY = 0,
@@ -27,38 +17,30 @@ export class Building extends WorldObject {
       color = "#ffffff",
       grammar,
     } = this.config;
-
     this.setPosition(positionX, positionY, positionZ);
     this.group.name = "building";
-
-    // Cel-shaded white material for cartoon-like appearance
     this.material = createCelShadedMaterial(0xffffff, {
       rimIntensity: 0.25,
     });
-
     const building = grammar.building;
     const wallThickness = grammar.wallThickness || 0.2;
-
     building.levels.forEach((level) => {
       level.rooms.forEach((room) => {
         const floorGeometry = new THREE.PlaneGeometry(room.width, room.depth);
         const floor = new THREE.Mesh(floorGeometry, this.material);
         floor.rotation.x = -Math.PI / 2;
         floor.position.set(room.x, room.y, room.z);
-        floor.castShadow = true; // Cast shadows onto terrain
+        floor.castShadow = true; 
         floor.receiveShadow = true;
         this.addMesh(floor);
-
         const ceilingGeometry = new THREE.PlaneGeometry(room.width, room.depth);
         const ceiling = new THREE.Mesh(ceilingGeometry, this.material);
         ceiling.rotation.x = Math.PI / 2;
         ceiling.position.set(room.x, room.y + room.height, room.z);
         ceiling.receiveShadow = true;
         this.addMesh(ceiling);
-
         const halfWidth = room.width / 2;
         const halfDepth = room.depth / 2;
-
         if (!this.hasConnection(room, "north", level.rooms)) {
           const northWall = this.createWall(room.width, room.height, wallThickness);
           northWall.position.set(room.x, room.y + room.height / 2, room.z - halfDepth);
@@ -66,7 +48,6 @@ export class Building extends WorldObject {
           northWall.receiveShadow = true;
           this.addMesh(northWall);
         }
-
         if (!this.hasConnection(room, "south", level.rooms)) {
           const southWall = this.createWall(room.width, room.height, wallThickness);
           southWall.position.set(room.x, room.y + room.height / 2, room.z + halfDepth);
@@ -74,7 +55,6 @@ export class Building extends WorldObject {
           southWall.receiveShadow = true;
           this.addMesh(southWall);
         }
-
         if (!this.hasConnection(room, "east", level.rooms)) {
           const eastWall = this.createWall(room.depth, room.height, wallThickness);
           eastWall.rotation.y = Math.PI / 2;
@@ -83,7 +63,6 @@ export class Building extends WorldObject {
           eastWall.receiveShadow = true;
           this.addMesh(eastWall);
         }
-
         if (!this.hasConnection(room, "west", level.rooms)) {
           const westWall = this.createWall(room.depth, room.height, wallThickness);
           westWall.rotation.y = Math.PI / 2;
@@ -94,7 +73,6 @@ export class Building extends WorldObject {
         }
       });
     });
-
     if (building.stairs && building.stairs.length > 0) {
       building.stairs.forEach((stair) => {
         const stairGeometry = new THREE.BoxGeometry(
@@ -114,26 +92,10 @@ export class Building extends WorldObject {
       });
     }
   }
-
-  /**
-   * Create a wall mesh
-   * @param {number} width - Wall width
-   * @param {number} height - Wall height
-   * @param {number} thickness - Wall thickness
-   * @returns {THREE.Mesh} Wall mesh
-   */
   createWall(width, height, thickness) {
     const geometry = new THREE.BoxGeometry(width, height, thickness);
     return new THREE.Mesh(geometry, this.material);
   }
-
-  /**
-   * Check if room has connection in direction
-   * @param {Object} room - Room object
-   * @param {string} direction - Direction to check
-   * @param {Array} allRooms - All rooms in level
-   * @returns {boolean} True if connection exists
-   */
   hasConnection(room, direction, allRooms) {
     return room.connections.some((conn) => {
       if (conn.direction === direction) {
@@ -142,29 +104,19 @@ export class Building extends WorldObject {
       return false;
     });
   }
-
-  /**
-   * Update building configuration
-   * @param {Object} newConfig - New configuration
-   * @returns {boolean} True if update was successful
-   */
   updateConfig(newConfig) {
     if (newConfig.grammar?.building !== this.config.grammar?.building) {
       return false;
     }
-
     this.setPosition(
       newConfig.positionX ?? this.config.positionX ?? 0,
       newConfig.positionY ?? this.config.positionY ?? 0,
       newConfig.positionZ ?? this.config.positionZ ?? 0
     );
-
     if (this.material) {
       this.material.color.set(newConfig.color ?? this.config.color ?? "#ffffff");
     }
-
     this.config = { ...this.config, ...newConfig };
     return true;
   }
 }
-

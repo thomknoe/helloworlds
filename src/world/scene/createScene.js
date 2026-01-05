@@ -1,22 +1,13 @@
 import * as THREE from "three";
 import { createRenderer } from "../../engine/createRenderer.js";
 import { createGradientSky } from "../../engine/createGradientSky.js";
-
 import { createTerrain } from "../terrain/createTerrain.js";
 import { createWater } from "../water/createWater.js";
-
 export default function createScene(mount, terrainConfig = null) {
   const scene = new THREE.Scene();
-
-  // Use procedural gradient sky instead of texture-based skybox
   const sky = createGradientSky();
   scene.add(sky);
-
-  // Set background to match sky gradient (will be overridden by sky mesh)
-  scene.background = new THREE.Color(0x7db8e8); // Light blue to match sky
-
-  // No general fog - using boundary fog in shaders instead
-
+  scene.background = new THREE.Color(0x7db8e8);
   const camera = new THREE.PerspectiveCamera(
     75,
     mount.clientWidth / mount.clientHeight,
@@ -24,32 +15,22 @@ export default function createScene(mount, terrainConfig = null) {
     2000
   );
   camera.position.set(0, 10, 15);
-
   const renderer = createRenderer(mount);
-
-  // Create terrain without texture dependencies
   const terrain = createTerrain({});
   scene.add(terrain);
-
   if (typeof window !== "undefined") {
     window.__terrainReference = terrain;
     window.__updateTerrain = null;
   }
-
   const waterHeight = terrainConfig?.waterHeight ?? 0;
   const water = createWater({ height: waterHeight, size: 400 });
   scene.add(water);
-
-  // Softer, more atmospheric lighting
-  // Hemisphere light - warm sky, gentle ground
   const hemi = new THREE.HemisphereLight(0xfff5e6, 0xd4c5b8, 0.6);
   scene.add(hemi);
-
-  // Directional light - soft and gentle with enhanced shadows
   const sun = new THREE.DirectionalLight(0xfff8f0, 0.6);
   sun.position.set(60, 100, 10);
-  sun.castShadow = true; // Enable shadows
-  sun.shadow.mapSize.width = 4096; // Higher resolution for better quality
+  sun.castShadow = true;
+  sun.shadow.mapSize.width = 4096;
   sun.shadow.mapSize.height = 4096;
   sun.shadow.camera.near = 0.5;
   sun.shadow.camera.far = 500;
@@ -57,30 +38,19 @@ export default function createScene(mount, terrainConfig = null) {
   sun.shadow.camera.right = 200;
   sun.shadow.camera.top = 200;
   sun.shadow.camera.bottom = -200;
-  sun.shadow.bias = -0.0001; // Reduce shadow acne
-  sun.shadow.normalBias = 0.02; // Additional bias for better quality
-  sun.shadow.radius = 4; // Soft shadow edges
+  sun.shadow.bias = -0.0001;
+  sun.shadow.normalBias = 0.02;
+  sun.shadow.radius = 4;
   scene.add(sun);
-
-  // Ambient light for soft fill
   const ambient = new THREE.AmbientLight(0xf5e6d3, 0.4);
   scene.add(ambient);
-
-  // Barely perceptible fill light from opposite direction
   const fillLight = new THREE.DirectionalLight(0xfff5e6, 0.008);
   fillLight.position.set(-40, 50, -30);
   scene.add(fillLight);
-
-  // Create environment map for reflective objects (NPCs, boids)
-  // Create a simple environment map using PMREMGenerator
   const pmremGenerator = new THREE.PMREMGenerator(renderer);
   pmremGenerator.compileEquirectangularShader();
-
-  // Create a simple scene with sky-colored sphere for environment
   const envScene = new THREE.Scene();
   envScene.background = new THREE.Color(0x7db8e8);
-
-  // Create a simple gradient sphere for environment
   const envSphere = new THREE.Mesh(
     new THREE.SphereGeometry(100, 32, 32),
     new THREE.MeshBasicMaterial({
@@ -89,12 +59,8 @@ export default function createScene(mount, terrainConfig = null) {
     })
   );
   envScene.add(envSphere);
-
   const envMapRT = pmremGenerator.fromScene(envScene, 0.04).texture;
   scene.environment = envMapRT;
-
-  // Clean up
   pmremGenerator.dispose();
-
   return { scene, camera, renderer, water, terrain, sky };
 }

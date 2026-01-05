@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import { LSystem } from "../../algorithms/lsystem.js";
-
 export default function LSystemNode({ id, data }) {
   const {
     label = "L-System",
@@ -18,19 +17,15 @@ export default function LSystemNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   const rules = {};
   if (rule1 && rule1Replacement) rules[rule1] = rule1Replacement;
   if (rule2 && rule2Replacement) rules[rule2] = rule2Replacement;
   if (rule3 && rule3Replacement) rules[rule3] = rule3Replacement;
-
   useEffect(() => {
     const lsystem = new LSystem(axiom, rules, iterations);
     const resultString = lsystem.iterate();
-
     onOutput?.({
       id,
       type: "lsystem",
@@ -42,11 +37,9 @@ export default function LSystemNode({ id, data }) {
       resultString,
     });
   }, [id, axiom, rule1, rule1Replacement, rule2, rule2Replacement, rule3, rule3Replacement, iterations, angle, stepSize, onOutput]);
-
   return (
     <div className="node-default node-lsystem">
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Axiom</div>
         <input
@@ -58,7 +51,6 @@ export default function LSystemNode({ id, data }) {
           onChange={(e) => update({ axiom: e.target.value })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Rule 1: {rule1 || "?"}</div>
         <input
@@ -82,7 +74,6 @@ export default function LSystemNode({ id, data }) {
           style={{ flex: 1 }}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Rule 2: {rule2 || "?"}</div>
         <input
@@ -106,7 +97,6 @@ export default function LSystemNode({ id, data }) {
           style={{ flex: 1 }}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Rule 3: {rule3 || "?"}</div>
         <input
@@ -130,7 +120,6 @@ export default function LSystemNode({ id, data }) {
           style={{ flex: 1 }}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Iterations</div>
         <input
@@ -144,7 +133,6 @@ export default function LSystemNode({ id, data }) {
           onChange={(e) => update({ iterations: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Angle (deg)</div>
         <input
@@ -159,7 +147,6 @@ export default function LSystemNode({ id, data }) {
           onChange={(e) => update({ angle: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Step Size</div>
         <input
@@ -174,7 +161,6 @@ export default function LSystemNode({ id, data }) {
           onChange={(e) => update({ stepSize: Number(e.target.value) })}
         />
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-85px',

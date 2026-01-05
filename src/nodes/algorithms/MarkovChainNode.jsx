@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import { MarkovChain } from "../../algorithms/markovChain.js";
-
 export default function MarkovChainNode({ id, data }) {
   const {
     label = "Markov Chain",
@@ -10,22 +9,17 @@ export default function MarkovChainNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     const stateArray = states.split(",").map(s => s.trim()).filter(s => s.length > 0);
     if (stateArray.length === 0) {
       stateArray.push("A", "B", "C");
     }
-
     const chain = new MarkovChain({
       states: stateArray,
     });
-
     const sequence = chain.generateSequence(sequenceLength);
-
     onOutput?.({
       id,
       type: "markovChain",
@@ -35,11 +29,9 @@ export default function MarkovChainNode({ id, data }) {
       currentState: chain.getCurrentState(),
     });
   }, [id, states, sequenceLength, onOutput]);
-
   return (
     <div className="node-default node-markov-chain">
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">States</div>
         <input
@@ -52,7 +44,6 @@ export default function MarkovChainNode({ id, data }) {
           onChange={(e) => update({ states: e.target.value })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Sequence Length</div>
         <input
@@ -66,7 +57,6 @@ export default function MarkovChainNode({ id, data }) {
           onChange={(e) => update({ sequenceLength: Number(e.target.value) })}
         />
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-100px',
@@ -95,4 +85,3 @@ export default function MarkovChainNode({ id, data }) {
     </div>
   );
 }
-

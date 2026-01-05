@@ -1,11 +1,9 @@
 import { Handle, Position } from "reactflow";
-
 export default function TerrainNode({ data }) {
   const {
     waterHeight = 0,
     onChange,
   } = data || {};
-
   const hasNoiseInput =
     data?.seed !== undefined ||
     data?.scale !== undefined ||
@@ -13,7 +11,6 @@ export default function TerrainNode({ data }) {
     data?.persistence !== undefined ||
     data?.amplitude !== undefined ||
     data?.frequency !== undefined;
-
   const noiseType = data?.type || "perlinNoise";
   const noiseTypeLabels = {
     perlinNoise: "Perlin",
@@ -23,22 +20,17 @@ export default function TerrainNode({ data }) {
     simplexNoise: "Simplex",
   };
   const noiseLabel = noiseTypeLabels[noiseType] || "Noise";
-
   let status = `Waiting for ${noiseLabel} input…`;
   if (hasNoiseInput) {
     status = `Reading ${noiseLabel} values…`;
   }
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   return (
     <div className="node-default node-terrain">
       <div className="node-title">Terrain</div>
-
       <div className="node-body">
         <div className="node-terrain-status">{status}</div>
-        
         <div className="node-param-row" style={{ marginTop: '12px' }}>
           <div className="node-param-label">Water Level</div>
           <input
@@ -52,7 +44,6 @@ export default function TerrainNode({ data }) {
           />
         </div>
       </div>
-
       <div style={{
         position: 'absolute',
         left: '-90px',
@@ -78,7 +69,6 @@ export default function TerrainNode({ data }) {
           boxShadow: '0 0 8px rgba(74, 144, 226, 0.6)'
         }}
       />
-
       <div style={{
         position: 'absolute',
         right: '-80px',

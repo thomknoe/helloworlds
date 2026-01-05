@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
-
 export default function BuildingNode({ id, data }) {
   const {
     label = "Building",
@@ -11,10 +10,8 @@ export default function BuildingNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     onOutput?.({
       id,
@@ -25,10 +22,8 @@ export default function BuildingNode({ id, data }) {
       color,
     });
   }, [id, positionX, positionY, positionZ, color, onOutput]);
-
   return (
     <div className="node-default node-building">
-
       <div style={{
         position: 'absolute',
         left: '-95px',
@@ -54,9 +49,7 @@ export default function BuildingNode({ id, data }) {
           boxShadow: '0 0 8px rgba(74, 144, 226, 0.6)'
         }}
       />
-
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">X (Horizontal)</div>
         <input
@@ -69,7 +62,6 @@ export default function BuildingNode({ id, data }) {
           onChange={(e) => update({ positionX: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Y (Vertical/Up)</div>
         <input
@@ -82,7 +74,6 @@ export default function BuildingNode({ id, data }) {
           onChange={(e) => update({ positionY: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Z (Depth/Forward)</div>
         <input
@@ -95,7 +86,6 @@ export default function BuildingNode({ id, data }) {
           onChange={(e) => update({ positionZ: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Color</div>
         <input
@@ -107,7 +97,6 @@ export default function BuildingNode({ id, data }) {
           onChange={(e) => update({ color: e.target.value })}
         />
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-85px',

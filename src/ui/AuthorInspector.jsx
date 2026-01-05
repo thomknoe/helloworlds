@@ -1,5 +1,4 @@
 import TerrainPreview from "./TerrainPreview.jsx";
-
 export default function AuthorInspector({ activeDomain }) {
   const previews = {
     noiseHeightfields: {
@@ -31,16 +30,13 @@ export default function AuthorInspector({ activeDomain }) {
       ),
     },
   };
-
   const { title, component } = previews[activeDomain] || previews.noiseHeightfields;
-
   return (
     <aside className="author-inspector">
       <div className="inspector-preview-block">
         <div className="inspector-preview-title">{title}</div>
         <div className="inspector-preview-canvas">{component}</div>
       </div>
-
       <div className="chatbot-shell">
         <div className="chatbot-title">World Assistant</div>
         <div className="chatbot-body">

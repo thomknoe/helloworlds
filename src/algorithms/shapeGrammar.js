@@ -1,11 +1,5 @@
-/**
- * Shape Grammar - General purpose shape generation
- * Can be used for buildings, facades, floor plans, architectural details
- * Consolidates/replaces Building Grammar with more general capabilities
- */
 export class ShapeGrammar {
   constructor(config = {}) {
-    // Building-specific parameters (for compatibility)
     this.levels = config.levels || config.buildingLevels || 3;
     this.roomsPerLevel = config.roomsPerLevel || config.buildingRoomsPerLevel || 4;
     this.roomSize = config.roomSize || config.buildingRoomSize || 4.0;
@@ -13,39 +7,30 @@ export class ShapeGrammar {
     this.wallThickness = config.wallThickness || 0.2;
     this.hasStairs = config.hasStairs !== false;
     this.roomLayout = config.roomLayout || "grid";
-    
-    // General shape grammar parameters
-    this.grammarType = config.grammarType || "building"; // "building", "facade", "floorplan"
+    this.grammarType = config.grammarType || "building"; 
     this.rules = config.rules || {};
     this.iterations = config.iterations || 3;
     this.seed = config.seed || 42;
   }
-
-  // Generate building structure (compatible with BuildingGrammar)
   generateBuilding() {
     const building = {
       levels: [],
       stairs: [],
     };
-
     for (let level = 0; level < this.levels; level++) {
       const levelData = this.generateLevel(level);
       building.levels.push(levelData);
-
       if (this.hasStairs && level < this.levels - 1) {
         const stair = this.generateStairs(level, levelData);
         building.stairs.push(stair);
       }
     }
-
     return building;
   }
-
   generateLevel(levelIndex) {
     const rooms = [];
     const y = levelIndex * this.levelHeight;
     const positions = this.generateRoomPositions(levelIndex);
-
     positions.forEach((pos, index) => {
       const room = {
         id: `level-${levelIndex}-room-${index}`,
@@ -58,14 +43,11 @@ export class ShapeGrammar {
         level: levelIndex,
         connections: [],
       };
-
       positions.forEach((otherPos, otherIndex) => {
         if (index === otherIndex) return;
-
         const distance = Math.sqrt(
           Math.pow(pos.x - otherPos.x, 2) + Math.pow(pos.z - otherPos.z, 2)
         );
-
         if (distance < this.roomSize * 1.2) {
           const direction = this.getDirection(pos, otherPos);
           if (!room.connections.some(c => c.to === `level-${levelIndex}-room-${otherIndex}`)) {
@@ -76,21 +58,17 @@ export class ShapeGrammar {
           }
         }
       });
-
       rooms.push(room);
     });
-
     return {
       level: levelIndex,
       y: y,
       rooms: rooms,
     };
   }
-
   generateRoomPositions(levelIndex) {
     const positions = [];
     const spacing = this.roomSize * 1.1;
-
     switch (this.roomLayout) {
       case "grid":
         const cols = Math.ceil(Math.sqrt(this.roomsPerLevel));
@@ -104,7 +82,6 @@ export class ShapeGrammar {
           });
         }
         break;
-
       case "linear":
         for (let i = 0; i < this.roomsPerLevel; i++) {
           positions.push({
@@ -113,7 +90,6 @@ export class ShapeGrammar {
           });
         }
         break;
-
       case "radial":
         const angleStep = (Math.PI * 2) / this.roomsPerLevel;
         const radius = spacing * 1.5;
@@ -125,7 +101,6 @@ export class ShapeGrammar {
           });
         }
         break;
-
       default:
         for (let i = 0; i < this.roomsPerLevel; i++) {
           positions.push({
@@ -134,21 +109,17 @@ export class ShapeGrammar {
           });
         }
     }
-
     return positions;
   }
-
   getDirection(from, to) {
     const dx = to.x - from.x;
     const dz = to.z - from.z;
-
     if (Math.abs(dx) > Math.abs(dz)) {
       return dx > 0 ? "east" : "west";
     } else {
       return dz > 0 ? "south" : "north";
     }
   }
-
   generateStairs(levelIndex, levelData) {
     const firstRoom = levelData.rooms[0];
     return {
@@ -161,8 +132,6 @@ export class ShapeGrammar {
       level: levelIndex,
     };
   }
-
-  // General generate method
   generate() {
     switch (this.grammarType) {
       case "building":
@@ -175,23 +144,17 @@ export class ShapeGrammar {
         return this.generateBuilding();
     }
   }
-
   generateFacade() {
-    // Placeholder for facade generation
     return {
       type: "facade",
       elements: [],
     };
   }
-
   generateFloorPlan() {
-    // Placeholder for floor plan generation
     return {
       type: "floorplan",
       rooms: [],
     };
   }
 }
-
 export default ShapeGrammar;
-

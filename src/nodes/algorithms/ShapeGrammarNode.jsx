@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import { ShapeGrammar } from "../../algorithms/shapeGrammar.js";
-
 export default function ShapeGrammarNode({ id, data }) {
   const {
     label = "Shape Grammar",
@@ -16,10 +15,8 @@ export default function ShapeGrammarNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     const grammar = new ShapeGrammar({
       grammarType,
@@ -31,10 +28,7 @@ export default function ShapeGrammarNode({ id, data }) {
       hasStairs,
       roomLayout,
     });
-
     const shape = grammar.generate();
-
-    // For compatibility with Building Grammar, output building structure
     const output = {
       id,
       type: "shapeGrammar",
@@ -48,20 +42,15 @@ export default function ShapeGrammarNode({ id, data }) {
       roomLayout,
       shape,
     };
-
-    // If building type, also include building structure for compatibility
     if (grammarType === "building") {
       output.building = shape;
-      output.type = "buildingGrammar"; // For compatibility with Building Node
+      output.type = "buildingGrammar"; 
     }
-
     onOutput?.(output);
   }, [id, grammarType, levels, roomsPerLevel, roomSize, levelHeight, wallThickness, hasStairs, roomLayout, onOutput]);
-
   return (
     <div className="node-default node-shape-grammar">
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Grammar Type</div>
         <select
@@ -76,7 +65,6 @@ export default function ShapeGrammarNode({ id, data }) {
           <option value="floorplan">Floor Plan</option>
         </select>
       </div>
-
       {grammarType === "building" && (
         <>
           <div className="node-param-row">
@@ -92,7 +80,6 @@ export default function ShapeGrammarNode({ id, data }) {
               onChange={(e) => update({ levels: Number(e.target.value) })}
             />
           </div>
-
           <div className="node-param-row">
             <div className="node-param-label">Rooms/Level</div>
             <input
@@ -106,7 +93,6 @@ export default function ShapeGrammarNode({ id, data }) {
               onChange={(e) => update({ roomsPerLevel: Number(e.target.value) })}
             />
           </div>
-
           <div className="node-param-row">
             <div className="node-param-label">Room Size</div>
             <input
@@ -119,7 +105,6 @@ export default function ShapeGrammarNode({ id, data }) {
               onChange={(e) => update({ roomSize: Number(e.target.value) })}
             />
           </div>
-
           <div className="node-param-row">
             <div className="node-param-label">Level Height</div>
             <input
@@ -132,7 +117,6 @@ export default function ShapeGrammarNode({ id, data }) {
               onChange={(e) => update({ levelHeight: Number(e.target.value) })}
             />
           </div>
-
           <div className="node-param-row">
             <div className="node-param-label">Room Layout</div>
             <select
@@ -149,7 +133,6 @@ export default function ShapeGrammarNode({ id, data }) {
           </div>
         </>
       )}
-
       <div style={{
         position: 'absolute',
         right: '-100px',
@@ -178,4 +161,3 @@ export default function ShapeGrammarNode({ id, data }) {
     </div>
   );
 }
-

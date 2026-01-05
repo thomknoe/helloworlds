@@ -1,12 +1,10 @@
 import { Waves, Zap, Network, Users } from "lucide-react";
-
 const DOMAINS = [
   { id: "noiseHeightfields", label: "Noise & Heightfields", icon: Waves },
   { id: "simulationNatural", label: "Simulations & Systems", icon: Zap },
   { id: "structuralGenerative", label: "Structures & Grammars", icon: Network },
   { id: "agentBehavior", label: "Agent & Entities", icon: Users },
 ];
-
 export default function AuthorSidebar({
   activeDomain,
   setActiveDomain,
@@ -38,7 +36,6 @@ export default function AuthorSidebar({
             Select what you're editing.
           </div>
         </div>
-
         <div className="domain-tab-container">
           {DOMAINS.map((dom) => (
             <button
@@ -56,15 +53,12 @@ export default function AuthorSidebar({
           ))}
         </div>
       </div>
-
       <div className="domain-section-shell preset-shell-full">
         <div className="preset-library">
           <div className="preset-library-title">
             Node List
           </div>
-
           <div className="preset-library-list">
-
             {activeDomain === "noiseHeightfields" && (
               <div className="preset-node-list">
                 <button
@@ -73,21 +67,18 @@ export default function AuthorSidebar({
                 >
                   Add Perlin Noise Node
                 </button>
-
                 <button
                   className="preset-node-item"
                   onClick={onAddVoronoiNoise}
                 >
                   Add Voronoi Noise Node
                 </button>
-
                 <button
                   className="preset-node-item"
                   onClick={onAddRidgeNoise}
                 >
                   Add Ridge Noise Node
                 </button>
-
                 <button
                   className="preset-node-item"
                   onClick={onAddSimplexNoise}
@@ -96,7 +87,6 @@ export default function AuthorSidebar({
                 </button>
               </div>
             )}
-
             {activeDomain === "simulationNatural" && (
               <div className="preset-node-list">
                 <button
@@ -125,7 +115,6 @@ export default function AuthorSidebar({
                 </button>
               </div>
             )}
-
             {activeDomain === "structuralGenerative" && (
               <div className="preset-node-list">
                 <button
@@ -154,7 +143,6 @@ export default function AuthorSidebar({
                 </button>
               </div>
             )}
-
             {activeDomain === "agentBehavior" && (
               <div className="preset-node-list">
                 <button
@@ -195,7 +183,6 @@ export default function AuthorSidebar({
                 </button>
               </div>
             )}
-
           </div>
         </div>
       </div>

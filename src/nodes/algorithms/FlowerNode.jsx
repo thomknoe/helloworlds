@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
-
 export default function FlowerNode({ id, data }) {
   const {
     label = "Flowers",
@@ -10,10 +9,8 @@ export default function FlowerNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     onOutput?.({
       id,
@@ -23,10 +20,8 @@ export default function FlowerNode({ id, data }) {
       size,
     });
   }, [id, count, spread, size, onOutput]);
-
   return (
     <div className="node-default node-flower">
-
       <div style={{
         position: 'absolute',
         left: '-80px',
@@ -52,9 +47,7 @@ export default function FlowerNode({ id, data }) {
           boxShadow: '0 0 8px rgba(74, 144, 226, 0.6)'
         }}
       />
-
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Count</div>
         <input
@@ -68,7 +61,6 @@ export default function FlowerNode({ id, data }) {
           onChange={(e) => update({ count: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Spread</div>
         <input
@@ -83,7 +75,6 @@ export default function FlowerNode({ id, data }) {
           onChange={(e) => update({ spread: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Size</div>
         <input
@@ -98,7 +89,6 @@ export default function FlowerNode({ id, data }) {
           onChange={(e) => update({ size: Number(e.target.value) })}
         />
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-75px',

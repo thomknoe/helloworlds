@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
-
 export default function BoidNode({ id, data }) {
   const {
     label = "Boids",
@@ -16,10 +15,8 @@ export default function BoidNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     onOutput?.({
       id,
@@ -35,14 +32,10 @@ export default function BoidNode({ id, data }) {
       spread,
     });
   }, [id, count, positionX, positionY, positionZ, velocityX, velocityY, velocityZ, size, spread, onOutput]);
-
   return (
     <div className="node-default node-boid">
-
       <Handle type="target" position={Position.Left} id="behavior" style={{ top: 40 }} />
-
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Count</div>
         <input
@@ -56,7 +49,6 @@ export default function BoidNode({ id, data }) {
           onChange={(e) => update({ count: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Pos X</div>
         <input
@@ -69,7 +61,6 @@ export default function BoidNode({ id, data }) {
           onChange={(e) => update({ positionX: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Pos Y</div>
         <input
@@ -82,7 +73,6 @@ export default function BoidNode({ id, data }) {
           onChange={(e) => update({ positionY: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Pos Z</div>
         <input
@@ -95,7 +85,6 @@ export default function BoidNode({ id, data }) {
           onChange={(e) => update({ positionZ: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Size</div>
         <input
@@ -110,7 +99,6 @@ export default function BoidNode({ id, data }) {
           onChange={(e) => update({ size: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Spread</div>
         <input
@@ -125,7 +113,6 @@ export default function BoidNode({ id, data }) {
           onChange={(e) => update({ spread: Number(e.target.value) })}
         />
       </div>
-
       <Handle
         type="source"
         position={Position.Right}

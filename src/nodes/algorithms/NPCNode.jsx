@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
-
 export default function NPCNode({ id, data }) {
   const {
     label = "NPC",
@@ -21,13 +20,10 @@ export default function NPCNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     const wordsArray = dialogueWords.split(",").map(w => w.trim()).filter(w => w.length > 0);
-    
     onOutput?.({
       id,
       type: "npc",
@@ -64,11 +60,9 @@ export default function NPCNode({ id, data }) {
     size,
     onOutput,
   ]);
-
   return (
     <div className="node-default node-npc">
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Position X</div>
         <input
@@ -81,7 +75,6 @@ export default function NPCNode({ id, data }) {
           onChange={(e) => update({ positionX: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Position Y</div>
         <input
@@ -94,7 +87,6 @@ export default function NPCNode({ id, data }) {
           onChange={(e) => update({ positionY: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Position Z</div>
         <input
@@ -107,7 +99,6 @@ export default function NPCNode({ id, data }) {
           onChange={(e) => update({ positionZ: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Movement Type</div>
         <select
@@ -122,7 +113,6 @@ export default function NPCNode({ id, data }) {
           <option value="stationary">Stationary</option>
         </select>
       </div>
-
       {movementType === "random" && (
         <>
           <div className="node-param-row">
@@ -138,7 +128,6 @@ export default function NPCNode({ id, data }) {
               onChange={(e) => update({ speed: Number(e.target.value) })}
             />
           </div>
-
           <div className="node-param-row">
             <div className="node-param-label">Wander Radius</div>
             <input
@@ -154,7 +143,6 @@ export default function NPCNode({ id, data }) {
           </div>
         </>
       )}
-
       <div className="node-param-row">
         <div className="node-param-label">Interaction Radius</div>
         <input
@@ -168,7 +156,6 @@ export default function NPCNode({ id, data }) {
           onChange={(e) => update({ interactionRadius: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Dialogue Words</div>
         <input
@@ -181,7 +168,6 @@ export default function NPCNode({ id, data }) {
           onChange={(e) => update({ dialogueWords: e.target.value })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Dialogue Length</div>
         <input
@@ -195,7 +181,6 @@ export default function NPCNode({ id, data }) {
           onChange={(e) => update({ dialogueLength: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Color</div>
         <input
@@ -207,7 +192,6 @@ export default function NPCNode({ id, data }) {
           onChange={(e) => update({ color: e.target.value })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Size</div>
         <input
@@ -221,7 +205,6 @@ export default function NPCNode({ id, data }) {
           onChange={(e) => update({ size: Number(e.target.value) })}
         />
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-100px',
@@ -250,4 +233,3 @@ export default function NPCNode({ id, data }) {
     </div>
   );
 }
-

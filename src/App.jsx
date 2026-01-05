@@ -4,7 +4,6 @@ import AuthorCanvas from "./ui/AuthorCanvas.jsx";
 import Portal from "./ui/Portal.jsx";
 import PerformanceMonitor from "./ui/PerformanceMonitor.jsx";
 import GameConsole from "./ui/GameConsole.jsx";
-
 export default function App() {
   const [isAuthorMode, setIsAuthorMode] = useState(false);
   const [terrainConfig, setTerrainConfig] = useState(null);
@@ -15,20 +14,16 @@ export default function App() {
   const [npcConfigs, setNPCConfigs] = useState([]);
   const [playerData, setPlayerData] = useState(null);
   const [consoleMessages, setConsoleMessages] = useState([]);
-
   const toggleAuthorMode = useCallback(() => {
     setIsAuthorMode((prev) => !prev);
   }, []);
-
   useEffect(() => {
     const handler = (e) => {
       if (e.key.toLowerCase() === "p") {
         e.preventDefault();
         const wasInAuthorMode = isAuthorMode;
         toggleAuthorMode();
-        // If exiting author mode, request pointer lock (user interaction is available from keydown event)
         if (wasInAuthorMode) {
-          // Request pointer lock after a brief delay to ensure state has updated
           setTimeout(() => {
             if (document.pointerLockElement !== document.body) {
               document.body.requestPointerLock();
@@ -40,17 +35,13 @@ export default function App() {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [isAuthorMode, toggleAuthorMode]);
-
-  // Handle pointer unlock when entering author mode
   useEffect(() => {
     if (isAuthorMode) {
-      // Entering author mode: unlock the cursor
       if (document.pointerLockElement) {
         document.exitPointerLock();
       }
     }
   }, [isAuthorMode]);
-
   return (
     <>
       <PlayerView
@@ -64,7 +55,6 @@ export default function App() {
         onPlayerDataUpdate={setPlayerData}
         onConsoleMessage={setConsoleMessages}
       />
-
       <Portal>
         {!isAuthorMode && (
           <div className="bottom-ui-container">
@@ -72,7 +62,6 @@ export default function App() {
             <GameConsole messages={consoleMessages} />
           </div>
         )}
-
         <div
           className="author-backdrop"
           style={{ display: isAuthorMode ? "flex" : "none" }}

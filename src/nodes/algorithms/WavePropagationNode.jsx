@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
-
 export default function WavePropagationNode({ id, data }) {
   const {
     label = "Wave Propagation",
@@ -12,10 +11,8 @@ export default function WavePropagationNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     onOutput?.({
       id,
@@ -27,11 +24,9 @@ export default function WavePropagationNode({ id, data }) {
       maxWaves,
     });
   }, [id, amplitude, speed, decayRate, lifetime, maxWaves, onOutput]);
-
   return (
     <div className="node-default node-wave-propagation">
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Amplitude</div>
         <input
@@ -45,7 +40,6 @@ export default function WavePropagationNode({ id, data }) {
           onChange={(e) => update({ amplitude: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Speed</div>
         <input
@@ -59,7 +53,6 @@ export default function WavePropagationNode({ id, data }) {
           onChange={(e) => update({ speed: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Decay Rate</div>
         <input
@@ -73,7 +66,6 @@ export default function WavePropagationNode({ id, data }) {
           onChange={(e) => update({ decayRate: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Lifetime</div>
         <input
@@ -87,7 +79,6 @@ export default function WavePropagationNode({ id, data }) {
           onChange={(e) => update({ lifetime: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Max Waves</div>
         <input
@@ -101,7 +92,6 @@ export default function WavePropagationNode({ id, data }) {
           onChange={(e) => update({ maxWaves: Number(e.target.value) })}
         />
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-100px',
@@ -130,4 +120,3 @@ export default function WavePropagationNode({ id, data }) {
     </div>
   );
 }
-

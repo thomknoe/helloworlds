@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import DomainWarping from "../../algorithms/domainWarping.js";
-
 export default function DomainWarpingNode({ id, data }) {
   const {
     label = "Domain Warping",
@@ -15,10 +14,8 @@ export default function DomainWarpingNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     const value = DomainWarping.noise2DFractal(
       seed * baseScale,
@@ -29,7 +26,6 @@ export default function DomainWarpingNode({ id, data }) {
       octaves,
       persistence
     );
-
     onOutput?.({
       id,
       type: "domainWarping",
@@ -43,11 +39,9 @@ export default function DomainWarpingNode({ id, data }) {
       amplitude,
     });
   }, [id, seed, baseScale, warpStrength, warpScale, octaves, persistence, amplitude, onOutput]);
-
   return (
     <div className="node-default node-domain-warping">
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Seed</div>
         <input
@@ -59,7 +53,6 @@ export default function DomainWarpingNode({ id, data }) {
           onChange={(e) => update({ seed: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Base Scale</div>
         <input
@@ -72,7 +65,6 @@ export default function DomainWarpingNode({ id, data }) {
           onChange={(e) => update({ baseScale: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Warp Strength</div>
         <input
@@ -85,7 +77,6 @@ export default function DomainWarpingNode({ id, data }) {
           onChange={(e) => update({ warpStrength: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Warp Scale</div>
         <input
@@ -98,7 +89,6 @@ export default function DomainWarpingNode({ id, data }) {
           onChange={(e) => update({ warpScale: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Octaves</div>
         <input
@@ -112,7 +102,6 @@ export default function DomainWarpingNode({ id, data }) {
           onChange={(e) => update({ octaves: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Persistence</div>
         <input
@@ -125,7 +114,6 @@ export default function DomainWarpingNode({ id, data }) {
           onChange={(e) => update({ persistence: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Amplitude</div>
         <input
@@ -137,7 +125,6 @@ export default function DomainWarpingNode({ id, data }) {
           onChange={(e) => update({ amplitude: Number(e.target.value) })}
         />
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-100px',
@@ -166,4 +153,3 @@ export default function DomainWarpingNode({ id, data }) {
     </div>
   );
 }
-

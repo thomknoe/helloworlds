@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import { BuildingGrammar } from "../../algorithms/buildingGrammar.js";
-
 export default function BuildingGrammarNode({ id, data }) {
   const {
     label = "Building Grammar",
@@ -15,10 +14,8 @@ export default function BuildingGrammarNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     const grammar = new BuildingGrammar({
       levels,
@@ -29,9 +26,7 @@ export default function BuildingGrammarNode({ id, data }) {
       hasStairs,
       roomLayout,
     });
-
     const building = grammar.generate();
-
     onOutput?.({
       id,
       type: "buildingGrammar",
@@ -45,11 +40,9 @@ export default function BuildingGrammarNode({ id, data }) {
       building,
     });
   }, [id, levels, roomsPerLevel, roomSize, levelHeight, wallThickness, hasStairs, roomLayout, onOutput]);
-
   return (
     <div className="node-default node-building-grammar">
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Levels</div>
         <input
@@ -63,7 +56,6 @@ export default function BuildingGrammarNode({ id, data }) {
           onChange={(e) => update({ levels: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Rooms/Level</div>
         <input
@@ -77,7 +69,6 @@ export default function BuildingGrammarNode({ id, data }) {
           onChange={(e) => update({ roomsPerLevel: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Room Size</div>
         <input
@@ -92,7 +83,6 @@ export default function BuildingGrammarNode({ id, data }) {
           onChange={(e) => update({ roomSize: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Level Height</div>
         <input
@@ -107,7 +97,6 @@ export default function BuildingGrammarNode({ id, data }) {
           onChange={(e) => update({ levelHeight: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Wall Thickness</div>
         <input
@@ -122,7 +111,6 @@ export default function BuildingGrammarNode({ id, data }) {
           onChange={(e) => update({ wallThickness: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Layout</div>
         <select
@@ -137,7 +125,6 @@ export default function BuildingGrammarNode({ id, data }) {
           <option value="radial">Radial</option>
         </select>
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Stairs</div>
         <input
@@ -149,7 +136,6 @@ export default function BuildingGrammarNode({ id, data }) {
           onChange={(e) => update({ hasStairs: e.target.checked })}
         />
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-85px',

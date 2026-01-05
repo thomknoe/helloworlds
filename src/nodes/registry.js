@@ -19,11 +19,9 @@ import BuildingNode from "./algorithms/BuildingNode.jsx";
 import DefaultNode from "./core/DefaultNode.jsx";
 import InputNode from "./core/InputNode.jsx";
 import TerrainNode from "./environment/TerrainNode.jsx";
-
 export const nodeRegistry = {
   default: DefaultNode,
   input: InputNode,
-
   perlinNoise: PerlinNoiseNode,
   voronoiNoise: VoronoiNoiseNode,
   ridgeNoise: RidgeNoiseNode,
@@ -42,6 +40,5 @@ export const nodeRegistry = {
   markovChain: MarkovChainNode,
   parametricCurve: ParametricCurveNode,
   building: BuildingNode,
-
   terrain: TerrainNode,
 };

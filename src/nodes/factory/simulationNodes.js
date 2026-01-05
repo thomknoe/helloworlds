@@ -1,6 +1,5 @@
 const makeId = (prefix) =>
   `${prefix}-${Math.random().toString(36).slice(2, 8)}`;
-
 export function createLSystemNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("lsystem"),
@@ -21,7 +20,6 @@ export function createLSystemNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-
 export function createPlantNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("plant"),
@@ -40,7 +38,6 @@ export function createPlantNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-
 export function createFlowerNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("flower"),
@@ -54,7 +51,6 @@ export function createFlowerNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-
 export function createDiffusionNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("diffusion"),
@@ -69,7 +65,6 @@ export function createDiffusionNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-
 export function createCellularAutomataNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("cellularAutomata"),
@@ -86,7 +81,6 @@ export function createCellularAutomataNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-
 export function createParticleSystemNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("particleSystem"),
@@ -112,7 +106,6 @@ export function createParticleSystemNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-
 export function createWavePropagationNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("wavePropagation"),

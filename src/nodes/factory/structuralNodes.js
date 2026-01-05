@@ -1,6 +1,5 @@
 const makeId = (prefix) =>
   `${prefix}-${Math.random().toString(36).slice(2, 8)}`;
-
 export function createBuildingGrammarNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("buildingGrammar"),
@@ -18,7 +17,6 @@ export function createBuildingGrammarNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-
 export function createShapeGrammarNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("shapeGrammar"),
@@ -37,7 +35,6 @@ export function createShapeGrammarNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-
 export function createMarkovChainNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("markovChain"),
@@ -50,7 +47,6 @@ export function createMarkovChainNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-
 export function createParametricCurveNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("parametricCurve"),
@@ -66,7 +62,6 @@ export function createParametricCurveNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-
 export function createBuildingNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("building"),

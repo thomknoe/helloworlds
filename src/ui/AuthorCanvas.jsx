@@ -1,10 +1,8 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useNodesState, useEdgesState, addEdge } from "reactflow";
 import "reactflow/dist/style.css";
-
 import AuthorSidebar from "./AuthorSidebar.jsx";
 import AuthorFlowCanvas from "./AuthorFlowCanvas.jsx";
-
 import { nodeRegistry } from "../nodes/registry.js";
 import {
   createPerlinNoiseNode,
@@ -13,7 +11,6 @@ import {
   createSimplexNoiseNode,
   createTerrainNode,
 } from "../nodes/factory/environmentNodes.js";
-
 import { createAgentNode, createFlockingNode, createNPCNode } from "../nodes/factory/agentNodes.js";
 import {
   createLSystemNode,
@@ -30,10 +27,8 @@ import {
   createParametricCurveNode,
   createBuildingNode,
 } from "../nodes/factory/structuralNodes.js";
-
 const initialNodes = [];
 const initialEdges = [];
-
 export default function AuthorCanvas({
   onTerrainConfigChange,
   onFlockingConfigChange,
@@ -43,47 +38,35 @@ export default function AuthorCanvas({
   onNPCConfigChange,
 }) {
   const [activeDomain, setActiveDomain] = useState("noiseHeightfields");
-
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-
   const [nodeOutputs, setNodeOutputs] = useState({});
   const [copiedNodes, setCopiedNodes] = useState([]);
   const [selectedNodeIds, setSelectedNodeIds] = useState(new Set());
   const nodeTypes = useMemo(() => nodeRegistry, []);
-  
-  // Use refs to access latest state in event handlers
   const nodesRef = useRef(nodes);
   const selectedNodeIdsRef = useRef(selectedNodeIds);
   const copiedNodesRef = useRef(copiedNodes);
-  
   useEffect(() => {
     nodesRef.current = nodes;
   }, [nodes]);
-  
   useEffect(() => {
     selectedNodeIdsRef.current = selectedNodeIds;
   }, [selectedNodeIds]);
-  
   useEffect(() => {
     copiedNodesRef.current = copiedNodes;
   }, [copiedNodes]);
-
   useEffect(() => {
     const terrainNode = nodes.find((n) => n.type === "terrain");
     if (!terrainNode) return;
-
     const configEdge = edges.find(
       (e) =>
         e.target === terrainNode.id &&
         (e.targetHandle === "config" || e.targetHandle == null)
     );
-
     let nextTerrainConfig = null;
-
     if (configEdge) {
       const srcOutput = nodeOutputs[configEdge.source];
-
       if (srcOutput) {
         nextTerrainConfig = {
           sourceId: configEdge.source,
@@ -95,27 +78,19 @@ export default function AuthorCanvas({
           amplitude: srcOutput.amplitude ?? 10,
           frequency: srcOutput.frequency ?? 1,
           rawValue: srcOutput.value ?? 0,
-          // Voronoi specific
           mode: srcOutput.mode,
-          // Domain Warping specific
           baseScale: srcOutput.baseScale,
           warpStrength: srcOutput.warpStrength,
           warpScale: srcOutput.warpScale,
-          // Ridge Noise specific
           offset: srcOutput.offset,
           power: srcOutput.power,
-          // Simplex specific
           zOffset: srcOutput.zOffset,
         };
       }
     }
-
-    // Include waterHeight from terrain node data
     const waterHeight = terrainNode.data?.waterHeight ?? 0;
-    
     if (nextTerrainConfig) {
       nextTerrainConfig.waterHeight = waterHeight;
-      
       const needsUpdate =
         terrainNode.data?.type !== nextTerrainConfig.type ||
         terrainNode.data?.seed !== nextTerrainConfig.seed ||
@@ -133,7 +108,6 @@ export default function AuthorCanvas({
         terrainNode.data?.power !== nextTerrainConfig.power ||
         terrainNode.data?.zOffset !== nextTerrainConfig.zOffset ||
         terrainNode.data?.waterHeight !== nextTerrainConfig.waterHeight;
-
       if (needsUpdate) {
         setNodes((prev) =>
           prev.map((n) =>
@@ -143,29 +117,23 @@ export default function AuthorCanvas({
           )
         );
       }
-
       if (typeof onTerrainConfigChange === "function") {
         onTerrainConfigChange(nextTerrainConfig);
       }
     } else {
-      // Even if no noise config, we should still send waterHeight
       const waterConfig = { waterHeight };
       if (typeof onTerrainConfigChange === "function") {
         onTerrainConfigChange(waterConfig);
       }
     }
   }, [nodes, edges, nodeOutputs, setNodes, onTerrainConfigChange]);
-
   useEffect(() => {
     if (typeof onFlockingConfigChange !== "function") return;
-
     const agentNodes = nodes.filter((n) => n.type === "agent");
-
     if (agentNodes.length === 0) {
       onFlockingConfigChange(null);
       return;
     }
-
     const agents = [];
     agentNodes.forEach((agentNode) => {
       const agentOutput = nodeOutputs[agentNode.id];
@@ -178,16 +146,13 @@ export default function AuthorCanvas({
       const baseVelocityZ = agentOutput?.velocityZ ?? agentNode.data?.velocityZ ?? 0;
       const size = agentOutput?.size ?? agentNode.data?.size ?? 0.3;
       const spread = agentOutput?.spread ?? agentNode.data?.spread ?? 20.0;
-
       for (let i = 0; i < count; i++) {
         const offsetX = (Math.random() - 0.5) * spread;
         const offsetY = (Math.random() - 0.5) * spread * 0.3;
         const offsetZ = (Math.random() - 0.5) * spread;
-
         const velX = baseVelocityX || (Math.random() - 0.5) * 4;
         const velY = baseVelocityY || (Math.random() - 0.5) * 1;
         const velZ = baseVelocityZ || (Math.random() - 0.5) * 4;
-
         agents.push({
           id: `${agentNode.id}-${i}`,
           positionX: basePositionX + offsetX,
@@ -200,27 +165,22 @@ export default function AuthorCanvas({
         });
       }
     });
-
     const behaviorMap = new Map();
-
     agentNodes.forEach((agentNode) => {
       const behaviorEdge = edges.find(
         (e) =>
           e.target === agentNode.id &&
           e.targetHandle === "behavior"
       );
-
       if (behaviorEdge) {
         const behaviorNode = nodes.find((n) => n.type === "flocking" && n.id === behaviorEdge.source);
         if (behaviorNode && !behaviorMap.has(behaviorNode.id)) {
           const behaviorOutput = nodeOutputs[behaviorNode.id];
-
           const noiseEdge = edges.find(
             (e) =>
               e.target === behaviorNode.id &&
               e.targetHandle === "noise"
           );
-
           let noiseConfig = null;
           if (noiseEdge) {
             const srcOutput = nodeOutputs[noiseEdge.source];
@@ -228,7 +188,6 @@ export default function AuthorCanvas({
               noiseConfig = srcOutput;
             }
           }
-
           behaviorMap.set(behaviorNode.id, {
             id: behaviorNode.id,
             separation: behaviorOutput?.separation ?? behaviorNode.data?.separation ?? 1.5,
@@ -246,37 +205,28 @@ export default function AuthorCanvas({
         }
       }
     });
-
     const behaviors = Array.from(behaviorMap.values());
     const behavior = behaviors.length > 0 ? behaviors[0] : null;
-
     const flockingConfig = {
       agents,
       behavior,
     };
-
     onFlockingConfigChange(flockingConfig);
   }, [nodes, edges, nodeOutputs, onFlockingConfigChange]);
-
   useEffect(() => {
     if (typeof onPlantConfigChange !== "function") return;
-
     const plantNodes = nodes.filter((n) => n.type === "plant");
-
     if (plantNodes.length === 0) {
       onPlantConfigChange([]);
       return;
     }
-
     const plants = plantNodes.map((plantNode) => {
       const plantOutput = nodeOutputs[plantNode.id];
-
       const lsystemEdge = edges.find(
         (e) =>
           e.target === plantNode.id &&
           e.targetHandle === "lsystem"
       );
-
       let lsystem = null;
       if (lsystemEdge) {
         const lsystemOutput = nodeOutputs[lsystemEdge.source];
@@ -284,7 +234,6 @@ export default function AuthorCanvas({
           lsystem = lsystemOutput;
         }
       }
-
       return {
         id: plantNode.id,
         positionX: plantOutput?.positionX ?? plantNode.data?.positionX ?? 0,
@@ -298,29 +247,22 @@ export default function AuthorCanvas({
         lsystem,
       };
     });
-
     onPlantConfigChange(plants);
   }, [nodes, edges, nodeOutputs, onPlantConfigChange]);
-
   useEffect(() => {
     if (typeof onBuildingConfigChange !== "function") return;
-
     const buildingNodes = nodes.filter((n) => n.type === "building");
-
     if (buildingNodes.length === 0) {
       onBuildingConfigChange([]);
       return;
     }
-
     const buildings = buildingNodes.map((buildingNode) => {
       const buildingOutput = nodeOutputs[buildingNode.id];
-
       const grammarEdge = edges.find(
         (e) =>
           e.target === buildingNode.id &&
           e.targetHandle === "grammar"
       );
-
       let grammar = null;
       if (grammarEdge) {
         const grammarOutput = nodeOutputs[grammarEdge.source];
@@ -328,7 +270,6 @@ export default function AuthorCanvas({
           grammar = grammarOutput;
         }
       }
-
       return {
         id: buildingNode.id,
         positionX: buildingOutput?.positionX ?? buildingNode.data?.positionX ?? 0,
@@ -338,29 +279,22 @@ export default function AuthorCanvas({
         grammar,
       };
     });
-
     onBuildingConfigChange(buildings);
   }, [nodes, edges, nodeOutputs, onBuildingConfigChange]);
-
   useEffect(() => {
     if (typeof onFlowerConfigChange !== "function") return;
-
     const flowerNodes = nodes.filter((n) => n.type === "flower");
-
     if (flowerNodes.length === 0) {
       onFlowerConfigChange([]);
       return;
     }
-
     const flowers = flowerNodes.map((flowerNode) => {
       const flowerOutput = nodeOutputs[flowerNode.id];
-
       const noiseEdge = edges.find(
         (e) =>
           e.target === flowerNode.id &&
           e.targetHandle === "noise"
       );
-
       let noiseConfig = null;
       if (noiseEdge) {
         const noiseOutput = nodeOutputs[noiseEdge.source];
@@ -368,7 +302,6 @@ export default function AuthorCanvas({
           noiseConfig = noiseOutput;
         }
       }
-
       return {
         id: flowerNode.id,
         count: flowerOutput?.count ?? flowerNode.data?.count ?? 50,
@@ -377,23 +310,17 @@ export default function AuthorCanvas({
         noiseConfig,
       };
     });
-
     onFlowerConfigChange(flowers);
   }, [nodes, edges, nodeOutputs, onFlowerConfigChange]);
-
   useEffect(() => {
     if (typeof onNPCConfigChange !== "function") return;
-
     const npcNodes = nodes.filter((n) => n.type === "npc");
-
     if (npcNodes.length === 0) {
       onNPCConfigChange([]);
       return;
     }
-
     const npcs = npcNodes.map((npcNode) => {
       const npcOutput = nodeOutputs[npcNode.id];
-
       return {
         id: npcNode.id,
         positionX: npcOutput?.positionX ?? npcNode.data?.positionX ?? 0,
@@ -412,13 +339,10 @@ export default function AuthorCanvas({
         size: npcOutput?.size ?? npcNode.data?.size ?? 1.0,
       };
     });
-
     onNPCConfigChange(npcs);
   }, [nodes, edges, nodeOutputs, onNPCConfigChange]);
-
   function attachNodeHandlers(node) {
     const data = node.data || {};
-
     return {
       ...node,
       data: {
@@ -440,12 +364,10 @@ export default function AuthorCanvas({
       },
     };
   }
-
   function addNodeToEnvironment(node) {
     const wrapped = attachNodeHandlers(node);
     setNodes((prev) => [...prev, wrapped]);
   }
-
   const handleAddTerrainNode = () => addNodeToEnvironment(createTerrainNode());
   const handleAddPerlinNoise = () => addNodeToEnvironment(createPerlinNoiseNode());
   const handleAddVoronoiNoise = () => addNodeToEnvironment(createVoronoiNoiseNode());
@@ -465,21 +387,15 @@ export default function AuthorCanvas({
   const handleAddCellularAutomataNode = () => addNodeToEnvironment(createCellularAutomataNode());
   const handleAddParticleSystemNode = () => addNodeToEnvironment(createParticleSystemNode());
   const handleAddWavePropagationNode = () => addNodeToEnvironment(createWavePropagationNode());
-
   function onConnect(params) {
     setEdges((prev) => addEdge({ ...params, animated: true }, prev));
   }
-
-  // Handle node selection change
   const onSelectionChange = useCallback(({ nodes: selectedNodes }) => {
     const selectedIds = new Set(selectedNodes.map((n) => n.id));
     setSelectedNodeIds(selectedIds);
   }, []);
-
-  // Keyboard event handlers
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Don't handle if user is typing in an input field
       if (
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement ||
@@ -487,16 +403,12 @@ export default function AuthorCanvas({
       ) {
         return;
       }
-
-      // Copy (Ctrl+C or Cmd+C)
       if ((e.ctrlKey || e.metaKey) && e.key === "c") {
         const currentNodes = nodesRef.current;
         const currentSelectedIds = selectedNodeIdsRef.current;
         const selectedNodes = currentNodes.filter((n) => currentSelectedIds.has(n.id));
-        
         if (selectedNodes.length > 0) {
           e.preventDefault();
-          // Store node data without handlers
           const nodesToCopy = selectedNodes.map((node) => {
             const { onChange, onOutput, ...nodeData } = node.data || {};
             return {
@@ -508,21 +420,14 @@ export default function AuthorCanvas({
           console.log(`Copied ${nodesToCopy.length} node(s)`);
         }
       }
-      
-      // Paste (Ctrl+V or Cmd+V)
       if ((e.ctrlKey || e.metaKey) && e.key === "v") {
         const currentCopiedNodes = copiedNodesRef.current;
-        
         if (currentCopiedNodes.length > 0) {
           e.preventDefault();
-          
-          // Generate new IDs and offset positions
           const offsetX = 50;
           const offsetY = 50;
-          
           const newNodes = currentCopiedNodes.map((node) => {
             const newId = `${node.type}-${Math.random().toString(36).slice(2, 8)}`;
-            
             return {
               ...node,
               id: newId,
@@ -533,25 +438,18 @@ export default function AuthorCanvas({
               selected: false,
             };
           });
-
-          // Attach handlers and add to canvas
           const wrappedNodes = newNodes.map((node) => attachNodeHandlers(node));
           setNodes((prev) => [...prev, ...wrappedNodes]);
-          
-          // Select newly pasted nodes
           setSelectedNodeIds(new Set(newNodes.map((n) => n.id)));
-          
           console.log(`Pasted ${newNodes.length} node(s)`);
         }
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-
   return (
     <div className="author-shell">
       <AuthorSidebar
@@ -577,7 +475,6 @@ export default function AuthorCanvas({
         onAddParticleSystemNode={handleAddParticleSystemNode}
         onAddWavePropagationNode={handleAddWavePropagationNode}
       />
-
       <AuthorFlowCanvas
         nodes={nodes}
         edges={edges}

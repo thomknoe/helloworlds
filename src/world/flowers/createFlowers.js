@@ -2,80 +2,58 @@ import * as THREE from "three";
 import Perlin from "../../algorithms/perlin.js";
 import { sampleTerrainHeight } from "../terrain/sampleHeight.js";
 import { createCelShadedMaterial } from "../../engine/createCelShadedMaterial.js";
-
 export function createFlowers(config, scene, terrainConfig) {
   if (!config) return null;
-
   const {
     count = 50,
     spread = 50.0,
     size = 1.0,
     noiseConfig,
   } = config;
-
   const WATER_LEVEL = 20;
-
   const group = new THREE.Group();
   group.name = "flowers";
-
-  // Cel-shaded materials for cartoon-like appearance
   const redMaterial = createCelShadedMaterial(0xff4444, {
     rimIntensity: 0.3,
   });
-
   const whiteMaterial = createCelShadedMaterial(0xffffff, {
     rimIntensity: 0.25,
   });
-
   const stemMaterial = createCelShadedMaterial(0x4a7c59, {
     rimIntensity: 0.2,
   });
-
   const leafMaterial = createCelShadedMaterial(0x4a7c59, {
     rimIntensity: 0.2,
   });
-
   const yellowCenterMaterial = createCelShadedMaterial(0xffffaa, {
     rimIntensity: 0.35,
   });
-
   const orangeCenterMaterial = createCelShadedMaterial(0xffaa00, {
     rimIntensity: 0.35,
   });
-
   const flowers = [];
   let attempts = 0;
   const maxAttempts = count * 20;
-
   if (noiseConfig) {
     Perlin.init(noiseConfig.seed ?? 42);
   }
-
   while (flowers.length < count && attempts < maxAttempts) {
     attempts++;
-
     const x = (Math.random() - 0.5) * spread;
     const z = (Math.random() - 0.5) * spread;
-
     let noiseValue = 0.5;
     if (noiseConfig) {
       const noiseScale = noiseConfig.scale ?? 0.05;
-
       noiseValue = Perlin.noise2D(x * noiseScale, z * noiseScale);
-
     }
-
     const threshold = 0.35;
     if (noiseValue < threshold) {
       continue;
     }
-
     let terrainHeight = 0;
     if (terrainConfig) {
-
       terrainHeight = sampleTerrainHeight(x, z, terrainConfig);
     } else {
-
       terrainHeight = sampleTerrainHeight(x, z, {
         type: "perlinNoise",
         seed: 42,
@@ -86,48 +64,36 @@ export function createFlowers(config, scene, terrainConfig) {
         frequency: 1,
       });
     }
-
     if (terrainHeight <= WATER_LEVEL) {
       continue;
     }
-
     const isRed = Math.random() > 0.5;
     const petalMaterial = isRed ? redMaterial : whiteMaterial;
-
     const flowerGroup = new THREE.Group();
-
     const stemHeight = size * 0.8;
     const stemRadius = size * 0.05;
     const stemGeometry = new THREE.CylinderGeometry(stemRadius, stemRadius, stemHeight, 8);
     const stemMesh = new THREE.Mesh(stemGeometry, stemMaterial);
-
     stemMesh.position.y = stemHeight / 2;
     stemMesh.castShadow = true;
     stemMesh.receiveShadow = false;
     flowerGroup.add(stemMesh);
-
     const flowerHeadY = stemHeight;
     const petalSize = size * 0.4;
     const petalCount = 6;
-
     for (let i = 0; i < petalCount; i++) {
       const angle = (i / petalCount) * Math.PI * 2;
-
       const petalGeometry = new THREE.ConeGeometry(petalSize * 0.5, petalSize, 8);
       const petalMesh = new THREE.Mesh(petalGeometry, petalMaterial);
-
       petalMesh.position.x = Math.cos(angle) * petalSize * 0.3;
       petalMesh.position.z = Math.sin(angle) * petalSize * 0.3;
       petalMesh.position.y = flowerHeadY;
-
       petalMesh.rotation.z = angle + Math.PI / 2;
       petalMesh.rotation.x = -Math.PI / 3;
       petalMesh.castShadow = true;
       petalMesh.receiveShadow = false;
-
       flowerGroup.add(petalMesh);
     }
-
     const centerSize = size * 0.25;
     const centerGeometry = new THREE.SphereGeometry(centerSize, 12, 12);
     const centerMesh = new THREE.Mesh(
@@ -138,7 +104,6 @@ export function createFlowers(config, scene, terrainConfig) {
     centerMesh.castShadow = true;
     centerMesh.receiveShadow = false;
     flowerGroup.add(centerMesh);
-
     const leafCount = 2;
     for (let i = 0; i < leafCount; i++) {
       const leafY = (stemHeight / (leafCount + 1)) * (i + 1);
@@ -152,20 +117,14 @@ export function createFlowers(config, scene, terrainConfig) {
       leafMesh.receiveShadow = false;
       flowerGroup.add(leafMesh);
     }
-
     flowerGroup.position.set(x, terrainHeight, z);
-
     flowerGroup.rotation.y = Math.random() * Math.PI * 2;
-
     flowerGroup.castShadow = true;
     flowerGroup.receiveShadow = false;
-
     group.add(flowerGroup);
     flowers.push(flowerGroup);
   }
-
   scene.add(group);
-
   return {
     group,
     flowers,
@@ -186,7 +145,6 @@ export function createFlowers(config, scene, terrainConfig) {
       scene.remove(group);
     },
     updateConfig: (newConfig) => {
-
       if (
         newConfig.count !== count ||
         newConfig.spread !== spread ||

@@ -1,9 +1,4 @@
 import * as THREE from "three";
-
-/**
- * Configuration class for flocking behavior systems
- * Encapsulates all flocking-related parameters
- */
 export class FlockingConfig {
   constructor(config = {}) {
     this.separation = config.separation ?? 1.5;
@@ -18,11 +13,6 @@ export class FlockingConfig {
     this.planeHeight = config.planeHeight ?? 50;
     this.noiseConfig = config.noiseConfig ?? null;
   }
-
-  /**
-   * Get bounds as an object
-   * @returns {Object} Bounds object with width, height, depth
-   */
   getBounds() {
     return {
       width: this.boundsWidth,
@@ -30,19 +20,9 @@ export class FlockingConfig {
       depth: this.boundsDepth,
     };
   }
-
-  /**
-   * Get center position
-   * @returns {THREE.Vector3} Center vector
-   */
   getCenter() {
     return new THREE.Vector3(0, this.planeHeight, 0);
   }
-
-  /**
-   * Create a copy of this configuration
-   * @returns {FlockingConfig} New configuration instance
-   */
   clone() {
     return new FlockingConfig({
       separation: this.separation,
@@ -58,19 +38,9 @@ export class FlockingConfig {
       noiseConfig: this.noiseConfig ? { ...this.noiseConfig } : null,
     });
   }
-
-  /**
-   * Update configuration with new values
-   * @param {Object} updates - Partial configuration updates
-   */
   update(updates) {
     Object.assign(this, updates);
   }
-
-  /**
-   * Convert to plain object for serialization
-   * @returns {Object} Plain object representation
-   */
   toObject() {
     return {
       separation: this.separation,
@@ -87,4 +57,3 @@ export class FlockingConfig {
     };
   }
 }
-

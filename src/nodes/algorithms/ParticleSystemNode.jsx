@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
-
 export default function ParticleSystemNode({ id, data }) {
   const {
     label = "Particle System",
@@ -22,10 +21,8 @@ export default function ParticleSystemNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     onOutput?.({
       id,
@@ -65,11 +62,9 @@ export default function ParticleSystemNode({ id, data }) {
     lifetime,
     onOutput,
   ]);
-
   return (
     <div className="node-default node-particle-system">
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Max Particles</div>
         <input
@@ -83,7 +78,6 @@ export default function ParticleSystemNode({ id, data }) {
           onChange={(e) => update({ maxParticles: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Spawn Rate</div>
         <input
@@ -97,7 +91,6 @@ export default function ParticleSystemNode({ id, data }) {
           onChange={(e) => update({ spawnRate: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Gravity Y</div>
         <input
@@ -110,7 +103,6 @@ export default function ParticleSystemNode({ id, data }) {
           onChange={(e) => update({ gravityY: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Wind X</div>
         <input
@@ -123,7 +115,6 @@ export default function ParticleSystemNode({ id, data }) {
           onChange={(e) => update({ windX: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Wind Z</div>
         <input
@@ -136,7 +127,6 @@ export default function ParticleSystemNode({ id, data }) {
           onChange={(e) => update({ windZ: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Lifetime</div>
         <input
@@ -150,7 +140,6 @@ export default function ParticleSystemNode({ id, data }) {
           onChange={(e) => update({ lifetime: Number(e.target.value) })}
         />
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-100px',
@@ -179,4 +168,3 @@ export default function ParticleSystemNode({ id, data }) {
     </div>
   );
 }
-

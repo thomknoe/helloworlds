@@ -1,5 +1,4 @@
 import ReactFlow, { Background, Controls } from "reactflow";
-
 export default function AuthorFlowCanvas({
   nodes,
   edges,

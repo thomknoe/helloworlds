@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import Voronoi from "../../algorithms/voronoi.js";
-
 export default function VoronoiNoiseNode({ id, data }) {
   const {
     label = "Voronoi Noise",
@@ -14,13 +13,10 @@ export default function VoronoiNoiseNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     const value = Voronoi.noise2DFractal(seed * scale, seed * scale, scale, octaves, persistence, seed, mode);
-
     onOutput?.({
       id,
       type: "voronoiNoise",
@@ -33,11 +29,9 @@ export default function VoronoiNoiseNode({ id, data }) {
       mode,
     });
   }, [id, seed, scale, octaves, persistence, amplitude, mode, onOutput]);
-
   return (
     <div className="node-default node-voronoi">
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Seed</div>
         <input
@@ -49,7 +43,6 @@ export default function VoronoiNoiseNode({ id, data }) {
           onChange={(e) => update({ seed: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Scale</div>
         <input
@@ -62,7 +55,6 @@ export default function VoronoiNoiseNode({ id, data }) {
           onChange={(e) => update({ scale: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Octaves</div>
         <input
@@ -76,7 +68,6 @@ export default function VoronoiNoiseNode({ id, data }) {
           onChange={(e) => update({ octaves: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Persistence</div>
         <input
@@ -89,7 +80,6 @@ export default function VoronoiNoiseNode({ id, data }) {
           onChange={(e) => update({ persistence: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Amplitude</div>
         <input
@@ -101,7 +91,6 @@ export default function VoronoiNoiseNode({ id, data }) {
           onChange={(e) => update({ amplitude: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Mode</div>
         <select
@@ -116,7 +105,6 @@ export default function VoronoiNoiseNode({ id, data }) {
           <option value="f2MinusF1">F2-F1 (Ridge)</option>
         </select>
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-100px',
@@ -145,4 +133,3 @@ export default function VoronoiNoiseNode({ id, data }) {
     </div>
   );
 }
-

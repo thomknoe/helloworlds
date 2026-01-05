@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
-
 export default function FlockingNode({ id, data }) {
   const {
     label = "Flocking Behavior",
@@ -17,10 +16,8 @@ export default function FlockingNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     onOutput?.({
       id,
@@ -50,11 +47,9 @@ export default function FlockingNode({ id, data }) {
     planeHeight,
     onOutput,
   ]);
-
   return (
     <div className="node-default node-flocking">
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Separation</div>
         <input
@@ -67,7 +62,6 @@ export default function FlockingNode({ id, data }) {
           onChange={(e) => update({ separation: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Alignment</div>
         <input
@@ -80,7 +74,6 @@ export default function FlockingNode({ id, data }) {
           onChange={(e) => update({ alignment: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Cohesion</div>
         <input
@@ -93,7 +86,6 @@ export default function FlockingNode({ id, data }) {
           onChange={(e) => update({ cohesion: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Sep. Radius</div>
         <input
@@ -106,7 +98,6 @@ export default function FlockingNode({ id, data }) {
           onChange={(e) => update({ separationRadius: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Neighbor Radius</div>
         <input
@@ -119,7 +110,6 @@ export default function FlockingNode({ id, data }) {
           onChange={(e) => update({ neighborRadius: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Max Speed</div>
         <input
@@ -132,7 +122,6 @@ export default function FlockingNode({ id, data }) {
           onChange={(e) => update({ maxSpeed: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Plane Height</div>
         <input
@@ -145,7 +134,6 @@ export default function FlockingNode({ id, data }) {
           onChange={(e) => update({ planeHeight: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Bounds Width</div>
         <input
@@ -158,7 +146,6 @@ export default function FlockingNode({ id, data }) {
           onChange={(e) => update({ boundsWidth: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Bounds Depth</div>
         <input
@@ -171,7 +158,6 @@ export default function FlockingNode({ id, data }) {
           onChange={(e) => update({ boundsDepth: Number(e.target.value) })}
         />
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-100px',

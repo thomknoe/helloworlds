@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
-
 export default function DiffusionNode({ id, data }) {
   const {
     label = "Diffusion Heat",
@@ -11,10 +10,8 @@ export default function DiffusionNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     onOutput?.({
       id,
@@ -25,11 +22,9 @@ export default function DiffusionNode({ id, data }) {
       dt,
     });
   }, [id, width, height, diffusionRate, dt, onOutput]);
-
   return (
     <div className="node-default node-diffusion">
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Grid Width</div>
         <input
@@ -43,7 +38,6 @@ export default function DiffusionNode({ id, data }) {
           onChange={(e) => update({ width: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Grid Height</div>
         <input
@@ -57,7 +51,6 @@ export default function DiffusionNode({ id, data }) {
           onChange={(e) => update({ height: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Diffusion Rate</div>
         <input
@@ -72,7 +65,6 @@ export default function DiffusionNode({ id, data }) {
           onChange={(e) => update({ diffusionRate: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Time Step</div>
         <input
@@ -86,7 +78,6 @@ export default function DiffusionNode({ id, data }) {
           onChange={(e) => update({ dt: Number(e.target.value) })}
         />
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-100px',
@@ -115,4 +106,3 @@ export default function DiffusionNode({ id, data }) {
     </div>
   );
 }
-

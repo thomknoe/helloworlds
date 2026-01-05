@@ -1,26 +1,19 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-
 import { sampleTerrainHeight } from "../world/terrain/sampleHeight.js";
 import { playerConfig } from "./playerConfig.js";
 import { defaultTerrainConfig } from "../world/terrain/terrainConfig.js";
-
-// Default terrain config matching the initial terrain creation
-// This matches defaultTerrainConfig used when terrain is first created
 const defaultPerlinConfig = {
   type: "perlinNoise",
   seed: 42,
-  noiseScale: defaultTerrainConfig.noiseScale, // 0.02
+  noiseScale: defaultTerrainConfig.noiseScale, 
   octaves: 4,
   persistence: 0.5,
-  amplitude: defaultTerrainConfig.amplitude, // 18
+  amplitude: defaultTerrainConfig.amplitude, 
   frequency: 1,
 };
-
-// Constants for out-of-bounds falling behavior
-const FALL_TELEPORT_TIME = 10000; // 10 seconds in milliseconds
-const FALL_TELEPORT_DEPTH = -1000; // Teleport if falling below this depth
-
+const FALL_TELEPORT_TIME = 10000;
+const FALL_TELEPORT_DEPTH = -1000;
 export default function useFirstPersonControls(
   playerRef,
   cameraRef,
@@ -33,24 +26,19 @@ export default function useFirstPersonControls(
     left: false,
     right: false,
   });
-
   const yaw = useRef(0);
   const pitch = useRef(0);
-
   const speed = 0.2;
   const mouseSensitivity = 0.002;
-  const jumpVelocity = 0.3; // Increased for more powerful jump
-  const gravity = 0.01; // Reduced for slower, more graceful descent
-  const groundThreshold = 0.1; // How close to ground to be considered "on ground"
-  const airControlFactor = 0.8; // How much control player has in air (0-1, 1 = full control)
-
+  const jumpVelocity = 0.3;
+  const gravity = 0.01;
+  const groundThreshold = 0.1;
+  const airControlFactor = 0.8;
   const velocity = useRef(new THREE.Vector3(0, 0, 0));
   const isOnGround = useRef(false);
-
   const isLocked = useRef(false);
   const isOutOfBounds = useRef(false);
   const fallStartTime = useRef(null);
-
   useEffect(() => {
     const lockChange = () => {
       isLocked.current = document.pointerLockElement === document.body;
@@ -58,7 +46,6 @@ export default function useFirstPersonControls(
     document.addEventListener("pointerlockchange", lockChange);
     return () => document.removeEventListener("pointerlockchange", lockChange);
   }, []);
-
   useEffect(() => {
     const onMouseMove = (e) => {
       if (!isLocked.current) return;
@@ -69,11 +56,9 @@ export default function useFirstPersonControls(
         Math.min(Math.PI / 2, pitch.current)
       );
     };
-
     window.addEventListener("mousemove", onMouseMove);
     return () => window.removeEventListener("mousemove", onMouseMove);
   }, []);
-
   useEffect(() => {
     const onKeyDown = (e) => {
       if (e.code === "KeyW") move.current.forward = true;
@@ -81,8 +66,7 @@ export default function useFirstPersonControls(
       if (e.code === "KeyA") move.current.left = true;
       if (e.code === "KeyD") move.current.right = true;
       if (e.code === "Space") {
-        e.preventDefault(); // Prevent spacebar from scrolling
-        // Jump when on ground (only allow single jump)
+        e.preventDefault();
         if (isOnGround.current) {
           velocity.current.y = jumpVelocity;
           isOnGround.current = false;
@@ -95,33 +79,23 @@ export default function useFirstPersonControls(
       if (e.code === "KeyA") move.current.left = false;
       if (e.code === "KeyD") move.current.right = false;
     };
-
     document.addEventListener("keydown", onKeyDown);
     document.addEventListener("keyup", onKeyUp);
-
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("keyup", onKeyUp);
     };
   }, []);
-
-  // Store update function ref so it can be called from main animation loop
   const updatePlayerControlsRef = useRef(null);
   const initializedRef = useRef(false);
-
   useEffect(() => {
     const forward = new THREE.Vector3();
     const right = new THREE.Vector3();
     const up = new THREE.Vector3(0, 1, 0);
-
-    // Create update function (no requestAnimationFrame - called from main loop)
     const updatePlayerControls = (deltaTime) => {
       const player = playerRef.current;
       const cam = cameraRef.current;
       if (!player || !cam) return;
-
-      // Initialize player position on terrain surface on first frame
-      // Use default Perlin parameters if terrain config not available yet
       if (!initializedRef.current) {
         const cfg = terrainConfigRef?.current || defaultPerlinConfig;
         const groundY = sampleTerrainHeight(
@@ -129,43 +103,29 @@ export default function useFirstPersonControls(
           player.position.z,
           cfg
         );
-        player.position.y = groundY; // Player position is at terrain level
+        player.position.y = groundY;
         isOnGround.current = true;
         initializedRef.current = true;
       }
-
-      // Apply rotation directly to camera (first-person style, not orbital)
-      cam.rotation.order = "YXZ"; // Yaw then pitch (standard FPS order)
+      cam.rotation.order = "YXZ";
       cam.rotation.y = yaw.current;
       cam.rotation.x = pitch.current;
-
-      // Calculate movement direction based on camera rotation
       cam.getWorldDirection(forward);
-      forward.y = 0; // Keep movement horizontal
+      forward.y = 0;
       forward.normalize();
-
       right.crossVectors(forward, up).normalize();
-
-      // Calculate movement amounts (forward/backward and left/right)
       let forwardAmount = 0;
       let rightAmount = 0;
-      if (move.current.forward) forwardAmount += speed; // W = forward
-      if (move.current.backward) forwardAmount -= speed; // S = backward
-      if (move.current.left) rightAmount -= speed; // A = left (negative right)
-      if (move.current.right) rightAmount += speed; // D = right (positive right)
-
-      // Apply horizontal movement
+      if (move.current.forward) forwardAmount += speed;
+      if (move.current.backward) forwardAmount -= speed;
+      if (move.current.left) rightAmount -= speed;
+      if (move.current.right) rightAmount += speed;
       if (isOnGround.current) {
-        // On ground: apply movement directly (instant response)
         velocity.current.x = forwardAmount * forward.x + rightAmount * right.x;
         velocity.current.z = forwardAmount * forward.z + rightAmount * right.z;
       } else {
-        // In air: allow air control (can change direction mid-air)
         const desiredX = forwardAmount * forward.x + rightAmount * right.x;
         const desiredZ = forwardAmount * forward.z + rightAmount * right.z;
-
-        // Interpolate between current velocity and desired direction
-        // This allows changing direction while maintaining some momentum
         velocity.current.x = THREE.MathUtils.lerp(
           velocity.current.x,
           desiredX,
@@ -177,75 +137,49 @@ export default function useFirstPersonControls(
           airControlFactor
         );
       }
-
-      // Apply gravity
       velocity.current.y -= gravity;
-
-      // Get terrain bounds
       const terrainCfg = terrainConfigRef?.current;
       const terrainWidth = terrainCfg?.width || defaultTerrainConfig.width;
       const terrainDepth = terrainCfg?.depth || defaultTerrainConfig.depth;
       const halfWidth = terrainWidth / 2;
       const halfDepth = terrainDepth / 2;
-
-      // Check if player is outside terrain bounds
       const wasOutOfBounds = isOutOfBounds.current;
       isOutOfBounds.current =
         player.position.x < -halfWidth ||
         player.position.x > halfWidth ||
         player.position.z < -halfDepth ||
         player.position.z > halfDepth;
-
-      // Start tracking fall time when first going out of bounds
       if (isOutOfBounds.current && !wasOutOfBounds) {
         fallStartTime.current = performance.now();
       }
-
-      // Reset fall time when back in bounds
       if (!isOutOfBounds.current && wasOutOfBounds) {
         fallStartTime.current = null;
       }
-
-      // Update player position with velocity
       player.position.x += velocity.current.x;
       player.position.y += velocity.current.y;
       player.position.z += velocity.current.z;
-
-      // If out of bounds, check for teleport conditions
       if (isOutOfBounds.current) {
         const fallDuration = fallStartTime.current
           ? performance.now() - fallStartTime.current
           : 0;
-
-        // Teleport if fallen too long or too deep
         if (
           fallDuration >= FALL_TELEPORT_TIME ||
           player.position.y <= FALL_TELEPORT_DEPTH
         ) {
-          // Teleport to center of terrain
           const cfg = terrainConfigRef?.current || defaultPerlinConfig;
           const centerGroundY = sampleTerrainHeight(0, 0, cfg);
-
           player.position.set(0, centerGroundY, 0);
           velocity.current.set(0, 0, 0);
           isOnGround.current = true;
           isOutOfBounds.current = false;
           fallStartTime.current = null;
-
-          // Skip rest of collision detection since we just teleported
           cam.position.set(0, playerConfig.eyeHeight, 0);
           return;
         }
       }
-
-      // Ground collision and height adjustment
-      // Use default Perlin config if terrain config not available
       const cfg = terrainConfigRef?.current || defaultPerlinConfig;
-
-      // Only check ground collision if in bounds
       let groundY;
       if (isOutOfBounds.current) {
-        // When out of bounds, use a very low ground level so player keeps falling
         groundY = FALL_TELEPORT_DEPTH - 100;
       } else {
         groundY = sampleTerrainHeight(
@@ -254,19 +188,12 @@ export default function useFirstPersonControls(
           cfg
         );
       }
-
-      // Check if on ground (only apply if in bounds)
       const distanceFromGround = player.position.y - groundY;
-
-      // Only apply ground collision if in bounds
       if (!isOutOfBounds.current) {
         if (player.position.y <= groundY) {
-          // Player is at or below ground - push them up to ground level
           player.position.y = groundY;
-          velocity.current.y = 0; // Stop any downward/upward velocity when colliding with ground
+          velocity.current.y = 0;
           isOnGround.current = true;
-
-          // Reset horizontal velocity when landing and no input
           if (
             !move.current.forward &&
             !move.current.backward &&
@@ -280,12 +207,9 @@ export default function useFirstPersonControls(
           distanceFromGround <= groundThreshold &&
           velocity.current.y <= 0
         ) {
-          // Player is very close to ground and falling - snap to ground for smooth landing
           player.position.y = groundY;
           velocity.current.y = 0;
           isOnGround.current = true;
-
-          // Reset horizontal velocity when landing and no input
           if (
             !move.current.forward &&
             !move.current.backward &&
@@ -296,28 +220,18 @@ export default function useFirstPersonControls(
             velocity.current.z = 0;
           }
         } else {
-          // Player is in air (above ground threshold or moving upward)
           isOnGround.current = false;
         }
       } else {
-        // Out of bounds - always falling, no ground collision
         isOnGround.current = false;
       }
-
-      // Camera is a child of player, offset upward by eye height
-      // Player position represents feet/ground level, camera is at eye level
       cam.position.set(0, playerConfig.eyeHeight, 0);
     };
-
-    // Store update function in ref
     updatePlayerControlsRef.current = updatePlayerControls;
-
     return () => {
       updatePlayerControlsRef.current = null;
       initializedRef.current = false;
     };
   }, [cameraRef, playerRef, terrainConfigRef]);
-
-  // Return update function ref so it can be called from main animation loop
   return updatePlayerControlsRef;
 }

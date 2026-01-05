@@ -1,14 +1,6 @@
 import * as THREE from "three";
-
-/**
- * Creates a mote material - glowing points that always face the camera
- * @param {Object} options - Material options
- * @param {boolean} options.enableFloating - Enable floating animation (default: true)
- * @returns {THREE.ShaderMaterial} Mote material
- */
 export function createMoteMaterial(options = {}) {
   const { enableFloating = true } = options;
-
   return new THREE.ShaderMaterial({
     uniforms: { time: { value: 0 } },
     transparent: true,
@@ -27,14 +19,11 @@ export function createMoteMaterial(options = {}) {
         ${
           enableFloating
             ? `
-        // Floating animation (for NPCs)
         pos.y = aBaseY + sin(time * 0.9 + aPhase) * 0.5;
         pos.x += sin(time * 0.15 + aPhase * 1.3) * 0.5;
         pos.z += cos(time * 0.12 + aPhase * 1.5) * 0.5;
         `
             : `
-        // No floating animation (for boids - use actual position from BufferGeometry)
-        // Position attribute already contains the updated boid.position values
         `
         }
         vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);

@@ -1,6 +1,5 @@
 const makeId = (prefix) =>
   `${prefix}-${Math.random().toString(36).slice(2, 8)}`;
-
 export function createAgentNode(position = { x: 0, y: 0 }) {
   const spread = 100;
   return {
@@ -21,7 +20,6 @@ export function createAgentNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-
 export function createFlockingNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("flocking"),
@@ -42,7 +40,6 @@ export function createFlockingNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-
 export function createNPCNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("npc"),
@@ -59,12 +56,12 @@ export function createNPCNode(position = { x: 0, y: 0 }) {
       wanderCenterX: 0,
       wanderCenterY: 0,
       wanderCenterZ: 0,
-      interactionRadius: 10.0, // Increased interaction radius
+      interactionRadius: 10.0, 
       dialogueWords:
         "hello,world,greetings,traveler,welcome,friend,adventure,journey",
       dialogueLength: 5,
-      color: "#ffffff", // White color
-      size: 3.5, // Size 3.5 for NPCs
+      color: "#ffffff", 
+      size: 3.5, 
     },
   };
 }

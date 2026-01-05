@@ -1,14 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-
 export default function TerrainPreview() {
   const mountRef = useRef(null);
   const [isReady, setIsReady] = useState(false);
-
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
-
     const check = () => {
       const w = mount.clientWidth;
       const h = mount.clientHeight;
@@ -18,58 +15,38 @@ export default function TerrainPreview() {
         requestAnimationFrame(check);
       }
     };
-
     check();
   }, []);
-
   useEffect(() => {
     if (!isReady) return;
-
     const mount = mountRef.current;
     if (!mount) return;
-
     const terrain = window.__terrainReference;
     if (!terrain) return;
-
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true,
     });
-
     renderer.setPixelRatio(window.devicePixelRatio || 1);
     renderer.setSize(mount.clientWidth, mount.clientHeight, false);
-
     mount.appendChild(renderer.domElement);
-
     const scene = new THREE.Scene();
-
     const clone = terrain.clone(true);
-
-    // Clone shader material (no texture maps needed for gradient-based material)
     const safeMat = terrain.material.clone();
     safeMat.needsUpdate = true;
-
     clone.material = safeMat;
-
     clone.matrixAutoUpdate = false;
     clone.updateMatrix();
-
     scene.add(clone);
-
-    // Soft lighting matching main scene aesthetic
     const hemi = new THREE.HemisphereLight(0xfff5e6, 0xd4c5b8, 0.6);
     scene.add(hemi);
-
     const dir = new THREE.DirectionalLight(0xfff8f0, 0.5);
     dir.position.set(50, 100, 80);
     scene.add(dir);
-
     const ambient = new THREE.AmbientLight(0xf5e6d3, 0.4);
     scene.add(ambient);
-
     const aspect = mount.clientWidth / mount.clientHeight;
     const frustum = 180;
-
     const camera = new THREE.OrthographicCamera(
       (-frustum * aspect) / 2,
       (frustum * aspect) / 2,
@@ -78,40 +55,30 @@ export default function TerrainPreview() {
       0.1,
       1000
     );
-
     camera.position.set(140, 140, 140);
     camera.lookAt(0, 0, 0);
-
     let frameId;
     let lastTime = performance.now();
     const loop = () => {
       const currentTime = performance.now();
       const time = currentTime / 1000;
-      
-      // Update shader time uniform for animated effects
       if (safeMat.uniforms?.time) {
         safeMat.uniforms.time.value = time;
       }
-      
       renderer.render(scene, camera);
       frameId = requestAnimationFrame(loop);
     };
     loop();
-
     return () => {
       cancelAnimationFrame(frameId);
-
       if (renderer.domElement.parentNode === mount) {
         mount.removeChild(renderer.domElement);
       }
-
       renderer.dispose();
-
       clone.geometry.dispose();
       clone.material.dispose();
     };
   }, [isReady]);
-
   return (
     <div
       ref={mountRef}

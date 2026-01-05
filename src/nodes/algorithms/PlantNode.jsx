@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
-
 export default function PlantNode({ id, data }) {
   const {
     label = "Plant",
@@ -15,10 +14,8 @@ export default function PlantNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     onOutput?.({
       id,
@@ -33,7 +30,6 @@ export default function PlantNode({ id, data }) {
       leafDensity,
     });
   }, [id, positionX, positionY, positionZ, branchThickness, branchColor, leafSize, leafColor, leafDensity, onOutput]);
-
   return (
     <div className="node-default node-plant">
       <div style={{
@@ -61,9 +57,7 @@ export default function PlantNode({ id, data }) {
           boxShadow: '0 0 8px rgba(74, 144, 226, 0.6)'
         }}
       />
-
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Pos X</div>
         <input
@@ -76,7 +70,6 @@ export default function PlantNode({ id, data }) {
           onChange={(e) => update({ positionX: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Pos Y</div>
         <input
@@ -89,7 +82,6 @@ export default function PlantNode({ id, data }) {
           onChange={(e) => update({ positionY: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Pos Z</div>
         <input
@@ -102,7 +94,6 @@ export default function PlantNode({ id, data }) {
           onChange={(e) => update({ positionZ: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Branch Thickness</div>
         <input
@@ -117,7 +108,6 @@ export default function PlantNode({ id, data }) {
           onChange={(e) => update({ branchThickness: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Bark Color</div>
         <input
@@ -129,7 +119,6 @@ export default function PlantNode({ id, data }) {
           onChange={(e) => update({ branchColor: e.target.value })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Leaf Size</div>
         <input
@@ -144,7 +133,6 @@ export default function PlantNode({ id, data }) {
           onChange={(e) => update({ leafSize: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Leaf Color</div>
         <input
@@ -156,7 +144,6 @@ export default function PlantNode({ id, data }) {
           onChange={(e) => update({ leafColor: e.target.value })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Leaf Density</div>
         <input
@@ -171,7 +158,6 @@ export default function PlantNode({ id, data }) {
           onChange={(e) => update({ leafDensity: Number(e.target.value) })}
         />
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-75px',

@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import Perlin from "../../algorithms/perlin.js";
-
 export default function PerlinNoiseNode({ id, data }) {
   const {
     label = "Perlin Noise",
@@ -14,14 +13,11 @@ export default function PerlinNoiseNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     Perlin.init(seed);
     const value = Perlin.noise2D(seed * scale, seed * scale);
-
     onOutput?.({
       id,
       type: "perlinNoise",
@@ -34,11 +30,9 @@ export default function PerlinNoiseNode({ id, data }) {
       frequency,
     });
   }, [id, seed, scale, octaves, persistence, amplitude, frequency, onOutput]);
-
   return (
     <div className="node-default node-perlin">
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Seed</div>
         <input
@@ -50,7 +44,6 @@ export default function PerlinNoiseNode({ id, data }) {
           onChange={(e) => update({ seed: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Scale</div>
         <input
@@ -63,7 +56,6 @@ export default function PerlinNoiseNode({ id, data }) {
           onChange={(e) => update({ scale: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Octaves</div>
         <input
@@ -77,7 +69,6 @@ export default function PerlinNoiseNode({ id, data }) {
           onChange={(e) => update({ octaves: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Persistence</div>
         <input
@@ -90,7 +81,6 @@ export default function PerlinNoiseNode({ id, data }) {
           onChange={(e) => update({ persistence: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Amplitude</div>
         <input
@@ -102,7 +92,6 @@ export default function PerlinNoiseNode({ id, data }) {
           onChange={(e) => update({ amplitude: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Frequency</div>
         <input
@@ -115,7 +104,6 @@ export default function PerlinNoiseNode({ id, data }) {
           onChange={(e) => update({ frequency: Number(e.target.value) })}
         />
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-100px',

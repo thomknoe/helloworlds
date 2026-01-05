@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
-
 export default function CellularAutomataNode({ id, data }) {
   const {
     label = "Cellular Automata",
@@ -13,10 +12,8 @@ export default function CellularAutomataNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     onOutput?.({
       id,
@@ -29,11 +26,9 @@ export default function CellularAutomataNode({ id, data }) {
       birthMax,
     });
   }, [id, width, height, surviveMin, surviveMax, birthMin, birthMax, onOutput]);
-
   return (
     <div className="node-default node-cellular-automata">
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Grid Width</div>
         <input
@@ -47,7 +42,6 @@ export default function CellularAutomataNode({ id, data }) {
           onChange={(e) => update({ width: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Grid Height</div>
         <input
@@ -61,7 +55,6 @@ export default function CellularAutomataNode({ id, data }) {
           onChange={(e) => update({ height: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Survive Min</div>
         <input
@@ -75,7 +68,6 @@ export default function CellularAutomataNode({ id, data }) {
           onChange={(e) => update({ surviveMin: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Survive Max</div>
         <input
@@ -89,7 +81,6 @@ export default function CellularAutomataNode({ id, data }) {
           onChange={(e) => update({ surviveMax: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Birth Min</div>
         <input
@@ -103,7 +94,6 @@ export default function CellularAutomataNode({ id, data }) {
           onChange={(e) => update({ birthMin: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Birth Max</div>
         <input
@@ -117,7 +107,6 @@ export default function CellularAutomataNode({ id, data }) {
           onChange={(e) => update({ birthMax: Number(e.target.value) })}
         />
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-100px',
@@ -146,4 +135,3 @@ export default function CellularAutomataNode({ id, data }) {
     </div>
   );
 }
-

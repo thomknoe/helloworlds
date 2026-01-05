@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import RidgeNoise from "../../algorithms/ridgeNoise.js";
-
 export default function RidgeNoiseNode({ id, data }) {
   const {
     label = "Ridge Noise",
@@ -15,10 +14,8 @@ export default function RidgeNoiseNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     const value = RidgeNoise.noise2DFractal(
       seed * scale,
@@ -29,7 +26,6 @@ export default function RidgeNoiseNode({ id, data }) {
       offset,
       power
     );
-
     onOutput?.({
       id,
       type: "ridgeNoise",
@@ -43,11 +39,9 @@ export default function RidgeNoiseNode({ id, data }) {
       power,
     });
   }, [id, seed, scale, octaves, persistence, amplitude, offset, power, onOutput]);
-
   return (
     <div className="node-default node-ridge-noise">
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Seed</div>
         <input
@@ -59,7 +53,6 @@ export default function RidgeNoiseNode({ id, data }) {
           onChange={(e) => update({ seed: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Scale</div>
         <input
@@ -72,7 +65,6 @@ export default function RidgeNoiseNode({ id, data }) {
           onChange={(e) => update({ scale: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Octaves</div>
         <input
@@ -86,7 +78,6 @@ export default function RidgeNoiseNode({ id, data }) {
           onChange={(e) => update({ octaves: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Persistence</div>
         <input
@@ -99,7 +90,6 @@ export default function RidgeNoiseNode({ id, data }) {
           onChange={(e) => update({ persistence: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Amplitude</div>
         <input
@@ -111,7 +101,6 @@ export default function RidgeNoiseNode({ id, data }) {
           onChange={(e) => update({ amplitude: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Offset</div>
         <input
@@ -124,7 +113,6 @@ export default function RidgeNoiseNode({ id, data }) {
           onChange={(e) => update({ offset: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Power</div>
         <input
@@ -137,7 +125,6 @@ export default function RidgeNoiseNode({ id, data }) {
           onChange={(e) => update({ power: Number(e.target.value) })}
         />
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-100px',
@@ -166,4 +153,3 @@ export default function RidgeNoiseNode({ id, data }) {
     </div>
   );
 }
-

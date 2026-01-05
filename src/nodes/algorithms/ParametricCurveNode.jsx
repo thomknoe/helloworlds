@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import { ParametricCurve } from "../../algorithms/parametricCurves.js";
 import * as THREE from "three";
-
 export default function ParametricCurveNode({ id, data }) {
   const {
     label = "Parametric Curve",
@@ -14,19 +13,14 @@ export default function ParametricCurveNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
-    // Parse control points
     const xCoords = controlPointsX.split(",").map(s => parseFloat(s.trim()) || 0);
     const yCoords = controlPointsY.split(",").map(s => parseFloat(s.trim()) || 0);
     const zCoords = controlPointsZ.split(",").map(s => parseFloat(s.trim()) || 0);
-    
     const maxLength = Math.max(xCoords.length, yCoords.length, zCoords.length);
     const controlPoints = [];
-    
     for (let i = 0; i < maxLength; i++) {
       controlPoints.push(new THREE.Vector3(
         xCoords[i] || 0,
@@ -34,22 +28,17 @@ export default function ParametricCurveNode({ id, data }) {
         zCoords[i] || 0
       ));
     }
-
-    // Ensure minimum points for curve type
     if (controlPoints.length < 2) {
       controlPoints.push(new THREE.Vector3(0, 0, 0));
       controlPoints.push(new THREE.Vector3(10, 0, 10));
     }
-
     const curve = new ParametricCurve({
       curveType,
       controlPoints,
       segments,
     });
-
     const points = curve.generatePoints();
     const length = curve.getLength();
-
     onOutput?.({
       id,
       type: "parametricCurve",
@@ -60,11 +49,9 @@ export default function ParametricCurveNode({ id, data }) {
       length,
     });
   }, [id, curveType, segments, controlPointsX, controlPointsY, controlPointsZ, onOutput]);
-
   return (
     <div className="node-default node-parametric-curve">
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Curve Type</div>
         <select
@@ -79,7 +66,6 @@ export default function ParametricCurveNode({ id, data }) {
           <option value="line">Line</option>
         </select>
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Segments</div>
         <input
@@ -93,7 +79,6 @@ export default function ParametricCurveNode({ id, data }) {
           onChange={(e) => update({ segments: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Control X</div>
         <input
@@ -106,7 +91,6 @@ export default function ParametricCurveNode({ id, data }) {
           onChange={(e) => update({ controlPointsX: e.target.value })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Control Y</div>
         <input
@@ -119,7 +103,6 @@ export default function ParametricCurveNode({ id, data }) {
           onChange={(e) => update({ controlPointsY: e.target.value })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Control Z</div>
         <input
@@ -132,7 +115,6 @@ export default function ParametricCurveNode({ id, data }) {
           onChange={(e) => update({ controlPointsZ: e.target.value })}
         />
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-100px',
@@ -161,4 +143,3 @@ export default function ParametricCurveNode({ id, data }) {
     </div>
   );
 }
-

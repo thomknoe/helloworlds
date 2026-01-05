@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import Simplex from "../../algorithms/simplex.js";
-
 export default function SimplexNoiseNode({ id, data }) {
   const {
     label = "Simplex Noise",
@@ -14,10 +13,8 @@ export default function SimplexNoiseNode({ id, data }) {
     onChange,
     onOutput,
   } = data || {};
-
   const update = (patch) => onChange?.({ ...data, ...patch });
   const stop = (e) => e.stopPropagation();
-
   useEffect(() => {
     const value = Simplex.noise3DFractal(
       seed * scale,
@@ -27,7 +24,6 @@ export default function SimplexNoiseNode({ id, data }) {
       persistence,
       scale
     );
-
     onOutput?.({
       id,
       type: "simplexNoise",
@@ -40,11 +36,9 @@ export default function SimplexNoiseNode({ id, data }) {
       zOffset,
     });
   }, [id, seed, scale, octaves, persistence, amplitude, zOffset, onOutput]);
-
   return (
     <div className="node-default node-simplex">
       <div className="node-title">{label}</div>
-
       <div className="node-param-row">
         <div className="node-param-label">Seed</div>
         <input
@@ -56,7 +50,6 @@ export default function SimplexNoiseNode({ id, data }) {
           onChange={(e) => update({ seed: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Scale</div>
         <input
@@ -69,7 +62,6 @@ export default function SimplexNoiseNode({ id, data }) {
           onChange={(e) => update({ scale: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Octaves</div>
         <input
@@ -83,7 +75,6 @@ export default function SimplexNoiseNode({ id, data }) {
           onChange={(e) => update({ octaves: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Persistence</div>
         <input
@@ -96,7 +87,6 @@ export default function SimplexNoiseNode({ id, data }) {
           onChange={(e) => update({ persistence: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Amplitude</div>
         <input
@@ -108,7 +98,6 @@ export default function SimplexNoiseNode({ id, data }) {
           onChange={(e) => update({ amplitude: Number(e.target.value) })}
         />
       </div>
-
       <div className="node-param-row">
         <div className="node-param-label">Z Offset</div>
         <input
@@ -121,7 +110,6 @@ export default function SimplexNoiseNode({ id, data }) {
           onChange={(e) => update({ zOffset: Number(e.target.value) })}
         />
       </div>
-
       <div style={{
         position: 'absolute',
         right: '-100px',
@@ -150,4 +138,3 @@ export default function SimplexNoiseNode({ id, data }) {
     </div>
   );
 }
-

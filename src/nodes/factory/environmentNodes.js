@@ -1,6 +1,5 @@
 const makeId = (prefix) =>
   `${prefix}-${Math.random().toString(36).slice(2, 8)}`;
-
 export function createPerlinNoiseNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("perlin"),
@@ -17,7 +16,6 @@ export function createPerlinNoiseNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-
 export function createTerrainNode(position = { x: 300, y: 0 }) {
   return {
     id: makeId("terrain"),
@@ -25,11 +23,10 @@ export function createTerrainNode(position = { x: 300, y: 0 }) {
     position,
     data: {
       elevationInfo: null,
-      waterHeight: 0, // Default water level starts at 0
+      waterHeight: 0, 
     },
   };
 }
-
 export function createVoronoiNoiseNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("voronoi"),
@@ -46,7 +43,6 @@ export function createVoronoiNoiseNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-
 export function createDomainWarpingNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("domainWarping"),
@@ -64,7 +60,6 @@ export function createDomainWarpingNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-
 export function createRidgeNoiseNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("ridgeNoise"),
@@ -82,7 +77,6 @@ export function createRidgeNoiseNode(position = { x: 0, y: 0 }) {
     },
   };
 }
-
 export function createSimplexNoiseNode(position = { x: 0, y: 0 }) {
   return {
     id: makeId("simplex"),
