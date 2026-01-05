@@ -57,13 +57,13 @@ Visit the web application at [https://thomknoe.github.io/helloworlds](https://th
 
 ## Node Reference
 
-The application consists of multiple node components organized into four categories: **Noise & Heightfields**, **Agent & Behavior Systems**, **Simulation & Natural Systems**, and **Structural / Generative Grammars**. Each node processes inputs and generates outputs that can be connected to other nodes to create complex procedural content.
+The application consists of multiple node components organized into four categories: **Noise & Heightfields**, **Agent & Behavior Systems**, **Simulation & Natural Systems**, and **Structural & Generative Grammars**. Each node processes inputs and generates outputs that can be connected to other nodes to create complex procedural content.
 
 ### Noise & Heightfield Nodes
 
 #### Perlin Noise Node
 
-Generates multi-octave Perlin noise for terrain heightfields and procedural placement. This node creates noise values that can be used to drive terrain height generation, flower distribution patterns, or flow field effects for flocking systems.
+Generates multi-octave Perlin noise for terrain heightfields and procedural placement. Creates smooth, natural-looking noise patterns ideal for terrain generation, texture variation, and flow field effects.
 
 **Inputs:**
 
@@ -77,16 +77,91 @@ Generates multi-octave Perlin noise for terrain heightfields and procedural plac
 **Outputs:**
 
 - `type`: "perlinNoise"
-- `value`: Sampled noise value at seed position
-- `seed`, `scale`, `octaves`, `persistence`, `amplitude`, `frequency`: Configuration values
+- `value`: Sampled noise value
+- All input parameters as configuration object
+
+#### Voronoi Noise Node
+
+Generates Voronoi (cellular) noise patterns with configurable distance metrics. Creates cell-like patterns useful for organic textures, terrain features, and procedural placement.
+
+**Inputs:**
+
+- `seed (number)`: Random seed (default: 42)
+- `scale (number)`: Noise scale factor (default: 0.1)
+- `octaves (number)`: Number of octaves (default: 4)
+- `persistence (number)`: Amplitude decay per octave (default: 0.5)
+- `amplitude (number)`: Amplitude multiplier (default: 10)
+- `mode (string)`: Distance metric - "f1", "f2", or "f2f1" (default: "f1")
+
+**Outputs:**
+
+- `type`: "voronoiNoise"
+- All input parameters as configuration object
+
+#### Simplex Noise Node
+
+Generates Simplex noise, an improved version of Perlin noise with better computational efficiency and smoother gradients. Ideal for high-performance terrain and texture generation.
+
+**Inputs:**
+
+- `seed (number)`: Random seed (default: 42)
+- `scale (number)`: Noise scale factor (default: 0.05)
+- `octaves (number)`: Number of octaves (default: 4)
+- `persistence (number)`: Amplitude decay per octave (default: 0.5)
+- `amplitude (number)`: Amplitude multiplier (default: 10)
+- `zOffset (number)`: Z-axis offset for 3D sampling (default: 0.0)
+
+**Outputs:**
+
+- `type`: "simplexNoise"
+- All input parameters as configuration object
+
+#### Ridge Noise Node
+
+Generates ridge noise patterns by inverting and power-scaling noise values. Creates sharp, mountain-like features ideal for dramatic terrain generation.
+
+**Inputs:**
+
+- `seed (number)`: Random seed (default: 42)
+- `scale (number)`: Noise scale factor (default: 0.05)
+- `octaves (number)`: Number of octaves (default: 4)
+- `persistence (number)`: Amplitude decay per octave (default: 0.5)
+- `amplitude (number)`: Amplitude multiplier (default: 10)
+- `offset (number)`: Value offset before power scaling (default: 0.0)
+- `power (number)`: Power exponent for ridge sharpness (default: 2.0)
+
+**Outputs:**
+
+- `type`: "ridgeNoise"
+- All input parameters as configuration object
+
+#### Domain Warping Node
+
+Applies domain warping to noise patterns, creating distorted and organic-looking variations. Uses a secondary noise function to warp the sampling coordinates of the primary noise.
+
+**Inputs:**
+
+- `seed (number)`: Random seed (default: 42)
+- `baseScale (number)`: Base noise scale (default: 0.05)
+- `warpStrength (number)`: Strength of domain warping (default: 5.0)
+- `warpScale (number)`: Scale of warping noise (default: 0.1)
+- `octaves (number)`: Number of octaves (default: 4)
+- `persistence (number)`: Amplitude decay per octave (default: 0.5)
+- `amplitude (number)`: Amplitude multiplier (default: 10)
+
+**Outputs:**
+
+- `type`: "domainWarping"
+- All input parameters as configuration object
 
 #### Terrain Node
 
-Creates a 3D terrain mesh using noise configuration. This node receives noise parameters from a connected Noise Node and generates a terrain heightfield that all other objects automatically snap to.
+Creates a 3D terrain mesh using noise configuration. Receives noise parameters from connected Noise Nodes and generates a terrain heightfield that all other objects automatically snap to. Controls water level and terrain dimensions.
 
 **Inputs:**
 
 - `config (object)`: Noise configuration from connected Noise Node (via config handle)
+- `waterHeight (number)`: Water level height (default: 0)
 
 **Outputs:**
 
@@ -105,11 +180,29 @@ Defines agent spawn parameters for flocking systems. Specifies how many agents t
 - `velocityX/Y/Z (number)`: Initial velocity (default: 0)
 - `size (number)`: Physical size of each agent (default: 0.3)
 - `spread (number)`: Spawn spread radius (default: 20.0)
-- `behavior (object)`: Flocking behavior configuration from Flocking Node
+- `behavior (object)`: Flocking behavior configuration from Flocking Node (via behavior handle)
 
 **Outputs:**
 
 - `type`: "agent"
+- All input parameters as outputs
+
+#### Boid Node
+
+Defines individual boid entities for flocking systems. Similar to Agent Node but optimized for boid-specific properties and behaviors. Can be connected to Flocking Node for behavior configuration.
+
+**Inputs:**
+
+- `count (number)`: Number of boids to spawn (default: 10, max: 200)
+- `positionX/Y/Z (number)`: Base spawn position (default: 0, 50, 0)
+- `velocityX/Y/Z (number)`: Initial velocity (default: 0)
+- `size (number)`: Physical size of each boid (default: 0.3)
+- `spread (number)`: Spawn spread radius (default: 5.0)
+- `behavior (object)`: Flocking behavior configuration from Flocking Node (via behavior handle)
+
+**Outputs:**
+
+- `type`: "boid"
 - All input parameters as outputs
 
 #### Flocking Node
@@ -125,16 +218,109 @@ Configures flocking behavior rules using separation, alignment, and cohesion for
 - `neighborRadius (number)`: Detection radius for neighbors (default: 5.0)
 - `maxSpeed (number)`: Maximum speed limit (default: 5.0)
 - `maxForce (number)`: Maximum steering force limit (default: 0.1)
-- `boundsWidth/Depth (number)`: Boundary dimensions (default: 50)
+- `boundsWidth (number)`: Boundary width dimension (default: 150)
+- `boundsDepth (number)`: Boundary depth dimension (default: 150)
 - `planeHeight (number)`: Vertical height of flocking plane (default: 50)
 - `noise (object)`: Optional noise configuration for flow field effects
 
 **Outputs:**
 
-- `type`: "flockingBehavior"
+- `type`: "flocking"
+- All input parameters as outputs
+
+#### NPC Node
+
+Creates non-player characters with configurable movement patterns, interaction radii, and procedural dialogue generation. NPCs can be stationary, wandering, or follow custom movement patterns.
+
+**Inputs:**
+
+- `positionX/Y/Z (number)`: NPC position (default: 0, auto-adjusted to terrain)
+- `movementType (string)`: Movement pattern - "stationary", "wander", or custom (default: "stationary")
+- `speed (number)`: Movement speed (default: 2.0)
+- `wanderRadius (number)`: Wandering radius (default: 10.0)
+- `wanderCenterX/Y/Z (number)`: Center point for wandering (default: 0)
+- `interactionRadius (number)`: Distance for player interaction (default: 10.0)
+- `dialogueWords (string)`: Comma-separated words for dialogue generation (default: "hello,world,greetings,traveler,welcome,friend,adventure,journey")
+- `dialogueLength (number)`: Number of words in generated dialogue (default: 5)
+- `color (string)`: NPC color in hex (default: "#ffffff")
+- `size (number)`: NPC size (default: 3.5)
+
+**Outputs:**
+
+- `type`: "npc"
 - All input parameters as outputs
 
 ### Simulation & Natural System Nodes
+
+#### Cellular Automata Node
+
+Implements cellular automata simulation with configurable survival and birth rules. Generates patterns based on neighbor counting rules, useful for terrain features, cave generation, and organic patterns.
+
+**Inputs:**
+
+- `width (number)`: Grid width (default: 100, min: 10, max: 500)
+- `height (number)`: Grid height (default: 100, min: 10, max: 500)
+- `surviveMin (number)`: Minimum neighbors for survival (default: 2)
+- `surviveMax (number)`: Maximum neighbors for survival (default: 3)
+- `birthMin (number)`: Minimum neighbors for birth (default: 3)
+- `birthMax (number)`: Maximum neighbors for birth (default: 3)
+
+**Outputs:**
+
+- `type`: "cellularAutomata"
+- Grid dimensions and rule parameters
+
+#### Diffusion Node
+
+Simulates heat diffusion or similar diffusion processes across a 2D grid. Useful for creating smooth gradients, temperature maps, or influence fields.
+
+**Inputs:**
+
+- `width (number)`: Grid width (default: 100)
+- `height (number)`: Grid height (default: 100)
+- `diffusionRate (number)`: Rate of diffusion (default: 0.1)
+- `dt (number)`: Time step for simulation (default: 0.1)
+
+**Outputs:**
+
+- `type`: "diffusion"
+- Grid dimensions and diffusion parameters
+
+#### Particle System Node
+
+Creates particle systems with configurable spawn rates, physics, and lifetimes. Particles are affected by gravity, wind, and spawn area constraints.
+
+**Inputs:**
+
+- `maxParticles (number)`: Maximum number of particles (default: 1000)
+- `spawnRate (number)`: Particles spawned per second (default: 10)
+- `gravityX/Y/Z (number)`: Gravity vector (default: 0, -9.8, 0)
+- `windX/Y/Z (number)`: Wind force vector (default: 0, 0, 0)
+- `spawnX/Y/Z (number)`: Spawn position center (default: 0, 50, 0)
+- `spawnSizeX/Y/Z (number)`: Spawn area dimensions (default: 10, 5, 10)
+- `lifetime (number)`: Particle lifetime in seconds (default: 5.0)
+
+**Outputs:**
+
+- `type`: "particleSystem"
+- All input parameters as outputs
+
+#### Wave Propagation Node
+
+Simulates wave propagation effects across a surface. Creates expanding wave patterns with configurable amplitude, speed, decay, and lifetime.
+
+**Inputs:**
+
+- `amplitude (number)`: Wave amplitude (default: 1.0)
+- `speed (number)`: Wave propagation speed (default: 10.0)
+- `decayRate (number)`: Wave decay rate over distance (default: 0.1)
+- `lifetime (number)`: Wave lifetime in seconds (default: 5.0)
+- `maxWaves (number)`: Maximum concurrent waves (default: 10)
+
+**Outputs:**
+
+- `type`: "wavePropagation"
+- All input parameters as outputs
 
 #### L-System Node
 
@@ -166,7 +352,7 @@ Creates 3D plants using L-system geometry. Takes an L-system definition and rend
 - `leafSize (number)`: Size of leaves (default: 0.3)
 - `leafColor (string)`: Leaf color in hex (default: "#228B22")
 - `leafDensity (number)`: Density of leaves 0-1 (default: 0.7)
-- `lsystem (object)`: L-system definition from L-System Node (required)
+- `lsystem (object)`: L-system definition from L-System Node (required, via lsystem handle)
 
 **Outputs:**
 
@@ -189,7 +375,7 @@ Places procedural flowers on terrain using noise-based distribution. Generates a
 - `type`: "flower"
 - `count`, `spread`, `size`, `noiseConfig`
 
-### Structural / Generative Grammar Nodes
+### Structural & Generative Grammar Nodes
 
 #### Building Grammar Node
 
@@ -210,6 +396,26 @@ Generates building structure definitions using procedural grammar. Creates archi
 - `type`: "buildingGrammar"
 - All input parameters plus `building` object with geometry data
 
+#### Shape Grammar Node
+
+Generates shapes and structures using shape grammar rules. Similar to Building Grammar but with more flexible shape generation capabilities. Supports multiple grammar types for different structural patterns.
+
+**Inputs:**
+
+- `grammarType (string)`: Type of grammar - "building" or custom (default: "building")
+- `levels (number)`: Number of levels (default: 3)
+- `roomsPerLevel (number)`: Number of rooms per level (default: 4)
+- `roomSize (number)`: Size of individual rooms (default: 4.0)
+- `levelHeight (number)`: Height of each level (default: 3.0)
+- `wallThickness (number)`: Thickness of walls (default: 0.2)
+- `hasStairs (boolean)`: Include staircases (default: true)
+- `roomLayout (string)`: Layout pattern (default: "grid")
+
+**Outputs:**
+
+- `type`: "shapeGrammar"
+- All input parameters plus generated shape data
+
 #### Building Node
 
 Instantiates buildings in the world using grammar definitions. Places buildings at specified positions, automatically adjusting their base height to match terrain elevation.
@@ -218,58 +424,43 @@ Instantiates buildings in the world using grammar definitions. Places buildings 
 
 - `positionX/Y/Z (number)`: Building position (default: 0, auto-adjusted to terrain)
 - `color (string)`: Building color in hex (default: "#ffffff")
-- `grammar (object)`: Building grammar definition from Building Grammar Node (required)
+- `grammar (object)`: Building grammar definition from Building Grammar Node (required, via grammar handle)
 
 **Outputs:**
 
 - `type`: "building"
 - All input parameters as outputs
 
----
+#### Markov Chain Node
 
-## Architecture
+Generates sequences using Markov chain probability models. Creates state transitions based on learned or defined probabilities, useful for procedural text, patterns, and sequences.
 
-The codebase follows object-oriented design principles with a clear separation of concerns and hierarchical class structure, making it scalable and maintainable.
+**Inputs:**
 
-### Core Architecture (`src/core/`)
+- `states (string)`: Comma-separated list of states (default: "A,B,C")
+- `sequenceLength (number)`: Length of generated sequence (default: 10)
 
-#### Base Classes
+**Outputs:**
 
-The foundation consists of abstract base classes that define common interfaces:
+- `type`: "markovChain"
+- `states`: Array of state values
+- `sequenceLength`: Requested sequence length
+- `sequence`: Generated sequence array
+- `currentState`: Current state value
 
-- **`algorithms/NoiseGenerator.js`**: Abstract base class for all noise generation algorithms. Provides `noise2D()`, `noise2DOctaves()`, and interpolation utilities.
-- **`algorithms/Grammar.js`**: Abstract base class for grammar-based generation systems (L-systems, shape grammars, building grammars). Provides rule application and string replacement utilities.
-- **`world/WorldObject.js`**: Base class for all 3D world objects. Manages Three.js groups, meshes, materials, and geometries with automatic resource disposal.
-- **`world/Entity.js`**: Extends `WorldObject` for entities that can move and interact. Provides position, velocity, acceleration, and force application capabilities.
+#### Parametric Curve Node
 
-#### Configuration Classes (`src/core/config/`)
+Generates parametric curves for paths, trajectories, and procedural shapes. Supports multiple curve types including Bezier curves with configurable control points.
 
-Encapsulated configuration objects providing type safety and validation:
+**Inputs:**
 
-- **`NoiseConfig.js`**: Configuration for noise generators supporting multiple noise types (Perlin, Voronoi, Simplex, Ridge, Domain Warping).
-- **`FlockingConfig.js`**: Configuration for flocking behavior systems with bounds, forces, and noise integration.
+- `curveType (string)`: Type of curve - "bezier" or custom (default: "bezier")
+- `segments (number)`: Number of curve segments (default: 50)
+- `controlPointsX (string)`: Comma-separated X coordinates (default: "0,5,10,15")
+- `controlPointsY (string)`: Comma-separated Y coordinates (default: "0,0,0,0")
+- `controlPointsZ (string)`: Comma-separated Z coordinates (default: "0,5,0,5")
 
-#### Service Layer (`src/core/services/`)
+**Outputs:**
 
-Manager classes for system-level operations:
-
-- **`SceneManager.js`**: Centralized management of Three.js scene, camera, renderer, and lighting.
-- **`EntityManager.js`**: Manages entity lifecycle (creation, updates, disposal) with ID-based tracking.
-
-### Algorithm Implementation (`src/algorithms/`)
-
-All algorithms are implemented as classes extending appropriate base classes:
-
-- **`PerlinNoise`** extends `NoiseGenerator`: Perlin noise with permutation table management
-- **`LSystem`** extends `Grammar`: L-system implementation for procedural plant generation
-- **`BuildingGrammar`** extends `Grammar`: Building structure generation with configurable layouts
-- **`Boid`** extends `Entity`: Individual boid entity for flocking systems
-- **`FlockingSystem`**: Manages boid behavior using `FlockingConfig` for configuration
-
-### World Objects (`src/world/`)
-
-World objects extend `WorldObject` and provide factory functions for backward compatibility:
-
-- **`plants/Plant.js`**: Extends `WorldObject`, creates 3D plant geometry from L-systems
-- **`buildings/Building.js`**: Extends `WorldObject`, creates building geometry from grammar definitions
-- Factory functions (`createPlant.js`, `createBuilding.js`) wrap class instances to maintain existing API
+- `type`: "parametricCurve"
+- All input parameters plus generated curve points
